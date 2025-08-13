@@ -1,0 +1,6 @@
+@career_module.server_HostAddress = http://localhost:5160
+
+GET {{career_module.server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
