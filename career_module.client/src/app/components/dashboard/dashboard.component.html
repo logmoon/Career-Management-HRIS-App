@@ -1,0 +1,137 @@
+<div class="space-y-6">
+  <!-- Welcome Section -->
+  <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold">Welcome back, {{ currentUser?.username }}!</h1>
+        <p class="text-indigo-100 mt-1">Here's what's happening with your career management today.</p>
+      </div>
+      <div class="hidden md:block">
+        <div class="bg-white/20 rounded-full p-3">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-2xl font-semibold text-gray-900">{{ dashboardStats.totalEmployees }}</p>
+          <p class="text-gray-600">Total Employees</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 002 2M8 6v2a2 2 0 002 2h4a2 2 0 002-2V6"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-2xl font-semibold text-gray-900">{{ dashboardStats.openPositions }}</p>
+          <p class="text-gray-600">Open Positions</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-2xl font-semibold text-gray-900">{{ dashboardStats.pendingReviews }}</p>
+          <p class="text-gray-600">Pending Reviews</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-2xl font-semibold text-gray-900">{{ dashboardStats.successionPlans }}</p>
+          <p class="text-gray-600">Succession Plans</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions & Recent Activities -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+      <div class="space-y-3">
+        <ng-container *ngFor="let action of quickActions">
+          <a *ngIf="canShowAction(action)"
+             [routerLink]="action.href"
+             class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors">
+            
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-white"
+                 [ngClass]="action.color">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                   [innerHTML]="getIconSvg(action.icon)">
+              </svg>
+            </div>
+            
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-900">{{ action.title }}</p>
+              <p class="text-xs text-gray-600">{{ action.description }}</p>
+            </div>
+            
+            <div class="ml-auto">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </a>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h3>
+      <div class="space-y-4">
+        <div *ngFor="let activity of recentActivities" 
+             class="flex items-start space-x-3">
+          
+          <div class="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+            <svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 [innerHTML]="getIconSvg(activity.icon)">
+            </svg>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-900">{{ activity.message }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ activity.timestamp }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
