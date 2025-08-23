@@ -11,6 +11,7 @@ export class AuthService {
   private readonly API_URL = 'https://localhost:7130/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
+  private readonly STORAGE_KEY = 'auth_data';
 
   public currentUser$ = this.currentUserSubject.asObservable();
   public isLoggedIn$ = this.isLoggedInSubject.asObservable();
@@ -38,8 +39,7 @@ export class AuthService {
   }
 
   logout(): void {
-    // TODO: Remove from local storage
-    // Remove from memory storage (we're not using localStorage in artifacts)
+    localStorage.removeItem(this.STORAGE_KEY);
     this.currentUserSubject.next(null);
     this.isLoggedInSubject.next(false);
     this.router.navigate(['/login']);
@@ -48,13 +48,26 @@ export class AuthService {
   private setSession(authResult: AuthResult): void {
     this.currentUserSubject.next(authResult.user);
     this.isLoggedInSubject.next(true);
-    // TODO: Store to local storage
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+      user: authResult.user,
+      token: authResult.token
+    }));
   }
 
   private loadUserFromStorage(): void {
-    // TODO: load from local storage
-    // Currently we always start with no user
-    this.isLoggedInSubject.next(false);
+    const storedData = localStorage.getItem(this.STORAGE_KEY);
+    if (storedData) {
+      try {
+        const authData = JSON.parse(storedData);
+        if (authData.user && authData.token) {
+          this.currentUserSubject.next(authData.user);
+          this.isLoggedInSubject.next(true);
+        }
+      } catch (error) {
+        console.error('Error parsing stored auth data:', error);
+        this.logout();
+      }
+    }
   }
 
   getCurrentUser(): User | null {

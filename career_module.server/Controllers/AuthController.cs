@@ -1,4 +1,5 @@
-﻿using career_module.server.Services;
+﻿using career_module.server.Models.DTOs;
+using career_module.server.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace career_module.server.Controllers
@@ -15,7 +16,7 @@ namespace career_module.server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResult>> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<AuthResultDto>> Login([FromBody] LoginRequestDto request)
         {
             var result = await _authService.LoginAsync(request.Username, request.Password);
 
@@ -26,28 +27,14 @@ namespace career_module.server.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<ActionResult<RegistrationResultDto>> Register([FromBody] RegisterRequestDto request)
         {
-            var user = await _authService.RegisterAsync(request.Username, request.Email, request.Password, request.Role);
+            var result = await _authService.RegisterAsync(request.Username, request.Email, request.Password, request.Role);
 
-            if (user == null)
-                return BadRequest(new { message = "Username or email already exists" });
+            if (!result.Success)
+                return BadRequest(result);
 
-            return Ok(new { message = "User registered successfully", userId = user.Id });
+            return Ok(result);
         }
-    }
-
-    public class LoginRequest
-    {
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-
-    public class RegisterRequest
-    {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = "Employee";
     }
 }

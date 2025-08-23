@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace career_module.server.Entities
+namespace career_module.server.Models.Entities
 {
     // User & Authentication
     public class User

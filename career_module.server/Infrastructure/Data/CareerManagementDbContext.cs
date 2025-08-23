@@ -1,4 +1,4 @@
-﻿using career_module.server.Entities;
+﻿using career_module.server.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace career_module.server.Infrastructure.Data

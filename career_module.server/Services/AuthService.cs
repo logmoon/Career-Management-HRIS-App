@@ -1,5 +1,6 @@
-﻿using career_module.server.Entities;
-using career_module.server.Infrastructure.Data;
+﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Models.DTOs;
+using career_module.server.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,8 +11,8 @@ namespace career_module.server.Services
 {
     public interface IAuthService
     {
-        Task<AuthResult> LoginAsync(string username, string password);
-        Task<User?> RegisterAsync(string username, string email, string password, string role = "Employee");
+        Task<AuthResultDto> LoginAsync(string username, string password);
+        Task<RegistrationResultDto> RegisterAsync(string username, string email, string password, string role = "Employee");
     }
 
     public class AuthService : IAuthService
@@ -25,29 +26,29 @@ namespace career_module.server.Services
             _configuration = configuration;
         }
 
-        public async Task<AuthResult> LoginAsync(string username, string password)
+        public async Task<AuthResultDto> LoginAsync(string username, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                return new AuthResult { Success = false, Message = "Invalid credentials" };
+                return new AuthResultDto { Success = false, Message = "Invalid credentials" };
             }
 
             var token = GenerateJwtToken(user);
-            return new AuthResult
+            return new AuthResultDto
             {
                 Success = true,
                 Token = token,
-                User = user,
+                User = DtoTranslator.ToUserDto(user),
                 Message = "Login successful"
             };
         }
 
-        public async Task<User?> RegisterAsync(string username, string email, string password, string role = "Employee")
+        public async Task<RegistrationResultDto> RegisterAsync(string username, string email, string password, string role = "Employee")
         {
             if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == email))
-                return null;
+                return new RegistrationResultDto { Success = false, Message = "Username or email already exists" };
 
             var user = new User
             {
@@ -59,7 +60,8 @@ namespace career_module.server.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
+
+            return new RegistrationResultDto { Success = true, User = DtoTranslator.ToUserDto(user), Message = "User registered successfully" };
         }
 
         private string GenerateJwtToken(User user)
@@ -84,13 +86,6 @@ namespace career_module.server.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    }
 
-    public class AuthResult
-    {
-        public bool Success { get; set; }
-        public string Token { get; set; } = string.Empty;
-        public User? User { get; set; }
-        public string Message { get; set; } = string.Empty;
     }
 }
