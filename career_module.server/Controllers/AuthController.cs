@@ -31,7 +31,7 @@ namespace career_module.server.Controllers
             var user = await _authService.RegisterAsync(request.Username, request.Email, request.Password, request.Role);
 
             if (user == null)
-                return BadRequest("Username or email already exists");
+                return BadRequest(new { message = "Username or email already exists" });
 
             return Ok(new { message = "User registered successfully", userId = user.Id });
         }
