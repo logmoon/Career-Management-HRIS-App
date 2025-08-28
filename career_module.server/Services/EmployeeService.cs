@@ -4,12 +4,13 @@ namespace career_module.server.Services
 {
     public interface IEmployeeService
     {
-        // ??
-        // TODO: Implement
+        // For now everything is in the EmployeeController
+        // TODO: Would be cleaner to move the service logic here
     }
 
     public class EmployeeService : IEmployeeService
     {
-        // TODO: Implement
+        // For now everything is in the EmployeeController
+        // TODO: Would be cleaner to move the service logic here
     }
 }

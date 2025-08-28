@@ -204,11 +204,12 @@ namespace career_module.server.Infrastructure.Data
             var staticDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // Seed Users
+            // All passwords: 123456
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", Email = "admin@company.com", PasswordHash = "$2a$11$example", Role = "Admin", CreatedAt = staticDate },
-                new User { Id = 2, Username = "hr_manager", Email = "hr@company.com", PasswordHash = "$2a$11$example", Role = "HR", CreatedAt = staticDate },
-                new User { Id = 3, Username = "john.doe", Email = "john.doe@company.com", PasswordHash = "$2a$11$example", Role = "Employee", CreatedAt = staticDate },
-                new User { Id = 4, Username = "jane.smith", Email = "jane.smith@company.com", PasswordHash = "$2a$11$example", Role = "Manager", CreatedAt = staticDate }
+                new User { Id = 1, Username = "admin", Email = "admin@admin.admin", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "Admin", CreatedAt = staticDate },
+                new User { Id = 2, Username = "hr", Email = "hr@hr.hr", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "HR", CreatedAt = staticDate },
+                new User { Id = 3, Username = "employee", Email = "employee@employee.employee", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "Employee", CreatedAt = staticDate },
+                new User { Id = 4, Username = "manager", Email = "manager@manager.manager", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "Manager", CreatedAt = staticDate }
             );
 
             // Seed Skills

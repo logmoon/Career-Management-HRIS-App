@@ -8,7 +8,7 @@ import { User, LoginRequest, RegisterRequest, AuthResult } from '../models/auth.
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'https://localhost:7130/api';
+  private readonly API_AUTH_URL = 'https://localhost:7130/api/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   private readonly STORAGE_KEY = 'auth_data';
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthResult> {
-    return this.http.post<AuthResult>(`${this.API_URL}/auth/login`, credentials)
+    return this.http.post<AuthResult>(`${this.API_AUTH_URL}/login`, credentials)
       .pipe(
         tap(result => {
           if (result.success && result.token) {
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<any> {
-    return this.http.post(`${this.API_URL}/auth/register`, userData);
+    return this.http.post(`${this.API_AUTH_URL}/register`, userData);
   }
 
   logout(): void {

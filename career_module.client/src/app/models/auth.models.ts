@@ -1,3 +1,5 @@
+import { EmployeeDto } from "./base.models";
+
 export interface User {
   id: number;
   username: string;
@@ -5,6 +7,7 @@ export interface User {
   role: string;
   createdAt: string;
   isActive: boolean;
+  employee: EmployeeDto | null;
 }
 
 export interface LoginRequest {

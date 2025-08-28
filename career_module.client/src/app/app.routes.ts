@@ -3,6 +3,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { RegisterComponent } from './components/register/register.component';
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -18,17 +19,13 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
-      }
-      /*
+      },
       {
         path: 'employees',
         loadComponent: () => import('./components/employees/employees.component').then(m => m.EmployeesComponent),
         canActivate: [RoleGuard],
-        redirectTo: '/dashboard',
         data: { roles: ['Manager', 'HR', 'Admin'] }
       }
-      // ...
-      */
     ]
   },
   

@@ -14,7 +14,7 @@ import {
   providedIn: 'root'
 })
 export class EmployeeService {
-  private apiUrl = '/api/Employees';
+  private readonly API_EMPLOYEES_URL = 'https://localhost:7130/api/Employees';
 
   constructor(private http: HttpClient) {}
 
@@ -28,30 +28,32 @@ export class EmployeeService {
       if (filters.pageSize) params = params.set('pageSize', filters.pageSize.toString());
     }
 
-    return this.http.get<EmployeeDto[]>(this.apiUrl, { params });
+    console.log('Fetching employees with params:', params.toString());
+
+    return this.http.get<EmployeeDto[]>(this.API_EMPLOYEES_URL, { params });
   }
 
   getEmployee(id: number): Observable<EmployeeDetailDto> {
-    return this.http.get<EmployeeDetailDto>(`${this.apiUrl}/${id}`);
+    return this.http.get<EmployeeDetailDto>(`${this.API_EMPLOYEES_URL}/${id}`);
   }
 
   createEmployee(employee: CreateEmployeeDto): Observable<EmployeeDto> {
-    return this.http.post<EmployeeDto>(this.apiUrl, employee);
+    return this.http.post<EmployeeDto>(this.API_EMPLOYEES_URL, employee);
   }
 
   updateEmployee(id: number, employee: UpdateEmployeeDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, employee);
+    return this.http.put<void>(`${this.API_EMPLOYEES_URL}/${id}`, employee);
   }
 
   deleteEmployee(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.API_EMPLOYEES_URL}/${id}`);
   }
 
   addEmployeeSkill(employeeId: number, skill: AddEmployeeSkillDto): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${employeeId}/skills`, skill);
+    return this.http.post<void>(`${this.API_EMPLOYEES_URL}/${employeeId}/skills`, skill);
   }
 
   removeEmployeeSkill(employeeId: number, skillId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${employeeId}/skills/${skillId}`);
+    return this.http.delete<void>(`${this.API_EMPLOYEES_URL}/${employeeId}/skills/${skillId}`);
   }
 }
