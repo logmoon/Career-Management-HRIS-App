@@ -111,6 +111,84 @@ export interface SkillDto {
   positionCount: number;
 }
 
+export interface EmployeeSkillSummaryDto {
+  employeeId: number;
+  employeeName: string;
+  department: string;
+  proficiencyLevel: number;
+  acquiredDate: Date;
+  lastAssessedDate?: Date;
+}
+
+export interface CreateSkillDto {
+  name: string;
+  category: string;
+  description: string;
+}
+
+export interface UpdateSkillDto {
+  name: string;
+  category: string;
+  description: string;
+  isActive: boolean;
+}
+
+export interface SkillSummaryDto {
+  id: number;
+  name: string;
+  category: string;
+  description: string;
+}
+
+export interface CategoryStatsDto {
+  category: string;
+  skillCount: number;
+  employeeCount: number;
+  positionCount: number;
+}
+
+export interface SkillGapAnalysisDto {
+  skillId: number;
+  skillName: string;
+  totalEmployeesWithSkill: number;
+  averageProficiencyLevel: number;
+  positionsRequiringSkill: number;
+  averageRequiredLevel: number;
+  gapsByDepartment?: DepartmentGapDto[];
+  gapsByLevel?: { [key: number]: number };
+  criticalGaps?: CriticalGapDto[];
+}
+
+export interface DepartmentGapDto {
+  department: string;
+  employeeCount: number;
+  averageProficiency: number;
+  maxProficiency: number;
+  minProficiency: number;
+}
+
+export interface CriticalGapDto {
+  positionTitle: string;
+  requiredLevel: number;
+  employeesAtLevel: number;
+  gap: number;
+}
+
+export interface SkillDetailDto extends SkillDto {
+  employeesWithSkill?: EmployeeSkillSummaryDto[];
+  positionsRequiring?: PositionSkillSummaryDto[];
+  proficiencyDistribution?: { [key: number]: number };
+}
+
+export interface PositionSkillSummaryDto {
+  positionId: number;
+  positionTitle: string;
+  department: string;
+  requiredLevel: number;
+  isMandatory: boolean;
+  weight: number;
+}
+
 export interface EmployeeSkillDto {
   skillId: number;
   skillName: string;
@@ -139,6 +217,12 @@ export interface AddEmployeeSkillDto {
 
 export interface AddPositionSkillDto {
   skillId: number;
+  requiredLevel: number;
+  isMandatory: boolean;
+  weight: number;
+}
+
+export interface UpdatePositionSkillDto {
   requiredLevel: number;
   isMandatory: boolean;
   weight: number;
@@ -174,12 +258,6 @@ export interface SkillMatchDto {
 }
 
 // Common Types
-export interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-}
-
 export interface PaginatedResponse<T> {
   data: T;
   totalCount: number;

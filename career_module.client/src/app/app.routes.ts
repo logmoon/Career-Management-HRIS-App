@@ -31,6 +31,30 @@ export const routes: Routes = [
         loadComponent: () => import('./components/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR', 'Admin'] }
+      },
+      {
+        path: 'positions',
+        loadComponent: () => import('./components/positions/positions.component').then(m => m.PositionsComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['HR', 'Admin'] }
+      },
+      {
+        path: 'positions/:id',
+        loadComponent: () => import('./components/position-detail/position-detail.component').then(m => m.PositionDetailComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['HR', 'Admin'] }
+      },
+      {
+        path: 'skills',
+        loadComponent: () => import('./components/skills/skills.component').then(m => m.SkillsComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['HR', 'Admin'] }
+      },
+      {
+        path: 'skills/:id',
+        loadComponent: () => import('./components/skill-detail/skill-detail.component').then(m => m.SkillDetailComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['HR', 'Admin'] }
       }
     ]
   },

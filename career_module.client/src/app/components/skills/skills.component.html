@@ -1,0 +1,230 @@
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Skills</h1>
+            <p class="text-gray-600 mt-1">Manage skills and competencies</p>
+        </div>
+        <button *ngIf="canCreateSkill()"
+                (click)="openCreateModal()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            Create New Skill
+        </button>
+    </div>
+
+    <!-- Category Overview -->
+    <div *ngIf="categories.length > 0" class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Skills by Category</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div *ngFor="let category of categories" 
+                 (click)="selectedCategory = selectedCategory === category.category ? '' : category.category; applyFilters()"
+                 [class]="selectedCategory === category.category ? 'ring-2 ring-indigo-500' : ''"
+                 class="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-all">
+                <div [class]="getCategoryColor(category.category)"
+                     class="px-3 py-1 rounded-full text-sm font-medium mb-2 text-center border">
+                    {{ category.category }}
+                </div>
+                <div class="text-center space-y-1">
+                    <div class="text-lg font-bold text-gray-900">{{ category.skillCount }}</div>
+                    <div class="text-xs text-gray-500">Skills</div>
+                    <div class="text-sm text-gray-600">{{ category.employeeCount }} employees</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <input type="text" 
+                       [(ngModel)]="searchText"
+                       (input)="applyFilters()"
+                       placeholder="Search skills by name, description, or category..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="flex items-center">
+                <label class="flex items-center">
+                    <input type="checkbox" 
+                           [(ngModel)]="showActiveOnly"
+                           (change)="applyFilters()"
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <span class="ml-2 text-sm text-gray-700">Active skills only</span>
+                </label>
+            </div>
+
+            <div class="flex space-x-2">
+                <button (click)="clearFilters()"
+                        class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-600">
+            Showing {{ filteredSkills.length }} of {{ skills.length }} skills
+        </div>
+    </div>
+
+    <!-- Skills Grid -->
+    <div *ngIf="!isLoading && filteredSkills.length > 0" 
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div *ngFor="let skill of filteredSkills"
+             class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <!-- Skill Header -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                            <a [routerLink]="['/skills', skill.id]" 
+                               class="hover:text-indigo-600 transition-colors">
+                                {{ skill.name }}
+                            </a>
+                        </h3>
+                        <div [class]="getCategoryColor(skill.category)"
+                             class="inline-block px-2 py-1 text-xs rounded-full border">
+                            {{ skill.category }}
+                        </div>
+                    </div>
+                    <span [class]="getSkillActivityClass(skill.isActive)"
+                          class="px-2 py-1 text-xs rounded-full ml-2">
+                        {{ getSkillActivityText(skill.isActive) }}
+                    </span>
+                </div>
+
+                <!-- Skill Description -->
+                <div class="mb-4">
+                    <p *ngIf="skill.description" class="text-sm text-gray-700 line-clamp-3">
+                        {{ skill.description }}
+                    </p>
+                    <p *ngIf="!skill.description" class="text-sm text-gray-500 italic">
+                        No description provided
+                    </p>
+                </div>
+
+                <!-- Usage Stats -->
+                <div class="border-t border-gray-200 pt-4 mb-4">
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-lg font-semibold text-gray-900">{{ skill.employeeCount }}</div>
+                            <div class="text-xs text-gray-500">Employees</div>
+                        </div>
+                        <div>
+                            <div class="text-lg font-semibold text-gray-900">{{ skill.positionCount }}</div>
+                            <div class="text-xs text-gray-500">Positions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="border-t border-gray-200 pt-4 flex justify-between">
+                    <a [routerLink]="['/skills', skill.id]"
+                       class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        View Details
+                    </a>
+                    <button *ngIf="canDeleteSkill()"
+                            (click)="deleteSkill(skill.id)"
+                            class="text-red-600 hover:text-red-800 text-sm font-medium">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredSkills.length === 0" 
+         class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9.375m1.5-12H5.625m4.125 12H1.875m4.125-12v2.625a1.125 1.125 0 001.125 1.125h2.25a1.125 1.125 0 001.125-1.125V8.25"/>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No skills found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+            {{ skills.length === 0 ? 'Get started by creating a new skill.' : 'Try adjusting your filters.' }}
+        </p>
+        <button *ngIf="canCreateSkill() && skills.length === 0"
+                (click)="openCreateModal()"
+                class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Create Skill
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <span class="ml-3 text-gray-600">Loading skills...</span>
+    </div>
+</div>
+
+<!-- Create Skill Modal -->
+<div *ngIf="showCreateModal" 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+     (click)="showCreateModal = false">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+        <h3 class="text-lg font-semibold mb-4">Create New Skill</h3>
+        
+        <form [formGroup]="createSkillForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input type="text" 
+                       formControlName="name"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                       [class.border-red-500]="createSkillForm.get('name')?.invalid && createSkillForm.get('name')?.touched">
+                <div *ngIf="createSkillForm.get('name')?.invalid && createSkillForm.get('name')?.touched" 
+                     class="text-red-500 text-xs mt-1">
+                    Name is required
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <select formControlName="category"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        [class.border-red-500]="createSkillForm.get('category')?.invalid && createSkillForm.get('category')?.touched">
+                    <option value="">Select a category</option>
+                    <option *ngFor="let category of categories" [value]="category.category">
+                        {{ category.category }}
+                    </option>
+                    <option value="Technical">Technical</option>
+                    <option value="Leadership">Leadership</option>
+                    <option value="Communication">Communication</option>
+                    <option value="Business">Business</option>
+                    <option value="Creative">Creative</option>
+                    <option value="Analytical">Analytical</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div *ngIf="createSkillForm.get('category')?.invalid && createSkillForm.get('category')?.touched" 
+                     class="text-red-500 text-xs mt-1">
+                    Category is required
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea formControlName="description"
+                          rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                          placeholder="Describe this skill and its applications...">
+                </textarea>
+            </div>
+        </form>
+
+        <div class="flex space-x-3 mt-6">
+            <button type="button" 
+                    (click)="createSkill()"
+                    [disabled]="!createSkillForm.valid"
+                    class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Create Skill
+            </button>
+            <button type="button" 
+                    (click)="showCreateModal = false"
+                    class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>

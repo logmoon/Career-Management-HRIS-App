@@ -1,0 +1,323 @@
+<div *ngIf="skill" class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ skill.name }}</h1>
+            <div class="flex items-center space-x-4 mt-2">
+                <span [class]="getCategoryColor(skill.category)"
+                      class="px-3 py-1 text-sm rounded-full border">
+                    {{ skill.category }}
+                </span>
+                <span [class]="getActivityClass(skill.isActive)"
+                      class="px-2 py-1 text-xs rounded-full">
+                    {{ getActivityText(skill.isActive) }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="flex space-x-3">
+            <button routerLink="/skills" 
+                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                Back to List
+            </button>
+            <button *ngIf="canEditSkill()" 
+                    (click)="toggleEditMode()"
+                    [disabled]="isEditing && !editSkillForm.valid"
+                    [class]="isEditing ? 'bg-green-600 hover:bg-green-700 disabled:bg-green-300' : 'bg-indigo-600 hover:bg-indigo-700'"
+                    class="px-4 py-2 text-white rounded-lg transition-colors disabled:cursor-not-allowed">
+                {{ isEditing ? 'Save Changes' : 'Edit Skill' }}
+            </button>
+            <button *ngIf="canEditSkill() && isEditing" 
+                    (click)="cancelEdit()"
+                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Skill Information -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Skill Details</h2>
+        <form [formGroup]="editSkillForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input *ngIf="isEditing" 
+                       type="text" 
+                       formControlName="name"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                       [class.border-red-500]="editSkillForm.get('name')?.invalid && editSkillForm.get('name')?.touched">
+                <p *ngIf="!isEditing" class="text-gray-900 py-2">{{ skill.name }}</p>
+                <div *ngIf="isEditing && editSkillForm.get('name')?.invalid && editSkillForm.get('name')?.touched" 
+                     class="text-red-500 text-xs mt-1">
+                    Name is required
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <select *ngIf="isEditing"
+                        formControlName="category"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        [class.border-red-500]="editSkillForm.get('category')?.invalid && editSkillForm.get('category')?.touched">
+                    <option value="">Select a category</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Leadership">Leadership</option>
+                    <option value="Communication">Communication</option>
+                    <option value="Business">Business</option>
+                    <option value="Creative">Creative</option>
+                    <option value="Analytical">Analytical</option>
+                    <option value="Other">Other</option>
+                </select>
+                <p *ngIf="!isEditing" class="text-gray-900 py-2">{{ skill.category }}</p>
+                <div *ngIf="isEditing && editSkillForm.get('category')?.invalid && editSkillForm.get('category')?.touched" 
+                     class="text-red-500 text-xs mt-1">
+                    Category is required
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea *ngIf="isEditing"
+                          formControlName="description"
+                          rows="4"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                </textarea>
+                <p *ngIf="!isEditing" class="text-gray-900 py-2">{{ skill.description || 'No description provided' }}</p>
+            </div>
+
+            <div *ngIf="isEditing">
+                <label class="flex items-center">
+                    <input type="checkbox" 
+                           formControlName="isActive"
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <span class="ml-2 text-sm text-gray-700">Active</span>
+                </label>
+            </div>
+        </form>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-2xl font-bold text-gray-900">{{ skill.employeeCount }}</div>
+            <div class="text-sm text-gray-600">Employees with this skill</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-2xl font-bold text-gray-900">{{ skill.positionCount }}</div>
+            <div class="text-sm text-gray-600">Positions requiring this skill</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <button (click)="loadGapAnalysis()"
+                    [disabled]="isLoadingGapAnalysis"
+                    class="text-indigo-600 hover:text-indigo-800 font-medium disabled:opacity-50">
+                {{ isLoadingGapAnalysis ? 'Loading...' : 'View Gap Analysis' }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Proficiency Distribution -->
+    <div *ngIf="skill.proficiencyDistribution" class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Proficiency Distribution</h2>
+        <div class="space-y-4">
+            <div *ngFor="let level of [1,2,3,4,5]" class="flex items-center">
+                <div class="w-20 text-sm text-gray-700">
+                    Level {{ level }}
+                </div>
+                <div class="flex-1 mx-4">
+                    <div class="bg-gray-200 rounded-full h-4 relative">
+                        <div [class]="getProficiencyColor(level)"
+                             [style.width.%]="skill.employeeCount > 0 ? ((skill.proficiencyDistribution[level] || 0) / skill.employeeCount * 100) : 0"
+                             class="bg-current h-4 rounded-full transition-all duration-300">
+                        </div>
+                    </div>
+                </div>
+                <div class="w-20 text-sm text-gray-600 text-right">
+                    {{ skill.proficiencyDistribution[level] || 0 }} employees
+                </div>
+                <div class="w-24 text-sm text-gray-500 text-right">
+                    {{ getProficiencyText(level) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gap Analysis -->
+    <div *ngIf="gapAnalysis" class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Gap Analysis</h2>
+        
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-lg font-bold text-gray-900">{{ gapAnalysis.averageProficiencyLevel.toFixed(1) }}</div>
+                <div class="text-sm text-gray-600">Avg Employee Level</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-lg font-bold text-gray-900">{{ gapAnalysis.averageRequiredLevel.toFixed(1) }}</div>
+                <div class="text-sm text-gray-600">Avg Required Level</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-lg font-bold text-gray-900">{{ gapAnalysis.positionsRequiringSkill }}</div>
+                <div class="text-sm text-gray-600">Positions Requiring</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-lg font-bold text-gray-900">{{ gapAnalysis.totalEmployeesWithSkill }}</div>
+                <div class="text-sm text-gray-600">Employees With Skill</div>
+            </div>
+        </div>
+
+        <!-- Department Gaps -->
+        <div *ngIf="gapAnalysis.gapsByDepartment && gapAnalysis.gapsByDepartment.length > 0" class="mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">Gaps by Department</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div *ngFor="let dept of gapAnalysis.gapsByDepartment" 
+                     class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-medium text-gray-900">{{ dept.department }}</h4>
+                        <span [class]="getDepartmentGapClass(dept.averageProficiency)"
+                              class="px-2 py-1 text-xs rounded-full">
+                            {{ dept.averageProficiency.toFixed(1) }} avg
+                        </span>
+                    </div>
+                    <div class="space-y-1 text-sm text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Employees:</span>
+                            <span>{{ dept.employeeCount }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Range:</span>
+                            <span>{{ dept.minProficiency }} - {{ dept.maxProficiency }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Critical Gaps -->
+        <div *ngIf="gapAnalysis.criticalGaps && gapAnalysis.criticalGaps.length > 0" class="mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">Critical Gaps</h3>
+            <div class="space-y-3">
+                <div *ngFor="let gap of gapAnalysis.criticalGaps" 
+                     class="border-l-4 border-red-500 bg-red-50 p-4 rounded-r-lg">
+                    <h4 class="font-medium text-red-900">{{ gap.positionTitle }}</h4>
+                    <div class="mt-1 text-sm text-red-700">
+                        Requires level {{ gap.requiredLevel }}, but only {{ gap.employeesAtLevel }} employees at this level.
+                        Gap: {{ gap.gap }} employees
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gaps by Level -->
+        <div *ngIf="gapAnalysis.gapsByLevel" class="mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">Workforce Distribution by Level</h3>
+            <div class="space-y-2">
+                <div *ngFor="let level of [1,2,3,4,5]" class="flex items-center">
+                    <div class="w-24 text-sm text-gray-700">
+                        Level {{ level }}
+                    </div>
+                    <div class="flex-1 mx-4">
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div [style.width.%]="gapAnalysis.totalEmployeesWithSkill > 0 ? ((gapAnalysis.gapsByLevel[level] || 0) / gapAnalysis.totalEmployeesWithSkill * 100) : 0"
+                                 class="bg-indigo-600 h-3 rounded-full">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-20 text-sm text-gray-600 text-right">
+                        {{ gapAnalysis.gapsByLevel[level] || 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employees with this Skill -->
+    <div *ngIf="skill.employeesWithSkill && skill.employeesWithSkill.length > 0" 
+         class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Employees with this Skill</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let employeeSkill of skill.employeesWithSkill"
+                 [routerLink]="['/employees', employeeSkill.employeeId]"
+                 class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div class="flex items-start justify-between mb-2">
+                    <h3 class="font-medium text-gray-900">{{ employeeSkill.employeeName }}</h3>
+                    <div class="flex items-center space-x-1">
+                        <div *ngFor="let i of [1,2,3,4,5]" 
+                             [class]="i <= employeeSkill.proficiencyLevel ? 'bg-indigo-500' : 'bg-gray-200'"
+                             class="w-3 h-2 rounded-full">
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-1">{{ employeeSkill.department }}</p>
+                <div class="text-xs text-gray-500">
+                    <p>Level: {{ getProficiencyText(employeeSkill.proficiencyLevel) }}</p>
+                    <p>Acquired: {{ formatDate(employeeSkill.acquiredDate) }}</p>
+                    <p *ngIf="employeeSkill.lastAssessedDate">
+                        Assessed: {{ formatDate(employeeSkill.lastAssessedDate) }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Positions Requiring this Skill -->
+    <div *ngIf="skill.positionsRequiring && skill.positionsRequiring.length > 0" 
+         class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Positions Requiring this Skill</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let positionSkill of skill.positionsRequiring"
+                 [routerLink]="['/positions', positionSkill.positionId]"
+                 class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div class="flex items-start justify-between mb-2">
+                    <h3 class="font-medium text-gray-900">{{ positionSkill.positionTitle }}</h3>
+                    <span *ngIf="positionSkill.isMandatory" 
+                          class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
+                        Required
+                    </span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">{{ positionSkill.department }}</p>
+                <div class="space-y-1 text-sm text-gray-500">
+                    <div class="flex justify-between">
+                        <span>Required Level:</span>
+                        <span class="font-medium">{{ getProficiencyText(positionSkill.requiredLevel) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Weight:</span>
+                        <span>{{ positionSkill.weight }}/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty States -->
+    <div *ngIf="(!skill.employeesWithSkill || skill.employeesWithSkill.length === 0) && 
+                (!skill.positionsRequiring || skill.positionsRequiring.length === 0)"
+         class="bg-white rounded-lg shadow-md p-6 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14"/>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">This skill is not yet in use</h3>
+        <p class="text-gray-600">No employees have this skill and no positions require it yet.</p>
+    </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+    <span class="ml-3 text-gray-600">Loading skill details...</span>
+</div>
+
+<!-- Error State -->
+<div *ngIf="!skill && !isLoading" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Skill not found</h3>
+    <p class="mt-1 text-sm text-gray-500">The skill you're looking for doesn't exist or you don't have permission to view it.</p>
+    <button routerLink="/skills" 
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+        Back to Skills
+    </button>
+</div>

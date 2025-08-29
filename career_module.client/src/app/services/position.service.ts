@@ -9,6 +9,7 @@ import {
   PositionFilters,
   CandidateMatchDto,
   AddPositionSkillDto,
+  UpdatePositionSkillDto,
   PaginatedResponse
 } from '../models/base.models';
 
@@ -68,6 +69,10 @@ export class PositionService {
 
   addPositionSkill(positionId: number, skill: AddPositionSkillDto): Observable<void> {
     return this.http.post<void>(`${this.API_POSITIONS_URL}/${positionId}/skills`, skill);
+  }
+
+  updatePositionSkill(positionId: number, skillId: number, skill: UpdatePositionSkillDto): Observable<void> {
+    return this.http.put<void>(`${this.API_POSITIONS_URL}/${positionId}/skills/${skillId}`, skill);
   }
 
   removePositionSkill(positionId: number, skillId: number): Observable<void> {
