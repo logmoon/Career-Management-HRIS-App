@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { 
   EmployeeDto, 
   EmployeeDetailDto, 
   CreateEmployeeDto, 
   UpdateEmployeeDto,
   EmployeeFilters,
-  AddEmployeeSkillDto
+  AddEmployeeSkillDto,
+  PaginatedResponse
 } from '../models/base.models';
 
 @Injectable({
@@ -30,8 +31,11 @@ export class EmployeeService {
 
     console.log('Fetching employees with params:', params.toString());
 
-    return this.http.get<EmployeeDto[]>(this.API_EMPLOYEES_URL, { params });
-  }
+    return this.http.get<PaginatedResponse<EmployeeDto[]>>(this.API_EMPLOYEES_URL, { params })
+    .pipe(
+      map(response => response.data || [])
+    );
+ }
 
   getEmployee(id: number): Observable<EmployeeDetailDto> {
     return this.http.get<EmployeeDetailDto>(`${this.API_EMPLOYEES_URL}/${id}`);

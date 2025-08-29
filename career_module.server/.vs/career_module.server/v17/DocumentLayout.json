@@ -114,8 +114,7 @@
               "RelativeToolTip": "Services\\AuthService.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAA5wCUAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-23T12:41:34.934Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-23T12:41:34.934Z"
             },
             {
               "$type": "Document",
@@ -137,7 +136,7 @@
               "RelativeDocumentMoniker": "Controllers\\EmployeesController.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeesController.cs",
               "RelativeToolTip": "Controllers\\EmployeesController.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAEwBsAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAEwBwAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-23T12:04:49.508Z",
               "EditorCaption": ""
@@ -152,8 +151,7 @@
               "RelativeToolTip": "Models\\Entities\\Entities.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAQwCkAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T03:16:48.186Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-20T03:16:48.186Z"
             }
           ]
         }
