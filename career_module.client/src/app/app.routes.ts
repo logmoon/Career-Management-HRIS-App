@@ -27,7 +27,7 @@ export const routes: Routes = [
         data: { roles: ['Manager', 'HR', 'Admin'] }
       },
       {
-        path: 'employees/:id', // Add this route
+        path: 'employees/:id',
         loadComponent: () => import('./components/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR', 'Admin'] }

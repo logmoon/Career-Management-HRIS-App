@@ -1,48 +1,64 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { SkillService } from '../../services/skill.service';
 import { AuthService } from '../../services/auth.service';
-import { EmployeeDetailDto, SkillDto, AddEmployeeSkillDto } from '../../models/base.models';
-import { forkJoin, catchError, of } from 'rxjs';
+import { EmployeeDetailDto, SkillDto, AddEmployeeSkillDto, EmployeeDto } from '../../models/base.models';
 
 @Component({
   selector: 'app-employee-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './employee-detail.component.html',
   styleUrls: ['./employee-detail.component.css']
 })
 export class EmployeeDetailComponent implements OnInit {
   employee: EmployeeDetailDto | null = null;
   availableSkills: SkillDto[] = [];
+  managers: EmployeeDto[] = [];
   isLoading = true;
   isEditing = false;
   showAddSkillModal = false;
   
-  editForm: any = {};
-  newSkill: AddEmployeeSkillDto = {
-    skillId: 0,
-    proficiencyLevel: 1,
-    acquiredDate: new Date(),
-    notes: ''
-  };
+  editEmployeeForm: FormGroup;
+  addSkillForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private formBuilder: FormBuilder,
     private employeeService: EmployeeService,
     private skillService: SkillService,
     private authService: AuthService
-  ) {}
+  ) {
+    // Initialize edit employee form
+    this.editEmployeeForm = this.formBuilder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      department: ['', Validators.required],
+      salary: ['', [Validators.min(0)]],
+      managerId: [null],
+      currentPositionId: [null]
+    });
+
+    // Initialize add skill form
+    this.addSkillForm = this.formBuilder.group({
+      skillId: [null, Validators.required],
+      proficiencyLevel: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      notes: ['']
+    });
+  }
 
   ngOnInit(): void {
     const employeeId = Number(this.route.snapshot.paramMap.get('id'));
     if (employeeId) {
       this.loadEmployeeDetails(employeeId);
       this.loadAvailableSkills();
+      this.loadManagers();
     }
   }
 
@@ -69,16 +85,28 @@ export class EmployeeDetailComponent implements OnInit {
     });
   }
 
+  private loadManagers(): void {
+    this.employeeService.getEmployees({ pageSize: 1000 }).subscribe({
+      next: (employees) => {
+        this.managers = employees.filter(emp => 
+          employees.some(e => e.managerId === emp.id)
+        );
+      },
+      error: () => this.managers = []
+    });
+  }
+
   private initializeEditForm(): void {
     if (this.employee) {
-      this.editForm = {
+      this.editEmployeeForm.patchValue({
         firstName: this.employee.firstName,
         lastName: this.employee.lastName,
         email: this.employee.email,
         phone: this.employee.phone,
         department: this.employee.department,
-        salary: this.employee.salary
-      };
+        salary: this.employee.salary,
+        managerId: this.employee.managerId
+      });
     }
   }
 
@@ -92,13 +120,21 @@ export class EmployeeDetailComponent implements OnInit {
 
   cancelEdit(): void {
     this.isEditing = false;
-    this.initializeEditForm();
+    this.initializeEditForm(); // Reset form to original values
   }
 
   private saveChanges(): void {
-    if (!this.employee) return;
+    if (!this.employee || !this.editEmployeeForm.valid) return;
     
-    this.employeeService.updateEmployee(this.employee.id, this.editForm).subscribe({
+    const formValue = this.editEmployeeForm.value;
+    const updateData = {
+      ...formValue,
+      managerId: formValue.managerId || null,
+      currentPositionId: formValue.currentPositionId || null,
+      salary: formValue.salary || null
+    };
+
+    this.employeeService.updateEmployee(this.employee.id, updateData).subscribe({
       next: () => {
         this.isEditing = false;
         this.loadEmployeeDetails(this.employee!.id);
@@ -110,14 +146,26 @@ export class EmployeeDetailComponent implements OnInit {
     });
   }
 
-  addSkill(): void {
-    if (!this.employee || !this.newSkill.skillId || !this.newSkill.proficiencyLevel) return;
+  openAddSkillModal(): void {
+    this.resetAddSkillForm();
+    this.showAddSkillModal = true;
+  }
 
-    this.newSkill.acquiredDate = new Date();
-    this.employeeService.addEmployeeSkill(this.employee.id, this.newSkill).subscribe({
+  addSkill(): void {
+    if (!this.employee || !this.addSkillForm.valid) return;
+
+    const formValue = this.addSkillForm.value;
+    const skillData: AddEmployeeSkillDto = {
+      skillId: formValue.skillId,
+      proficiencyLevel: formValue.proficiencyLevel,
+      acquiredDate: new Date(),
+      notes: formValue.notes || ''
+    };
+
+    this.employeeService.addEmployeeSkill(this.employee.id, skillData).subscribe({
       next: () => {
         this.showAddSkillModal = false;
-        this.resetNewSkill();
+        this.resetAddSkillForm();
         this.loadEmployeeDetails(this.employee!.id);
       },
       error: (error) => {
@@ -139,13 +187,12 @@ export class EmployeeDetailComponent implements OnInit {
     });
   }
 
-  private resetNewSkill(): void {
-    this.newSkill = {
-      skillId: 0,
+  private resetAddSkillForm(): void {
+    this.addSkillForm.reset({
+      skillId: null,
       proficiencyLevel: 1,
-      acquiredDate: new Date(),
       notes: ''
-    };
+    });
   }
 
   canEditEmployee(): boolean {
@@ -176,7 +223,7 @@ export class EmployeeDetailComponent implements OnInit {
 
   formatSalary(amount?: number): string {
     if (!amount) return 'N/A';
-    return `${amount.toLocaleString()}`;
+    return `$${amount.toLocaleString()}`;
   }
 
   getGoalStatusClass(status: string): string {

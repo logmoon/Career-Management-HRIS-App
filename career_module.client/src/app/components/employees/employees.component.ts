@@ -1,23 +1,24 @@
-// employees.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { PositionService } from '../../services/position.service';
 import { AuthService } from '../../services/auth.service';
-import { EmployeeDto, EmployeeFilters } from '../../models/base.models';
+import { CreateEmployeeDto, EmployeeDto, EmployeeFilters } from '../../models/base.models';
 import { debounceTime, Subject, switchMap, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.css']
 })
 
 export class EmployeesComponent implements OnInit {
+  createEmployeeForm: FormGroup;
+
   employees: EmployeeDto[] = [];
   managers: EmployeeDto[] = [];
   departments: string[] = [];
@@ -30,13 +31,35 @@ export class EmployeesComponent implements OnInit {
     pageSize: 12
   };
 
+  newEmployee: CreateEmployeeDto = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    department: '',
+    hireDate: '',
+  };
+
   private searchSubject = new Subject<string>();
 
   constructor(
+    private formBuilder: FormBuilder,
     private employeeService: EmployeeService,
     private positionService: PositionService,
     private authService: AuthService
-  ) {}
+  ) {
+    this.createEmployeeForm = this.formBuilder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      department: ['', Validators.required],
+      hireDate: ['', Validators.required],
+      salary: ['', [Validators.min(0)]],
+      managerId: [null],
+      currentPositionId: [null]
+    });
+  }
 
   ngOnInit(): void {
     this.setupSearch();
@@ -95,6 +118,52 @@ export class EmployeesComponent implements OnInit {
       },
       error: () => this.managers = []
     });
+  }
+
+  private resetNewEmployeeForm(): void {
+    this.createEmployeeForm.reset({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      department: '',
+      hireDate: '',
+      salary: '',
+      managerId: null,
+      currentPositionId: null
+    });
+  }
+
+  openCreateModal(): void {
+    this.resetNewEmployeeForm();
+    this.showCreateModal = true;
+  }
+
+  addEmployee(): void {
+    if (this.createEmployeeForm.valid) {
+      const formValue = this.createEmployeeForm.value;
+      
+      // Convert empty strings to null for optional numeric fields
+      const employeeData: CreateEmployeeDto = {
+        ...formValue,
+        managerId: formValue.managerId || null,
+        currentPositionId: formValue.currentPositionId || null,
+        salary: formValue.salary || undefined
+      };
+
+      this.employeeService.createEmployee(employeeData).subscribe({
+        next: () => {
+          this.showCreateModal = false;
+          this.resetNewEmployeeForm();
+          this.resetFilters();
+          this.loadEmployees();
+        },
+        error: (error) => {
+          console.error('Failed to add employee:', error);
+          alert('Failed to add employee. Please try again.');
+        }
+      });
+    }
   }
 
   onSearchChange(): void {
