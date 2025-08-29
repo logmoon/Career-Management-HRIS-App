@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { 
   PositionDto, 
   PositionDetailDto, 
@@ -8,14 +8,15 @@ import {
   UpdatePositionDto,
   PositionFilters,
   CandidateMatchDto,
-  AddPositionSkillDto
+  AddPositionSkillDto,
+  PaginatedResponse
 } from '../models/base.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PositionService {
-  private apiUrl = '/api/Positions';
+  private readonly API_POSITIONS_URL = 'https://localhost:7130/api/Positions';
 
   constructor(private http: HttpClient) {}
 
@@ -31,42 +32,45 @@ export class PositionService {
       if (filters.pageSize) params = params.set('pageSize', filters.pageSize.toString());
     }
 
-    return this.http.get<PositionDto[]>(this.apiUrl, { params });
+    return this.http.get<PaginatedResponse<PositionDto[]>>(this.API_POSITIONS_URL, { params })
+    .pipe(
+      map(response => response.data || [])
+    );
   }
 
   getPosition(id: number): Observable<PositionDetailDto> {
-    return this.http.get<PositionDetailDto>(`${this.apiUrl}/${id}`);
+    return this.http.get<PositionDetailDto>(`${this.API_POSITIONS_URL}/${id}`);
   }
 
   createPosition(position: CreatePositionDto): Observable<PositionDto> {
-    return this.http.post<PositionDto>(this.apiUrl, position);
+    return this.http.post<PositionDto>(this.API_POSITIONS_URL, position);
   }
 
   updatePosition(id: number, position: UpdatePositionDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, position);
+    return this.http.put<void>(`${this.API_POSITIONS_URL}/${id}`, position);
   }
 
   deletePosition(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.API_POSITIONS_URL}/${id}`);
   }
 
   getPositionCandidates(positionId: number): Observable<CandidateMatchDto[]> {
-    return this.http.get<CandidateMatchDto[]>(`${this.apiUrl}/${positionId}/candidates`);
+    return this.http.get<CandidateMatchDto[]>(`${this.API_POSITIONS_URL}/${positionId}/candidates`);
   }
 
   getPositionLevels(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/levels`);
+    return this.http.get<string[]>(`${this.API_POSITIONS_URL}/levels`);
   }
 
   getDepartments(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/departments`);
+    return this.http.get<string[]>(`${this.API_POSITIONS_URL}/departments`);
   }
 
   addPositionSkill(positionId: number, skill: AddPositionSkillDto): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${positionId}/skills`, skill);
+    return this.http.post<void>(`${this.API_POSITIONS_URL}/${positionId}/skills`, skill);
   }
 
   removePositionSkill(positionId: number, skillId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${positionId}/skills/${skillId}`);
+    return this.http.delete<void>(`${this.API_POSITIONS_URL}/${positionId}/skills/${skillId}`);
   }
 }

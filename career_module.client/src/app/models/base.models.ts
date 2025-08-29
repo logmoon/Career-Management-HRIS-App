@@ -133,7 +133,7 @@ export interface PositionSkillDto {
 export interface AddEmployeeSkillDto {
   skillId: number;
   proficiencyLevel: number;
-  acquiredDate: string;
+  acquiredDate: Date;
   notes?: string;
 }
 

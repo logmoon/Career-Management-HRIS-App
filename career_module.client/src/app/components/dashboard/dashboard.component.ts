@@ -105,20 +105,18 @@ export class DashboardComponent implements OnInit {
     
     // Load dashboard data in parallel
     forkJoin({
-      allEmployees: this.employeeService.getEmployees({ page: 1, pageSize: 1000 }).pipe(catchError(() => of([])))
-      // allPositions: this.positionService.getPositions({ page: 1, pageSize: 1000 })
+      allEmployees: this.employeeService.getEmployees({ page: 1, pageSize: 1000 }).pipe(catchError(() => of([]))),
+      allPositions: this.positionService.getPositions({ page: 1, pageSize: 1000 }).pipe(catchError(() => of([])))
     }).subscribe({
       next: (data) => {
         this.recentEmployees = data.allEmployees.slice(0, 3);
-        // this.recentPositions = data.allPositions.slice(0, 3);
+        this.recentPositions = data.allPositions.slice(0, 3);
         
         // Calculate stats
         this.dashboardStats = {
           totalEmployees: data.allEmployees.length,
-          // openPositions: data.allPositions.filter(p => p.isActive && p.currentEmployeeCount === 0).length,
-          openPositions: 0,
-          keyPositions: 0,
-          // keyPositions: data.allPositions.filter(p => p.isKeyPosition).length,
+          openPositions: data.allPositions.filter(p => p.isActive && p.currentEmployeeCount === 0).length,
+          keyPositions: data.allPositions.filter(p => p.isKeyPosition).length,
           activeDepartments: this.getUniqueDepartments(data.allEmployees).length
         };
         
@@ -127,12 +125,12 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         console.log('Error loading dashboard data: ', err);
         this.isLoading = false;
-        // Set mock data in case of error
+        // Error stats
         this.dashboardStats = {
-          totalEmployees: 125,
-          openPositions: 8,
-          keyPositions: 15,
-          activeDepartments: 6
+          totalEmployees: -1,
+          openPositions: -1,
+          keyPositions: -1,
+          activeDepartments: -1
         };
       }
     });

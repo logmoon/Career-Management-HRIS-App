@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { SkillDto } from '../models/base.models';
+import { map, Observable } from 'rxjs';
+import { PaginatedResponse, SkillDto } from '../models/base.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SkillService {
-  private apiUrl = '/api/Skills';
+  private readonly API_SKILLS_URL = 'https://localhost:7130/api/Skills';
 
   constructor(private http: HttpClient) {}
 
@@ -28,11 +28,14 @@ export class SkillService {
       if (params.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
     }
 
-    return this.http.get<SkillDto[]>(this.apiUrl, { params: httpParams });
+    return this.http.get<PaginatedResponse<SkillDto[]>>(this.API_SKILLS_URL, { params })
+    .pipe(
+      map(response => response.data || [])
+    );
   }
 
   searchSkills(query: string): Observable<SkillDto[]> {
     const params = new HttpParams().set('query', query);
-    return this.http.get<SkillDto[]>(`${this.apiUrl}/search`, { params });
+    return this.http.get<SkillDto[]>(`${this.API_SKILLS_URL}/search`, { params });
   }
 }

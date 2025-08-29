@@ -25,6 +25,12 @@ export const routes: Routes = [
         loadComponent: () => import('./components/employees/employees.component').then(m => m.EmployeesComponent),
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR', 'Admin'] }
+      },
+      {
+        path: 'employees/:id', // Add this route
+        loadComponent: () => import('./components/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['Manager', 'HR', 'Admin'] }
       }
     ]
   },
