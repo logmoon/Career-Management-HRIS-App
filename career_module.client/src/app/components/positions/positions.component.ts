@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { PositionService } from '../../services/position.service';
 import { AuthService } from '../../services/auth.service';
-import { PositionDto, CreatePositionDto } from '../../models/base.models';
+import { PositionDto, CreatePositionDto, PositionFilters } from '../../models/base.models';
 
 @Component({
   selector: 'app-positions',
@@ -23,7 +23,17 @@ export class PositionsComponent implements OnInit {
   
   createPositionForm: FormGroup;
   
+  // Pagination
+  currentPage = 1;
+  pageSize = 9; // 3x3 grid
+  totalPositions = 0;
+  totalPages = 0;
+  
   // Filters
+  filters: PositionFilters = {
+    page: 1,
+    pageSize: 1000 // Load all, we'll do the filtering and pagination here on the client-side
+  }
   selectedDepartment = '';
   selectedLevel = '';
   showKeyPositionsOnly = false;
@@ -44,7 +54,23 @@ export class PositionsComponent implements OnInit {
       maxSalary: [null, [Validators.min(0)]],
       minYearsExperience: [0, [Validators.required, Validators.min(0)]],
       isKeyPosition: [false]
-    });
+    }, { validators: this.salaryRangeValidator });
+  }
+
+  // Custom validator to ensure minSalary < maxSalary
+  private salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
+    const minSalary = control.get('minSalary')?.value;
+    const maxSalary = control.get('maxSalary')?.value;
+
+    if (minSalary != null && maxSalary != null && 
+        typeof minSalary === 'number' && typeof maxSalary === 'number') {
+      
+      if (minSalary > maxSalary) {
+        return { salaryRangeInvalid: true };
+      }
+    }
+
+    return null;
   }
 
   ngOnInit(): void {
@@ -55,7 +81,7 @@ export class PositionsComponent implements OnInit {
 
   private loadPositions(): void {
     this.isLoading = true;
-    this.positionService.getPositions({ pageSize: 1000 }).subscribe({
+    this.positionService.getPositions(this.filters).subscribe({
       next: (positions) => {
         this.positions = positions;
         this.applyFilters();
@@ -94,6 +120,10 @@ export class PositionsComponent implements OnInit {
 
       return matchesDepartment && matchesLevel && matchesKeyPosition && matchesActive && matchesSearch;
     });
+
+    this.totalPositions = this.positions.length;
+    this.totalPages = Math.ceil(this.totalPositions / this.pageSize);
+    this.currentPage = Math.min(this.currentPage, Math.max(1, this.totalPages));
   }
 
   clearFilters(): void {
@@ -102,7 +132,14 @@ export class PositionsComponent implements OnInit {
     this.showKeyPositionsOnly = false;
     this.showActiveOnly = true;
     this.searchText = '';
+    this.currentPage = 1;
     this.applyFilters();
+  }
+
+  get paginatedPositions(): PositionDto[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredPositions.slice(startIndex, endIndex);
   }
 
   openCreateModal(): void {
@@ -161,6 +198,49 @@ export class PositionsComponent implements OnInit {
       minYearsExperience: 0,
       isKeyPosition: false
     });
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  }
+
+  get isSalaryRangeInvalid(): boolean {
+    return this.createPositionForm.hasError('salaryRangeInvalid');
+  }
+  
+  getSalaryRangeErrorMessage(): string {
+    if (this.isSalaryRangeInvalid) {
+      return 'Minimum salary must be less than maximum salary';
+    }
+    return '';
   }
 
   canCreatePosition(): boolean {

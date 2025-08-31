@@ -9,7 +9,8 @@ import {
   UpdateSkillDto,
   SkillSummaryDto,
   CategoryStatsDto,
-  SkillGapAnalysisDto
+  SkillGapAnalysisDto,
+  SkillFilters
 } from '../models/base.models';
 
 @Injectable({
@@ -20,21 +21,15 @@ export class SkillService {
 
   constructor(private http: HttpClient) {}
 
-  getSkills(params?: {
-    category?: string;
-    isActive?: boolean;
-    search?: string;
-    page?: number;
-    pageSize?: number;
-  }): Observable<SkillDto[]> {
+  getSkills(filters?: SkillFilters): Observable<SkillDto[]> {
     let httpParams = new HttpParams();
     
-    if (params) {
-      if (params.category) httpParams = httpParams.set('category', params.category);
-      if (params.isActive !== undefined) httpParams = httpParams.set('isActive', params.isActive.toString());
-      if (params.search) httpParams = httpParams.set('search', params.search);
-      if (params.page) httpParams = httpParams.set('page', params.page.toString());
-      if (params.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
+    if (filters) {
+      if (filters.category) httpParams = httpParams.set('category', filters.category);
+      if (filters.isActive !== undefined) httpParams = httpParams.set('isActive', filters.isActive.toString());
+      if (filters.search) httpParams = httpParams.set('search', filters.search);
+      if (filters.page) httpParams = httpParams.set('page', filters.page.toString());
+      if (filters.pageSize) httpParams = httpParams.set('pageSize', filters.pageSize.toString());
     }
 
     return this.http.get<PaginatedResponse<SkillDto[]>>(this.API_SKILLS_URL, { params: httpParams })

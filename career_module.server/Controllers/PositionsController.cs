@@ -26,6 +26,7 @@ namespace career_module.server.Controllers
             [FromQuery] string? level = null,
             [FromQuery] bool? isKeyPosition = null,
             [FromQuery] bool? isActive = null,
+            [FromQuery] string? search = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -56,6 +57,11 @@ namespace career_module.server.Controllers
                 if (isActive.HasValue)
                 {
                     query = query.Where(p => p.IsActive == isActive.Value);
+                }
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    query = query.Where(s => s.Title.Contains(search) || s.Description.Contains(search));
                 }
 
                 var totalCount = await query.CountAsync();

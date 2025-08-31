@@ -274,6 +274,7 @@ export interface PaginationParams {
 export interface EmployeeFilters extends PaginationParams {
   department?: string;
   managerId?: number;
+  search?: string;
 }
 
 export interface PositionFilters extends PaginationParams {
@@ -281,4 +282,11 @@ export interface PositionFilters extends PaginationParams {
   level?: string;
   isKeyPosition?: boolean;
   isActive?: boolean;
+  search?: string;
+}
+
+export interface SkillFilters extends PaginationParams {
+  category?: string;
+  isActive?: boolean;
+  search?: string;
 }

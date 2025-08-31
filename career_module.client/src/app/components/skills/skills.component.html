@@ -12,50 +12,52 @@
         </button>
     </div>
 
-    <!-- Category Overview -->
-    <div *ngIf="categories.length > 0" class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Skills by Category</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <div *ngFor="let category of categories" 
-                 (click)="selectedCategory = selectedCategory === category.category ? '' : category.category; applyFilters()"
-                 [class]="selectedCategory === category.category ? 'ring-2 ring-indigo-500' : ''"
-                 class="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-all">
-                <div [class]="getCategoryColor(category.category)"
-                     class="px-3 py-1 rounded-full text-sm font-medium mb-2 text-center border">
-                    {{ category.category }}
-                </div>
-                <div class="text-center space-y-1">
-                    <div class="text-lg font-bold text-gray-900">{{ category.skillCount }}</div>
-                    <div class="text-xs text-gray-500">Skills</div>
-                    <div class="text-sm text-gray-600">{{ category.employeeCount }} employees</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+        
+        <!-- Skills by Category Section -->
+        <div *ngIf="categories.length > 0" class="mb-8">
+            <h4 class="font-semibold text-gray-900 mb-4">Skills by Category</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div *ngFor="let category of categories" 
+                    (click)="selectedCategory = selectedCategory === category.category ? '' : category.category; applyFilters()"
+                    [class]="selectedCategory === category.category ? 'ring-2 ring-indigo-500' : ''"
+                    class="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-all">
+                    <div [class]="getCategoryColor(category.category)"
+                        class="px-3 py-1 rounded-full text-sm font-medium mb-2 text-center border">
+                        {{ category.category }}
+                    </div>
+                    <div class="text-center space-y-1">
+                        <div class="text-lg font-bold text-gray-900">{{ category.skillCount }}</div>
+                        <div class="text-xs text-gray-500">Skills</div>
+                        <div class="text-sm text-gray-600">{{ category.employeeCount }} employees</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="categories.length > 0" class="border-t border-gray-200 my-6"></div>
+
+        <!-- Search and Other Filters Section -->
+        <h4 class="font-semibold text-gray-900 mb-4">Search</h4>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input type="text" 
-                       [(ngModel)]="searchText"
-                       (input)="applyFilters()"
-                       placeholder="Search skills by name, description, or category..."
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    [(ngModel)]="searchText"
+                    (input)="applyFilters()"
+                    placeholder="Search skills by name, description, or category..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
             </div>
-
             <div class="flex items-center">
                 <label class="flex items-center">
                     <input type="checkbox" 
-                           [(ngModel)]="showActiveOnly"
-                           (change)="applyFilters()"
-                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        [(ngModel)]="showActiveOnly"
+                        (change)="applyFilters()"
+                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                     <span class="ml-2 text-sm text-gray-700">Active skills only</span>
                 </label>
             </div>
-
             <div class="flex space-x-2">
                 <button (click)="clearFilters()"
                         class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -63,16 +65,22 @@
                 </button>
             </div>
         </div>
-
+        
         <div class="mt-4 text-sm text-gray-600">
-            Showing {{ filteredSkills.length }} of {{ skills.length }} skills
+            Showing {{ paginatedSkills.length }} of {{ totalSkills }} skills
         </div>
     </div>
 
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <span class="ml-3 text-gray-600">Loading skills...</span>
+    </div>
+
     <!-- Skills Grid -->
-    <div *ngIf="!isLoading && filteredSkills.length > 0" 
+    <div *ngIf="!isLoading && paginatedSkills.length > 0" 
          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div *ngFor="let skill of filteredSkills"
+        <div *ngFor="let skill of paginatedSkills"
              class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
             <div class="p-6">
                 <!-- Skill Header -->
@@ -127,7 +135,10 @@
                     </a>
                     <button *ngIf="canDeleteSkill()"
                             (click)="deleteSkill(skill.id)"
-                            class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            [disabled]="skill.employeeCount > 0 || skill.positionCount > 0"
+                            class="text-red-600 hover:text-red-800 text-sm font-medium"
+                            [ngClass]="{'opacity-50 cursor-not-allowed': skill.employeeCount > 0 || skill.positionCount > 0}"
+                            [title]="(skill.employeeCount > 0 || skill.positionCount > 0) ? 'Cannot delete skill that is assigned to employees or required by positions. Consider deactivating it instead.' : ''">
                         Delete
                     </button>
                 </div>
@@ -136,7 +147,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredSkills.length === 0" 
+    <div *ngIf="!isLoading && paginatedSkills.length === 0" 
          class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -144,7 +155,7 @@
         </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">No skills found</h3>
         <p class="mt-1 text-sm text-gray-500">
-            {{ skills.length === 0 ? 'Get started by creating a new skill.' : 'Try adjusting your filters.' }}
+            {{ filteredSkills.length === 0 && skills.length > 0 ? 'Try adjusting your filters.' : 'Get started by creating a new skill.' }}
         </p>
         <button *ngIf="canCreateSkill() && skills.length === 0"
                 (click)="openCreateModal()"
@@ -153,10 +164,26 @@
         </button>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        <span class="ml-3 text-gray-600">Loading skills...</span>
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center items-center space-x-2">
+        <button (click)="previousPage()"
+                [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            Previous
+        </button>
+        
+        <button *ngFor="let page of pageNumbers"
+                (click)="goToPage(page)"
+                [class]="page === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-600 border-gray-300 hover:bg-gray-50'"
+                class="px-3 py-2 text-sm border rounded-lg transition-colors">
+            {{ page }}
+        </button>
+        
+        <button (click)="nextPage()"
+                [disabled]="currentPage === totalPages"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+        </button>
     </div>
 </div>
 

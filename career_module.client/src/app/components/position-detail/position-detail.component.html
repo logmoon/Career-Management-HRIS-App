@@ -134,6 +134,15 @@
                 </div>
             </div>
 
+
+            <div *ngIf="canViewSalary() && isEditing && isSalaryRangeInvalid">
+                <div class="md:col-span-2">
+                    <div class="text-red-500 text-sm mt-1">
+                        {{ getSalaryRangeErrorMessage() }}
+                    </div>
+                </div>
+            </div>
+
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea *ngIf="isEditing"

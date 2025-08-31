@@ -20,16 +20,26 @@ export class EmployeesComponent implements OnInit {
   createEmployeeForm: FormGroup;
 
   employees: EmployeeDto[] = [];
+  filteredEmployees: EmployeeDto[] = [];
   managers: EmployeeDto[] = [];
   departments: string[] = [];
   isLoading = false;
-  searchTerm = '';
   showCreateModal = false;
   
+  // Pagination
+  currentPage = 1;
+  pageSize = 9; // 3x3 grid
+  totalEmployees = 0;
+  totalPages = 0;
+  
+  // Filters
   filters: EmployeeFilters = {
     page: 1,
-    pageSize: 12
-  };
+    pageSize: 1000 // Load all, we'll do the filtering and pagination here on the client-side
+  }
+  selectedDepartment = '';
+  selectedManagerId = '';
+  searchText = '';
 
   newEmployee: CreateEmployeeDto = {
     firstName: '',
@@ -52,7 +62,7 @@ export class EmployeesComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.min(0)]],
       department: ['', Validators.required],
       hireDate: ['', Validators.required],
       salary: ['', [Validators.min(0)]],
@@ -70,16 +80,12 @@ export class EmployeesComponent implements OnInit {
     this.searchSubject.pipe(
       debounceTime(300),
       switchMap(() => {
-        this.filters.page = 1;
-        return this.employeeService.getEmployees(this.filters)
-          .pipe( catchError(() => of([])) );
-        }
-      )
-    ).subscribe((employees) => {
-      this.employees = employees;
-      this.isLoading = false;
-    });
+        this.applyFilters();
+        return of(null);
+      })
+    ).subscribe();
   }
+
   private loadEmployees() {
     this.isLoading = true;
     this.employeeService.getEmployees(this.filters)
@@ -87,6 +93,7 @@ export class EmployeesComponent implements OnInit {
       .subscribe({
         next: (employees) => {
           this.employees = employees;
+          this.applyFilters();
           this.isLoading = false;
         }, error: () => {
           this.isLoading = false;
@@ -118,6 +125,37 @@ export class EmployeesComponent implements OnInit {
       },
       error: () => this.managers = []
     });
+  }
+
+  applyFilters(): void {
+    this.filteredEmployees = this.employees.filter(employee => {
+      const matchesDepartment = !this.selectedDepartment || employee.department === this.selectedDepartment;
+      const matchesManager = !this.selectedManagerId || employee.managerId?.toString() === this.selectedManagerId;
+      const matchesSearch = !this.searchText || 
+        employee.firstName?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        employee.lastName?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        employee.email?.toLowerCase().includes(this.searchText.toLowerCase());
+
+      return matchesDepartment && matchesManager && matchesSearch;
+    });
+
+    this.totalEmployees = this.filteredEmployees.length;
+    this.totalPages = Math.ceil(this.totalEmployees / this.pageSize);
+    this.currentPage = Math.min(this.currentPage, Math.max(1, this.totalPages));
+  }
+
+  clearFilters(): void {
+    this.selectedDepartment = '';
+    this.selectedManagerId = '';
+    this.searchText = '';
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  get paginatedEmployees(): EmployeeDto[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredEmployees.slice(startIndex, endIndex);
   }
 
   private resetNewEmployeeForm(): void {
@@ -155,7 +193,6 @@ export class EmployeesComponent implements OnInit {
         next: () => {
           this.showCreateModal = false;
           this.resetNewEmployeeForm();
-          this.resetFilters();
           this.loadEmployees();
         },
         error: (error) => {
@@ -167,40 +204,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.searchSubject.next(this.searchTerm);
-  }
-
-  applyFilters(): void {
-    this.filters.page = 1;
-    this.loadEmployees();
-  }
-
-  resetFilters(): void {
-    this.filters = { page: 1, pageSize: 12 };
-    this.searchTerm = '';
-    this.loadEmployees();
-  }
-
-  hasActiveFilters(): boolean {
-    return !!(this.filters.department || this.filters.managerId || this.searchTerm);
-  }
-
-  previousPage(): void {
-    if ((this.filters.page ?? 1) > 1) {
-      this.filters.page = (this.filters.page ?? 1) - 1;
-      this.loadEmployees();
-    }
-  }
-
-  nextPage(): void {
-    this.filters.page = (this.filters.page ?? 1) + 1;
-    this.loadEmployees();
-  }
-
-  editEmployee(employee: EmployeeDto, event: Event): void {
-    event.stopPropagation();
-    // Navigate to edit form - to be implemented
-    console.log('Edit employee:', employee);
+    this.searchSubject.next(this.searchText);
   }
 
   deleteEmployee(employee: EmployeeDto, event: Event): void {
@@ -211,6 +215,38 @@ export class EmployeesComponent implements OnInit {
         error: (error) => console.error('Delete failed:', error)
       });
     }
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
   }
 
   canCreateEmployee(): boolean {

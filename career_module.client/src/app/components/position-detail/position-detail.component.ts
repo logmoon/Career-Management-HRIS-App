@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { PositionService } from '../../services/position.service';
 import { SkillService } from '../../services/skill.service';
 import { AuthService } from '../../services/auth.service';
@@ -51,7 +51,7 @@ export class PositionDetailComponent implements OnInit {
       minYearsExperience: [0, [Validators.required, Validators.min(0)]],
       isKeyPosition: [false],
       isActive: [true]
-    });
+    }, { validators: this.salaryRangeValidator });
 
     this.addSkillForm = this.formBuilder.group({
       skillId: [null, Validators.required],
@@ -59,6 +59,23 @@ export class PositionDetailComponent implements OnInit {
       isMandatory: [true],
       weight: [1, [Validators.required, Validators.min(1), Validators.max(10)]]
     });
+  }
+
+  // Custom validator to ensure minSalary < maxSalary
+  private salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
+    const minSalary = control.get('minSalary')?.value;
+    const maxSalary = control.get('maxSalary')?.value;
+
+    if (minSalary != null && maxSalary != null && 
+        typeof minSalary === 'number' && typeof maxSalary === 'number') {
+      
+      // 
+      if (minSalary > maxSalary) {
+        return { salaryRangeInvalid: true };
+      }
+    }
+
+    return null;
   }
 
   ngOnInit(): void {
@@ -135,6 +152,17 @@ export class PositionDetailComponent implements OnInit {
   cancelEdit(): void {
     this.isEditing = false;
     this.initializeEditForm();
+  }
+
+
+  get isSalaryRangeInvalid(): boolean {
+    return this.editPositionForm.hasError('salaryRangeInvalid');
+  }
+  getSalaryRangeErrorMessage(): string {
+    if (this.isSalaryRangeInvalid) {
+      return 'Minimum salary must be less than maximum salary';
+    }
+    return '';
   }
 
   private saveChanges(): void {

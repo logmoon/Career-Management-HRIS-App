@@ -24,6 +24,7 @@ namespace career_module.server.Controllers
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(
             [FromQuery] string? department = null,
             [FromQuery] int? managerId = null,
+            [FromQuery] string? search = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -44,6 +45,13 @@ namespace career_module.server.Controllers
                 if (managerId.HasValue)
                 {
                     query = query.Where(e => e.ManagerId == managerId);
+                }
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    query = query.Where(s => s.FirstName.Contains(search) ||
+                                        s.LastName.Contains(search) ||
+                                        s.Email.Contains(search));
                 }
 
                 var totalCount = await query.CountAsync();

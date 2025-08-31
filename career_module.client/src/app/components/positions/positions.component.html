@@ -74,14 +74,20 @@
         </div>
 
         <div class="mt-4 text-sm text-gray-600">
-            Showing {{ filteredPositions.length }} of {{ positions.length }} positions
+            Showing {{ paginatedPositions.length }} of {{ totalPositions }} positions
         </div>
     </div>
 
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <span class="ml-3 text-gray-600">Loading positions...</span>
+    </div>
+
     <!-- Positions Grid -->
-    <div *ngIf="!isLoading && filteredPositions.length > 0" 
+    <div *ngIf="!isLoading && paginatedPositions.length > 0" 
          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let position of filteredPositions"
+        <div *ngFor="let position of paginatedPositions"
              class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
             <div class="p-6">
                 <!-- Position Header -->
@@ -155,7 +161,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredPositions.length === 0" 
+    <div *ngIf="!isLoading && paginatedPositions.length === 0" 
          class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -163,7 +169,7 @@
         </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">No positions found</h3>
         <p class="mt-1 text-sm text-gray-500">
-            {{ positions.length === 0 ? 'Get started by creating a new position.' : 'Try adjusting your filters.' }}
+            {{ filteredPositions.length === 0 && positions.length > 0 ? 'Try adjusting your filters.' : 'Get started by creating a new position.' }}
         </p>
         <button *ngIf="canCreatePosition() && positions.length === 0"
                 (click)="openCreateModal()"
@@ -172,10 +178,26 @@
         </button>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        <span class="ml-3 text-gray-600">Loading positions...</span>
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center items-center space-x-2">
+        <button (click)="previousPage()"
+                [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            Previous
+        </button>
+        
+        <button *ngFor="let page of pageNumbers"
+                (click)="goToPage(page)"
+                [class]="page === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-600 border-gray-300 hover:bg-gray-50'"
+                class="px-3 py-2 text-sm border rounded-lg transition-colors">
+            {{ page }}
+        </button>
+        
+        <button (click)="nextPage()"
+                [disabled]="currentPage === totalPages"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+        </button>
     </div>
 </div>
 
@@ -267,6 +289,12 @@
                         <div *ngIf="createPositionForm.get('maxSalary')?.invalid && createPositionForm.get('maxSalary')?.touched" 
                              class="text-red-500 text-xs mt-1">
                             Salary must be positive
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div *ngIf="isSalaryRangeInvalid" class="text-red-500 text-sm mt-1">
+                            {{ getSalaryRangeErrorMessage() }}
                         </div>
                     </div>
 

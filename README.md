@@ -1,64 +1,80 @@
-Gestion de Carrière
-Acteurs Clés
-Salarié
-Consule Plan Carriere
-Reçoit propositions
-Demande évolution
-Manager
-Suit Progression
-Propose promotions
-Valide Demandes
-RH
-Supervise plans
-Analyse compétences
-Définit criteres
-Admin
-Parametres du module
-Gére permissions
-Scénarios d'usage
-Remplacement poste clé
+# Gestion de Carrière
+
+## Mindmap
+
+### Acteurs Clés
+- **Salarié**
+  - Consulte Plan Carrière
+  - Reçoit propositions
+  - Demande évolution
+- **Manager**
+  - Suit Progression
+  - Propose promotions
+  - Valide Demandes
+- **RH**
+  - Supervise plans
+  - Analyse compétences
+  - Définit critères
+- **Admin**
+  - Paramètres du module
+  - Gère permissions
+
+### Scénarios d'usage
+### Remplacement poste clé
 1. Poste vacant
 2. Identification candidats
 3. Validation RH
 4. Nomination
-Evolution interne
+
+#### Evolution interne
 1. Demande salarié
 2. Validation manager
 3. Plan évolution RH
-Plan de succession préventif
+
+#### Plan de succession préventif
 1. Définition postes critiques
 2. Association candidats
 3. Suivi préparation
-Liaisons avec autres modules
-Module RH
-Fiches salariés
-Contrats
-Module Formation
-Catalogue formations
-Inscriptions
-Module évaluation
-Scores
-Feedback
-Base de données postes
-Fiches de postes
-Compétences requises
-Fonctions Principales
-Plans de succession
-Associer postes clés
-Définir criteres
-Prioriser candidats
-Évaluations des compétences
-Comparer compétences
-Recommander formations
-Mobilité interne
-Proposer postes (par salarié)
-Permettre candidature
-Suivi de carriere
-Historique évolutions
-Objectifs/jalons
-Recommendations
-Formations
-Mobilités
-Reporting et Statistiques
-Candidats/postes
-Taux réussite (based on the post and the employe's "compétences")
+
+### Liaisons avec autres modules
+- **Module RH**
+  - Fiches salariés
+  - Contrats
+- **Module Formation**
+  - Catalogue formations
+  - Inscriptions
+- **Module évaluation**
+  - Scores
+  - Feedback
+- **Base de données postes**
+  - Fiches de postes
+  - Compétences requises
+
+### Fonctions Principales
+- Plans de succession
+  - Associer postes clés
+  - Définir critères
+  - Prioriser candidats
+- Évaluations des compétences
+  - Comparer compétences
+  - Recommander formations
+- Mobilité interne
+  - Proposer postes (par salarié)
+  - Permettre candidature
+- Suivi de carrière
+  - Historique évolutions
+  - Objectifs/jalons
+  - Recommendations
+  - Formations
+  - Mobilités
+
+### Reporting et Statistiques
+- Candidats/postes
+- Taux réussite (based on the post and the employe's "compétences")
+
+---
+## Known inconsistencies that I'm leaving in, but should be looked into if further expansions to the project were to occur
+#### Pagination and filtering in backend vs frontend
+The backend already supports pagination and filtering for most big GET requests for all services, but currently in the fontend, I'm choosing to ignore this completely, and do all fitering and pagination client-side. This feels like the better option because it decreases the number api calls needed, so it's what I went with, but I'm leaving the filtering and pagination in the backend, cuz I can't be bothered to remove it + it might be useful?
+#### Salary inputs in client-side forms
+Salary inputs in client-side forms currently accept text, but when submitted, they are nulled and are saved to the db as such, doesn't seem like a huge issue, and I might fix it.
