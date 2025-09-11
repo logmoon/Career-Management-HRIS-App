@@ -1,439 +1,171 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using career_module.server.Infrastructure.Data;
-using career_module.server.Models.Entities;
-using career_module.server.Models.DTOs;
+﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace career_module.server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeesController : ControllerBase
+    [Authorize]
+    public class EmployeesController : BaseController
     {
-        private readonly CareerManagementDbContext _context;
-        private readonly ILogger<EmployeesController> _logger;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeesController(CareerManagementDbContext context, ILogger<EmployeesController> logger)
+        public EmployeesController(CareerManagementDbContext context, IEmployeeService employeeService) : base(context)
         {
-            _context = context;
-            _logger = logger;
+            _employeeService = employeeService;
         }
 
-        // GET: api/employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(
+        public async Task<IActionResult> GetAllEmployees(
             [FromQuery] string? department = null,
-            [FromQuery] int? managerId = null,
-            [FromQuery] string? search = null,
+            [FromQuery] string? role = null,
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 50)
         {
-            try
-            {
-                var query = _context.Employees
-                    .Include(e => e.CurrentPosition)
-                    .Include(e => e.Manager)
-                    .Include(e => e.EmployeeSkills)
-                        .ThenInclude(es => es.Skill)
-                    .AsQueryable();
+            var result = await _employeeService.GetAllEmployeesAsync(department, role, page, pageSize);
 
-                if (!string.IsNullOrEmpty(department))
-                {
-                    query = query.Where(e => e.Department.Contains(department));
-                }
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
 
-                if (managerId.HasValue)
-                {
-                    query = query.Where(e => e.ManagerId == managerId);
-                }
-
-                if (!string.IsNullOrEmpty(search))
-                {
-                    query = query.Where(s => s.FirstName.Contains(search) ||
-                                        s.LastName.Contains(search) ||
-                                        s.Email.Contains(search));
-                }
-
-                var totalCount = await query.CountAsync();
-                var employees = await query
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(e => new EmployeeDto
-                    {
-                        Id = e.Id,
-                        FirstName = e.FirstName,
-                        LastName = e.LastName,
-                        Email = e.Email,
-                        Phone = e.Phone,
-                        Department = e.Department,
-                        HireDate = e.HireDate,
-                        Salary = e.Salary,
-                        ManagerId = e.ManagerId,
-                        ManagerName = e.Manager != null ? $"{e.Manager.FirstName} {e.Manager.LastName}" : null,
-                        CurrentPositionId = e.CurrentPositionId,
-                        CurrentPositionTitle = e.CurrentPosition != null ? e.CurrentPosition.Title : null,
-                        Skills = e.EmployeeSkills.Select(es => new EmployeeSkillDto
-                        {
-                            SkillId = es.SkillId,
-                            SkillName = es.Skill.Name,
-                            ProficiencyLevel = es.ProficiencyLevel,
-                            AcquiredDate = es.AcquiredDate
-                        }).ToList()
-                    })
-                    .ToListAsync();
-
-                return Ok(new
-                {
-                    Data = employees,
-                    TotalCount = totalCount,
-                    Page = page,
-                    PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving employees");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
-        // GET: api/employees/{id}
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<EmployeeDetailDto>> GetEmployee(int id)
+        public async Task<IActionResult> GetEmployeeById(int id)
         {
-            try
-            {
-                var employee = await _context.Employees
-                    .Include(e => e.CurrentPosition)
-                    .Include(e => e.Manager)
-                    .Include(e => e.DirectReports)
-                    .Include(e => e.EmployeeSkills)
-                        .ThenInclude(es => es.Skill)
-                    .Include(e => e.CareerGoals)
-                        .ThenInclude(cg => cg.TargetPosition)
-                    .FirstOrDefaultAsync(e => e.Id == id);
+            var result = await _employeeService.GetEmployeeByIdAsync(id);
 
-                if (employee == null)
-                {
-                    return NotFound($"Employee with ID {id} not found");
-                }
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
 
-                var employeeDto = new EmployeeDetailDto
-                {
-                    Id = employee.Id,
-                    FirstName = employee.FirstName,
-                    LastName = employee.LastName,
-                    Email = employee.Email,
-                    Phone = employee.Phone,
-                    Department = employee.Department,
-                    HireDate = employee.HireDate,
-                    Salary = employee.Salary,
-                    ManagerId = employee.ManagerId,
-                    ManagerName = employee.Manager != null ? $"{employee.Manager.FirstName} {employee.Manager.LastName}" : null,
-                    CurrentPositionId = employee.CurrentPositionId,
-                    CurrentPositionTitle = employee.CurrentPosition?.Title,
-                    DirectReports = employee.DirectReports.Select(dr => new EmployeeSummaryDto
-                    {
-                        Id = dr.Id,
-                        FirstName = dr.FirstName,
-                        LastName = dr.LastName,
-                        Email = dr.Email,
-                        Department = dr.Department
-                    }).ToList(),
-                    Skills = employee.EmployeeSkills.Select(es => new EmployeeSkillDto
-                    {
-                        SkillId = es.SkillId,
-                        SkillName = es.Skill.Name,
-                        SkillCategory = es.Skill.Category,
-                        ProficiencyLevel = es.ProficiencyLevel,
-                        AcquiredDate = es.AcquiredDate,
-                        LastAssessedDate = es.LastAssessedDate,
-                        Notes = es.Notes
-                    }).ToList(),
-                    CareerGoals = employee.CareerGoals.Select(cg => new CareerGoalSummaryDto
-                    {
-                        Id = cg.Id,
-                        GoalDescription = cg.GoalDescription,
-                        TargetDate = cg.TargetDate,
-                        Status = cg.Status,
-                        Priority = cg.Priority,
-                        TargetPositionTitle = cg.TargetPosition?.Title
-                    }).ToList()
-                };
-
-                return Ok(employeeDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving employee {EmployeeId}", id);
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
 
-        // POST: api/employees
-        [HttpPost]
-        public async Task<ActionResult<EmployeeDto>> CreateEmployee(CreateEmployeeDto createEmployeeDto)
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyProfile()
         {
-            try
-            {
-                // Validate manager exists if provided
-                if (createEmployeeDto.ManagerId.HasValue)
-                {
-                    var managerExists = await _context.Employees.AnyAsync(e => e.Id == createEmployeeDto.ManagerId);
-                    if (!managerExists)
-                    {
-                        return BadRequest($"Manager with ID {createEmployeeDto.ManagerId} not found");
-                    }
-                }
+            var currentUserId = GetCurrentUserId();
+            var result = await _employeeService.GetEmployeeByUserIdAsync(currentUserId);
 
-                // Validate position exists if provided
-                if (createEmployeeDto.CurrentPositionId.HasValue)
-                {
-                    var positionExists = await _context.Positions.AnyAsync(p => p.Id == createEmployeeDto.CurrentPositionId);
-                    if (!positionExists)
-                    {
-                        return BadRequest($"Position with ID {createEmployeeDto.CurrentPositionId} not found");
-                    }
-                }
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
 
-                var employee = new Employee
-                {
-                    FirstName = createEmployeeDto.FirstName,
-                    LastName = createEmployeeDto.LastName,
-                    Email = createEmployeeDto.Email,
-                    Phone = createEmployeeDto.Phone,
-                    Department = createEmployeeDto.Department,
-                    HireDate = createEmployeeDto.HireDate,
-                    Salary = createEmployeeDto.Salary,
-                    ManagerId = createEmployeeDto.ManagerId,
-                    CurrentPositionId = createEmployeeDto.CurrentPositionId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-
-                _context.Employees.Add(employee);
-                await _context.SaveChangesAsync();
-
-                // Load related data for response
-                await _context.Entry(employee)
-                    .Reference(e => e.CurrentPosition)
-                    .LoadAsync();
-
-                await _context.Entry(employee)
-                    .Reference(e => e.Manager)
-                    .LoadAsync();
-
-                var employeeDto = new EmployeeDto
-                {
-                    Id = employee.Id,
-                    FirstName = employee.FirstName,
-                    LastName = employee.LastName,
-                    Email = employee.Email,
-                    Phone = employee.Phone,
-                    Department = employee.Department,
-                    HireDate = employee.HireDate,
-                    Salary = employee.Salary,
-                    ManagerId = employee.ManagerId,
-                    ManagerName = employee.Manager != null ? $"{employee.Manager.FirstName} {employee.Manager.LastName}" : null,
-                    CurrentPositionId = employee.CurrentPositionId,
-                    CurrentPositionTitle = employee.CurrentPosition?.Title,
-                    Skills = new List<EmployeeSkillDto>()
-                };
-
-                return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employeeDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating employee");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
 
-        // PUT: api/employees/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
+        public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
         {
-            try
+            // Check permissions: users can only update their own profile, or HR/Admin can update anyone
+            var currentUserId = GetCurrentUserId();
+            var currentUserRole = GetCurrentUserRole();
+
+            if (currentUserRole != "HR" && currentUserRole != "Admin")
             {
-                var employee = await _context.Employees.FindAsync(id);
-                if (employee == null)
-                {
-                    return NotFound($"Employee with ID {id} not found");
-                }
+                var employeeResult = await _employeeService.GetEmployeeByIdAsync(id);
+                if (!employeeResult.IsSuccess)
+                    return NotFound(new { message = employeeResult.ErrorMessage });
 
-                // Validate manager exists if provided
-                if (updateEmployeeDto.ManagerId.HasValue && updateEmployeeDto.ManagerId != id)
-                {
-                    var managerExists = await _context.Employees.AnyAsync(e => e.Id == updateEmployeeDto.ManagerId);
-                    if (!managerExists)
-                    {
-                        return BadRequest($"Manager with ID {updateEmployeeDto.ManagerId} not found");
-                    }
-                }
-
-                // Validate position exists if provided
-                if (updateEmployeeDto.CurrentPositionId.HasValue)
-                {
-                    var positionExists = await _context.Positions.AnyAsync(p => p.Id == updateEmployeeDto.CurrentPositionId);
-                    if (!positionExists)
-                    {
-                        return BadRequest($"Position with ID {updateEmployeeDto.CurrentPositionId} not found");
-                    }
-                }
-
-                // Update properties
-                employee.FirstName = updateEmployeeDto.FirstName;
-                employee.LastName = updateEmployeeDto.LastName;
-                employee.Email = updateEmployeeDto.Email;
-                employee.Phone = updateEmployeeDto.Phone;
-                employee.Department = updateEmployeeDto.Department;
-                employee.Salary = updateEmployeeDto.Salary;
-                employee.ManagerId = updateEmployeeDto.ManagerId;
-                employee.CurrentPositionId = updateEmployeeDto.CurrentPositionId;
-                employee.UpdatedAt = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
-                return NoContent();
+                if (employeeResult.Data!.UserId != currentUserId)
+                    return Forbid("You can only update your own profile");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating employee {EmployeeId}", id);
-                return StatusCode(500, "Internal server error");
-            }
+
+            var result = await _employeeService.UpdateEmployeeAsync(id, dto);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(result.Data);
         }
 
-        // DELETE: api/employees/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmployee(int id)
+        [HttpPut("{id}/department")]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<IActionResult> ChangeDepartment(int id, [FromBody] ChangeDepartmentDto dto)
         {
-            try
-            {
-                var employee = await _context.Employees
-                    .Include(e => e.DirectReports)
-                    .FirstOrDefaultAsync(e => e.Id == id);
+            var currentUserId = GetCurrentUserId();
+            var result = await _employeeService.ChangeDepartmentAsync(id, dto.NewDepartmentId, currentUserId);
 
-                if (employee == null)
-                {
-                    return NotFound($"Employee with ID {id} not found");
-                }
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
 
-                // Check if employee has direct reports
-                if (employee.DirectReports.Any())
-                {
-                    return BadRequest("Cannot delete employee who has direct reports. Please reassign or remove direct reports first.");
-                }
-
-                _context.Employees.Remove(employee);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting employee {EmployeeId}", id);
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
 
-        // POST: api/employees/{id}/skills
-        [HttpPost("{id}/skills")]
-        public async Task<IActionResult> AddEmployeeSkill(int id, AddEmployeeSkillDto addSkillDto)
+        [HttpPut("{id}/manager")]
+        [Authorize(Roles = "HR,Admin,Manager")]
+        public async Task<IActionResult> ChangeManager(int id, [FromBody] ChangeManagerDto dto)
         {
-            try
-            {
-                var employee = await _context.Employees.FindAsync(id);
-                if (employee == null)
-                {
-                    return NotFound($"Employee with ID {id} not found");
-                }
+            var currentUserId = GetCurrentUserId();
+            var result = await _employeeService.ChangeManagerAsync(id, dto.NewManagerId, currentUserId);
 
-                var skill = await _context.Skills.FindAsync(addSkillDto.SkillId);
-                if (skill == null)
-                {
-                    return BadRequest($"Skill with ID {addSkillDto.SkillId} not found");
-                }
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
 
-                var existingSkill = await _context.EmployeeSkills
-                    .FirstOrDefaultAsync(es => es.EmployeeId == id && es.SkillId == addSkillDto.SkillId);
-
-                if (existingSkill != null)
-                {
-                    return BadRequest("Employee already has this skill");
-                }
-
-                var employeeSkill = new EmployeeSkill
-                {
-                    EmployeeId = id,
-                    SkillId = addSkillDto.SkillId,
-                    ProficiencyLevel = addSkillDto.ProficiencyLevel,
-                    AcquiredDate = addSkillDto.AcquiredDate,
-                    Notes = addSkillDto.Notes
-                };
-
-                _context.EmployeeSkills.Add(employeeSkill);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding skill to employee {EmployeeId}", id);
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
 
-        // PUT: api/employees/{employeeId}/skills/{skillId}
-        [HttpPut("{employeeId}/skills/{skillId}")]
-        public async Task<IActionResult> UpdateEmployeeSkill(int employeeId, int skillId, UpdateEmployeeSkillDto updateSkillDto)
+        [HttpGet("{id}/direct-reports")]
+        public async Task<IActionResult> GetDirectReports(int id)
         {
-            try
+            // Check permissions: users can see their own direct reports, or HR/Admin can see anyone's
+            var currentUserId = GetCurrentUserId();
+            var currentUserRole = GetCurrentUserRole();
+
+            if (currentUserRole != "HR" && currentUserRole != "Admin")
             {
-                var employeeSkill = await _context.EmployeeSkills
-                    .FirstOrDefaultAsync(es => es.EmployeeId == employeeId && es.SkillId == skillId);
+                var employeeResult = await _employeeService.GetEmployeeByIdAsync(id);
+                if (!employeeResult.IsSuccess)
+                    return NotFound(new { message = employeeResult.ErrorMessage });
 
-                if (employeeSkill == null)
-                {
-                    return NotFound("Employee skill not found");
-                }
-
-                employeeSkill.ProficiencyLevel = updateSkillDto.ProficiencyLevel;
-                employeeSkill.LastAssessedDate = DateTime.UtcNow;
-                employeeSkill.Notes = updateSkillDto.Notes;
-
-                await _context.SaveChangesAsync();
-                return NoContent();
+                if (employeeResult.Data!.UserId != currentUserId)
+                    return Forbid("You can only view your own direct reports");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating employee skill");
-                return StatusCode(500, "Internal server error");
-            }
+
+            var result = await _employeeService.GetDirectReportsAsync(id);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(result.Data);
         }
 
-        // DELETE: api/employees/{employeeId}/skills/{skillId}
-        [HttpDelete("{employeeId}/skills/{skillId}")]
-        public async Task<IActionResult> RemoveEmployeeSkill(int employeeId, int skillId)
+        [HttpGet("org-chart")]
+        [Authorize(Roles = "HR,Admin,Manager")]
+        public async Task<IActionResult> GetOrganizationChart()
         {
-            try
-            {
-                var employeeSkill = await _context.EmployeeSkills
-                    .FirstOrDefaultAsync(es => es.EmployeeId == employeeId && es.SkillId == skillId);
+            var result = await _employeeService.GetOrganizationHierarchyAsync();
 
-                if (employeeSkill == null)
-                {
-                    return NotFound("Employee skill not found");
-                }
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
 
-                _context.EmployeeSkills.Remove(employeeSkill);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error removing employee skill");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result.Data);
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchEmployees([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return BadRequest(new { message = "Search term is required" });
+
+            var result = await _employeeService.SearchEmployeesAsync(searchTerm);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(result.Data);
+        }
+    }
+
+    // Additional DTOs for the controller
+    public class ChangeDepartmentDto
+    {
+        public int NewDepartmentId { get; set; }
+    }
+
+    public class ChangeManagerDto
+    {
+        public int? NewManagerId { get; set; }
     }
 }

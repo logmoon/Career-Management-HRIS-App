@@ -1,4 +1,5 @@
 ﻿using career_module.server.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace career_module.server.Models.DTOs
 {
@@ -21,6 +22,14 @@ namespace career_module.server.Models.DTOs
                 Notes = es.Notes
             };
         }
+        public static DepartmentDto ToDepartmentDto(Department department)
+        {
+            return new DepartmentDto
+            {
+                // Id = department.Id,
+                // Name = department.Name
+            };
+        }
         public static EmployeeDto ToEmployeeDto(Employee employee)
         {
             return new EmployeeDto
@@ -30,7 +39,7 @@ namespace career_module.server.Models.DTOs
                 LastName = employee.LastName,
                 Email = employee.Email,
                 Phone = employee.Phone,
-                Department = employee.Department,
+                Department = ToDepartmentDto(employee.Department),
                 HireDate = employee.HireDate,
                 Salary = employee.Salary,
                 ManagerId = employee.ManagerId,
@@ -55,6 +64,15 @@ namespace career_module.server.Models.DTOs
         }
     }
     #endregion
+
+
+    public class CreateRequestDto
+    {
+        public int RequesterId { get; set; }
+        public int? TargetEmployeeId { get; set; }
+        public string RequestType { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+    }
 
     #region Auth API
     public class UserDto
@@ -86,12 +104,18 @@ namespace career_module.server.Models.DTOs
         public string Message { get; set; } = string.Empty;
     }
 
-    public class RegisterRequestDto
+    public class RegistrationRequestDto
     {
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Role { get; set; } = "Employee";
+
+        // Employee fields
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public DateTime? HireDate { get; set; }
     }
     #endregion
 
@@ -103,7 +127,7 @@ namespace career_module.server.Models.DTOs
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
-        public string Department { get; set; } = string.Empty;
+        public DepartmentDto Department { get; set; } = new();
         public DateTime HireDate { get; set; }
         public decimal? Salary { get; set; }
         public int? ManagerId { get; set; }
@@ -111,6 +135,10 @@ namespace career_module.server.Models.DTOs
         public int? CurrentPositionId { get; set; }
         public string? CurrentPositionTitle { get; set; }
         public List<EmployeeSkillDto> Skills { get; set; } = new();
+    }
+
+    public class DepartmentDto
+    {
     }
 
     public class EmployeeDetailDto : EmployeeDto
@@ -384,6 +412,298 @@ namespace career_module.server.Models.DTOs
         public int RequiredLevel { get; set; }
         public int EmployeesAtLevel { get; set; }
         public int Gap { get; set; }
+    }
+    #endregion
+
+    #region SuccessionPlan API
+
+    public class SuccessionPlanDto
+    {
+        public int Id { get; set; }
+        public int PositionId { get; set; }
+        public string PositionTitle { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ReviewDate { get; set; }
+        public string CreatedByName { get; set; } = string.Empty;
+        public int CandidateCount { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    public class SuccessionPlanDetailDto
+    {
+        public int Id { get; set; }
+        public int PositionId { get; set; }
+        public string PositionTitle { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string PositionLevel { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ReviewDate { get; set; }
+        public string CreatedByName { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+        public List<SuccessionCandidateDto> Candidates { get; set; } = new List<SuccessionCandidateDto>();
+        public List<PositionSkillDto> RequiredSkills { get; set; } = new List<PositionSkillDto>();
+    }
+
+    public class CreateSuccessionPlanDto
+    {
+        [Required]
+        public int PositionId { get; set; }
+        public DateTime? ReviewDate { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    public class UpdateSuccessionPlanDto
+    {
+        [Required]
+        public string Status { get; set; } = string.Empty;
+        public DateTime? ReviewDate { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    #endregion
+
+    #region SuccessionCandidate API
+    public class SuccessionCandidateDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public string CurrentPositionTitle { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public int Priority { get; set; }
+        public decimal MatchScore { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime AddedDate { get; set; }
+        public string? Notes { get; set; }
+        public List<SkillMatchDto> SkillMatches { get; set; } = new List<SkillMatchDto>();
+    }
+
+    public class AddSuccessionCandidateDto
+    {
+        [Required]
+        public int EmployeeId { get; set; }
+        public int Priority { get; set; } = 1;
+        public string? Notes { get; set; }
+    }
+
+    public class UpdateSuccessionCandidateDto
+    {
+        public int Priority { get; set; }
+        [Required]
+        public string Status { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+    }
+
+    public class CandidateSuggestionDto
+    {
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public string CurrentPositionTitle { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public decimal MatchScore { get; set; }
+        public List<SkillMatchDto> SkillMatches { get; set; } = new List<SkillMatchDto>();
+        public bool IsAlreadyCandidate { get; set; }
+    }
+    #endregion
+
+    #region CarrerGoal API
+    public class CareerGoalDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public int? TargetPositionId { get; set; }
+        public string? TargetPositionTitle { get; set; }
+        public string GoalDescription { get; set; } = string.Empty;
+        public DateTime TargetDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public int DevelopmentActionCount { get; set; }
+        public int CompletedActionCount { get; set; }
+    }
+
+    public class CareerGoalDetailDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public int? TargetPositionId { get; set; }
+        public string? TargetPositionTitle { get; set; }
+        public string? TargetPositionDepartment { get; set; }
+        public string GoalDescription { get; set; } = string.Empty;
+        public DateTime TargetDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public List<DevelopmentActionDto> DevelopmentActions { get; set; } = new List<DevelopmentActionDto>();
+        public List<SkillMatchDto>? SkillGaps { get; set; } = new List<SkillMatchDto>();
+        public decimal? MatchScore { get; set; }
+    }
+
+    public class CreateCareerGoalDto
+    {
+        [Required]
+        public int? TargetPositionId { get; set; }
+        [Required]
+        public string GoalDescription { get; set; } = string.Empty;
+        [Required]
+        public DateTime TargetDate { get; set; }
+        public string Priority { get; set; } = "Medium";
+    }
+
+    public class UpdateCareerGoalDto
+    {
+        public int? TargetPositionId { get; set; }
+        [Required]
+        public string GoalDescription { get; set; } = string.Empty;
+        [Required]
+        public DateTime TargetDate { get; set; }
+        [Required]
+        public string Status { get; set; } = string.Empty;
+        [Required]
+        public string Priority { get; set; } = string.Empty;
+    }
+    #endregion
+
+    #region DevelopmentAction API
+    public class DevelopmentActionDto
+    {
+        public int Id { get; set; }
+        public int CareerGoalId { get; set; }
+        public string ActionType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime? DueDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public bool IsOverdue => DueDate.HasValue && DueDate.Value < DateTime.UtcNow && Status != "Completed";
+    }
+
+    public class DevelopmentActionDetailDto
+    {
+        public int Id { get; set; }
+        public int CareerGoalId { get; set; }
+        public string CareerGoalDescription { get; set; } = string.Empty;
+        public string EmployeeName { get; set; } = string.Empty;
+        public string ActionType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime? DueDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public bool IsOverdue => DueDate.HasValue && DueDate.Value < DateTime.UtcNow && Status != "Completed";
+    }
+
+    public class CreateDevelopmentActionDto
+    {
+        [Required]
+        public string ActionType { get; set; } = string.Empty;
+        [Required]
+        public string Description { get; set; } = string.Empty;
+        public DateTime? DueDate { get; set; }
+    }
+
+    public class UpdateDevelopmentActionDto
+    {
+        [Required]
+        public string ActionType { get; set; } = string.Empty;
+        [Required]
+        public string Description { get; set; } = string.Empty;
+        public DateTime? DueDate { get; set; }
+        [Required]
+        public string Status { get; set; } = string.Empty;
+    }
+    #endregion
+
+    #region PerformanceReview API
+    public class PerformanceReviewDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public string? EmployeeDepartment { get; set; }
+        public int ReviewerId { get; set; }
+        public string ReviewerName { get; set; } = string.Empty;
+        public DateTime ReviewPeriodStart { get; set; }
+        public DateTime ReviewPeriodEnd { get; set; }
+        public decimal OverallRating { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+    }
+
+    public class PerformanceReviewDetailDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public string? EmployeeDepartment { get; set; }
+        public string? EmployeePosition { get; set; }
+        public string? EmployeeManager { get; set; }
+        public int ReviewerId { get; set; }
+        public string ReviewerName { get; set; } = string.Empty;
+        public DateTime ReviewPeriodStart { get; set; }
+        public DateTime ReviewPeriodEnd { get; set; }
+        public decimal OverallRating { get; set; }
+        public string? Strengths { get; set; }
+        public string? AreasForImprovement { get; set; }
+        public string? Goals { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+    }
+
+    public class CreatePerformanceReviewDto
+    {
+        [Required]
+        public int EmployeeId { get; set; }
+
+        [Required]
+        public int ReviewerId { get; set; }
+
+        [Required]
+        public DateTime ReviewPeriodStart { get; set; }
+
+        [Required]
+        public DateTime ReviewPeriodEnd { get; set; }
+
+        [Required]
+        [Range(1.0, 5.0, ErrorMessage = "Overall rating must be between 1.0 and 5.0")]
+        public decimal OverallRating { get; set; }
+
+        public string? Strengths { get; set; }
+        public string? AreasForImprovement { get; set; }
+        public string? Goals { get; set; }
+    }
+
+    public class UpdatePerformanceReviewDto
+    {
+        [Required]
+        public DateTime ReviewPeriodStart { get; set; }
+
+        [Required]
+        public DateTime ReviewPeriodEnd { get; set; }
+
+        [Required]
+        [Range(1.0, 5.0, ErrorMessage = "Overall rating must be between 1.0 and 5.0")]
+        public decimal OverallRating { get; set; }
+
+        public string? Strengths { get; set; }
+        public string? AreasForImprovement { get; set; }
+        public string? Goals { get; set; }
+
+        [Required]
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class ReviewAnalyticsDto
+    {
+        public int TotalReviews { get; set; }
+        public decimal AverageRating { get; set; }
+        public Dictionary<string, int> StatusDistribution { get; set; } = new();
+        public Dictionary<string, int> RatingDistribution { get; set; } = new();
+        public Dictionary<string, decimal> DepartmentAverages { get; set; } = new();
+        public Dictionary<string, int> ReviewsByMonth { get; set; } = new();
     }
     #endregion
 }

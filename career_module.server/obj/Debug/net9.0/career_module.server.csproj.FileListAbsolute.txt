@@ -163,7 +163,7 @@ C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\runtimes\win\lib
 C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\000\Programming\stage1\career_module.server\obj\Debug\net9.0\career_module.server.sourcelink.json
-C:\000\Programming\stage1\career_module.server\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\000\Programming\stage1\career_module.server\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\000\Programming\stage1\career_module.server\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

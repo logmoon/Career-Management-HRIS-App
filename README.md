@@ -74,7 +74,11 @@
 
 ---
 ## Known inconsistencies that I'm leaving in, but should be looked into if further expansions to the project were to occur
+#### Anything can send requests to the API
+Currently anything can send requests to our API, which is very bad, ideally, you'd pass an authorization token thingy? (I dunno what the correct term is) which validates our requests to the API.
+In extension to this, I think it would be nice for the API to allow/disallow certain requests based on the role of the user requesting them. Currently, we do this in the client to protect routes, viewing, editing, etc. But considering anything can send requests to our API, not having the permission checks in the API further increase the security issues.
+Alas, this still remains a 6 week internship project, and I can't really cover everything. I might adress this if I have enough time, if not, well, let it be known that I'm aware of the issue.
 #### Pagination and filtering in backend vs frontend
-The backend already supports pagination and filtering for most big GET requests for all services, but currently in the fontend, I'm choosing to ignore this completely, and do all fitering and pagination client-side. This feels like the better option because it decreases the number api calls needed, so it's what I went with, but I'm leaving the filtering and pagination in the backend, cuz I can't be bothered to remove it + it might be useful?
+The backend already supports pagination and filtering for most big GET requests for all services, but currently in the fontend, I'm choosing to ignore this completely, and do all fitering and pagination client-side. This feels like the better option because it decreases the number of api calls needed, so it's what I went with, but I'm leaving the filtering and pagination in the backend, cuz I can't be bothered to remove it + it might be useful?
 #### Salary inputs in client-side forms
-Salary inputs in client-side forms currently accept text, but when submitted, they are nulled and are saved to the db as such, doesn't seem like a huge issue, and I might fix it.
+Salary inputs in client-side forms currently accept text, but when submitted, they are nulled and are saved to the db as such, doesn't seem like a huge issue, and I might fix it, or just as equally ignore it.

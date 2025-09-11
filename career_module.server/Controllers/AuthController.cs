@@ -1,4 +1,5 @@
-﻿using career_module.server.Models.DTOs;
+﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Models.DTOs;
 using career_module.server.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,26 +16,48 @@ namespace career_module.server.Controllers
             _authService = authService;
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<AuthResultDto>> Login([FromBody] LoginRequestDto request)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegistrationRequestDto request)
         {
-            var result = await _authService.LoginAsync(request.Username, request.Password);
+            try
+            {
+                var result = await _authService.RegisterAsync(request.Username, request.Password, request.Email,
+                        request.FirstName, request.LastName, request.Role, request.Phone, request.HireDate);
 
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<RegistrationResultDto>> Register([FromBody] RegisterRequestDto request)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            var result = await _authService.RegisterAsync(request.Username, request.Email, request.Password, request.Role);
+            try
+            {
+                var result = await _authService.LoginAsync(request.Username, request.Password);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok(result);
+        [HttpGet("validate-token")]
+        public async Task<IActionResult> ValidateToken([FromQuery] string token)
+        {
+            try
+            {
+                var result = await Task.Run(() => _authService.ValidateTokenAsync(token));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -5,6 +5,37 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/Auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -31,72 +62,1243 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResultDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResultDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResultDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/api/Auth/register": {
-      "post": {
+    "/api/Auth/validate-token": {
+      "get": {
         "tags": [
           "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/dashboard": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/recommendations": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/employee/{employeeId}/career-intelligence": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/my-career-intelligence": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/employee/{employeeId}/opportunities": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/employee/{employeeId}/skill-recommendations": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/employee/{employeeId}/promotion-readiness": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/employee/{employeeId}/performance-insights": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/organization": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/department/{departmentId}": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/skills": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/talent-risks": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/attrition-risks": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/my-team": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/team/{managerId}": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "managerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/process/performance-review/{reviewId}": {
+      "post": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/process/employee-request/{requestId}": {
+      "post": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/quick-insights": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/intelligence/search": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath": {
+      "post": {
+        "tags": [
+          "CareerPath"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequestDto"
+                "$ref": "#/components/schemas/CreateCareerPathDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequestDto"
+                "$ref": "#/components/schemas/CreateCareerPathDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequestDto"
+                "$ref": "#/components/schemas/CreateCareerPathDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResultDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResultDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResultDto"
-                }
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{id}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCareerPathDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCareerPathDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCareerPathDto"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/recommendations": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/employee/{employeeId}/recommendations": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/from-position/{positionId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/to-position/{positionId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/analyze": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/analyze/{employeeId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/skill-gaps": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/skill-gaps/{employeeId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/roadmap/to-position/{targetPositionId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "targetPositionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/roadmap/{employeeId}/to-position/{targetPositionId}": {
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "targetPositionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/skills": {
+      "post": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCareerPathSkillDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCareerPathSkillDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCareerPathSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CareerPath/{careerPathId}/skills/{skillId}": {
+      "delete": {
+        "tags": [
+          "CareerPath"
+        ],
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skillId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Departments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/{id}": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/{id}/employees": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/{id}/head": {
+      "put": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignHeadDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignHeadDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignHeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/with-stats": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests": {
+      "post": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/{id}": {
+      "get": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/my-requests": {
+      "get": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/pending": {
+      "get": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/{id}/approve": {
+      "put": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/{id}/reject": {
+      "put": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectionDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/types": {
+      "get": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -115,15 +1317,7 @@
             }
           },
           {
-            "name": "managerId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "search",
+            "name": "role",
             "in": "query",
             "schema": {
               "type": "string"
@@ -144,85 +1338,13 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 10
+              "default": 50
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Employees"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -245,24 +1367,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDetailDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDetailDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmployeeDetailDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -305,8 +1410,106 @@
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/Employees/me": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Employees/{id}/department": {
+      "put": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeDepartmentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeDepartmentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Employees/{id}/manager": {
+      "put": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeManagerDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeManagerDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeManagerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Employees/{id}/direct-reports": {
+      "get": {
         "tags": [
           "Employees"
         ],
@@ -328,10 +1531,165 @@
         }
       }
     },
-    "/api/Employees/{id}/skills": {
+    "/api/Employees/org-chart": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Employees/search": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Notifications/me": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Notifications/{id}/mark-read": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "employeeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "reviewerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "post": {
         "tags": [
-          "Employees"
+          "PerformanceReview"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceReviewDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceReviewDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/{id}": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "PerformanceReview"
         ],
         "parameters": [
           {
@@ -348,68 +1706,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddEmployeeSkillDto"
+                "$ref": "#/components/schemas/UpdatePerformanceReviewDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddEmployeeSkillDto"
+                "$ref": "#/components/schemas/UpdatePerformanceReviewDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/AddEmployeeSkillDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Employees/{employeeId}/skills/{skillId}": {
-      "put": {
-        "tags": [
-          "Employees"
-        ],
-        "parameters": [
-          {
-            "name": "employeeId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "skillId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
+                "$ref": "#/components/schemas/UpdatePerformanceReviewDto"
               }
             }
           }
@@ -422,7 +1729,111 @@
       },
       "delete": {
         "tags": [
-          "Employees"
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/{id}/submit": {
+      "post": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/{id}/approve": {
+      "post": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/employee/{employeeId}/history": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/pending": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/employee/{employeeId}/average-rating": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
         ],
         "parameters": [
           {
@@ -435,7 +1846,29 @@
             }
           },
           {
-            "name": "skillId",
+            "name": "lastNReviews",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/employee/{employeeId}/analytics": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
             "in": "path",
             "required": true,
             "schema": {
@@ -443,6 +1876,30 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/templates": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PerformanceReview/rating-scale": {
+      "get": {
+        "tags": [
+          "PerformanceReview"
         ],
         "responses": {
           "200": {
@@ -458,88 +1915,25 @@
         ],
         "parameters": [
           {
-            "name": "department",
+            "name": "includeInactive",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "boolean",
+              "default": false
             }
           },
           {
-            "name": "level",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "isKeyPosition",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "isActive",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
+            "name": "departmentId",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
+              "format": "int32"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PositionDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PositionDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PositionDto"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -568,24 +1962,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -608,24 +1985,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDetailDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDetailDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PositionDetailDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -691,206 +2051,7 @@
         }
       }
     },
-    "/api/Positions/{id}/skills": {
-      "post": {
-        "tags": [
-          "Positions"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPositionSkillDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPositionSkillDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPositionSkillDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Positions/{positionId}/skills/{skillId}": {
-      "put": {
-        "tags": [
-          "Positions"
-        ],
-        "parameters": [
-          {
-            "name": "positionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "skillId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePositionSkillDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePositionSkillDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePositionSkillDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Positions"
-        ],
-        "parameters": [
-          {
-            "name": "positionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "skillId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Positions/levels": {
-      "get": {
-        "tags": [
-          "Positions"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Positions/departments": {
-      "get": {
-        "tags": [
-          "Positions"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Positions/{id}/candidates": {
+    "/api/Positions/{id}/employees": {
       "get": {
         "tags": [
           "Positions"
@@ -908,33 +2069,122 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CandidateMatchDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CandidateMatchDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CandidateMatchDto"
-                  }
-                }
-              }
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Positions/vacant-key-positions": {
+      "get": {
+        "tags": [
+          "Positions"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Positions/by-department/{departmentId}": {
+      "get": {
+        "tags": [
+          "Positions"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Reports/dashboard": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Reports/department-analytics": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Reports/request-summary": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Reports/performance-statistics": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Reports/skills-analytics": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -946,74 +2196,24 @@
         ],
         "parameters": [
           {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
             "name": "category",
             "in": "query",
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "isActive",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 20
-            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillDto"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -1042,24 +2242,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -1082,24 +2265,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDetailDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDetailDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillDetailDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -1172,41 +2338,275 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryStatsDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryStatsDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryStatsDto"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/api/Skills/{id}/gap-analysis": {
+    "/api/Skills/{id}/employees": {
       "get": {
         "tags": [
           "Skills"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "minProficiencyLevel",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Skills/employee/{employeeId}": {
+      "get": {
+        "tags": [
+          "Skills"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Skills/employee": {
+      "post": {
+        "tags": [
+          "Skills"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddEmployeeSkillDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddEmployeeSkillDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddEmployeeSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Skills/employee/{employeeId}/skill/{skillId}": {
+      "put": {
+        "tags": [
+          "Skills"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skillId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Skills"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skillId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Skills/employee/{employeeId}/gap-analysis/{targetPositionId}": {
+      "get": {
+        "tags": [
+          "Skills"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "targetPositionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Skills/proficiency-levels": {
+      "get": {
+        "tags": [
+          "Skills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/plans": {
+      "post": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSuccessionPlanDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSuccessionPlanDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSuccessionPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/plans/{id}": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
         ],
         "parameters": [
           {
@@ -1221,71 +2621,364 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillGapAnalysisDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillGapAnalysisDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SkillGapAnalysisDto"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
-      }
-    },
-    "/api/Skills/search": {
-      "get": {
+      },
+      "put": {
         "tags": [
-          "Skills"
+          "SuccessionPlanning"
         ],
         "parameters": [
           {
-            "name": "query",
-            "in": "query",
+            "name": "id",
+            "in": "path",
+            "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionPlanDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionPlanDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillSummaryDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillSummaryDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillSummaryDto"
-                  }
-                }
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/plans/position/{positionId}": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/positions/{positionId}/smart-candidates": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/positions/{positionId}/analyze-candidates": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/plans/{successionPlanId}/candidates": {
+      "post": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "successionPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSuccessionCandidateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSuccessionCandidateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSuccessionCandidateDto"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "successionPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/candidates/{candidateId}": {
+      "put": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "candidateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionCandidateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionCandidateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuccessionCandidateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "candidateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/reports/readiness": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/reports/risks": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/reports/metrics": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/recommendations": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/retirement-planning": {
+      "post": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetirementPlanningDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetirementPlanningDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetirementPlanningDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SuccessionPlanning/dashboard": {
+      "get": {
+        "tags": [
+          "SuccessionPlanning"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1293,9 +2986,30 @@
   },
   "components": {
     "schemas": {
+      "AddCareerPathSkillDto": {
+        "type": "object",
+        "properties": {
+          "skillId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minProficiencyLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isMandatory": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "AddEmployeeSkillDto": {
         "type": "object",
         "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "skillId": {
             "type": "integer",
             "format": "int32"
@@ -1306,7 +3020,8 @@
           },
           "acquiredDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "notes": {
             "type": "string",
@@ -1315,176 +3030,185 @@
         },
         "additionalProperties": false
       },
-      "AddPositionSkillDto": {
-        "type": "object",
-        "properties": {
-          "skillId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requiredLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMandatory": {
-            "type": "boolean"
-          },
-          "weight": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "AuthResultDto": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "token": {
-            "type": "string",
-            "nullable": true
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserDto"
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CandidateMatchDto": {
+      "AddSuccessionCandidateDto": {
         "type": "object",
         "properties": {
           "employeeId": {
             "type": "integer",
             "format": "int32"
           },
-          "firstName": {
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprovalDto": {
+        "type": "object",
+        "properties": {
+          "notes": {
             "type": "string",
             "nullable": true
-          },
-          "lastName": {
-            "type": "string",
+          }
+        },
+        "additionalProperties": false
+      },
+      "AssignHeadDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangeDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "newDepartmentId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangeManagerDto": {
+        "type": "object",
+        "properties": {
+          "newManagerId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateCareerPathDto": {
+        "type": "object",
+        "properties": {
+          "fromPositionId": {
+            "type": "integer",
+            "format": "int32"
           },
-          "currentPositionTitle": {
-            "type": "string",
-            "nullable": true
+          "toPositionId": {
+            "type": "integer",
+            "format": "int32"
           },
-          "department": {
-            "type": "string",
-            "nullable": true
+          "minYearsInCurrentRole": {
+            "type": "integer",
+            "format": "int32"
           },
-          "matchScore": {
+          "minTotalExperience": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minPerformanceRating": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
-          "skillMatches": {
+          "requiredCertifications": {
+            "type": "string",
+            "nullable": true
+          },
+          "requiredEducationLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "requiredSkills": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SkillMatchDto"
+              "$ref": "#/components/schemas/CreateCareerPathSkillDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "CareerGoalSummaryDto": {
+      "CreateCareerPathSkillDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "skillId": {
             "type": "integer",
             "format": "int32"
           },
-          "goalDescription": {
+          "minProficiencyLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isMandatory": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
             "nullable": true
           },
-          "targetDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
+          "description": {
             "type": "string",
             "nullable": true
           },
-          "priority": {
-            "type": "string",
-            "nullable": true
-          },
-          "targetPositionTitle": {
-            "type": "string",
+          "headOfDepartmentId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "CategoryStatsDto": {
+      "CreatePerformanceReviewDto": {
+        "required": [
+          "employeeId",
+          "overallRating",
+          "reviewerId",
+          "reviewPeriodEnd",
+          "reviewPeriodStart"
+        ],
         "type": "object",
         "properties": {
-          "category": {
-            "type": "string",
-            "nullable": true
-          },
-          "skillCount": {
+          "employeeId": {
             "type": "integer",
             "format": "int32"
           },
-          "employeeCount": {
+          "reviewerId": {
             "type": "integer",
             "format": "int32"
           },
-          "positionCount": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "CreateEmployeeDto": {
-        "type": "object",
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "hireDate": {
+          "reviewPeriodStart": {
             "type": "string",
             "format": "date-time"
           },
-          "salary": {
+          "reviewPeriodEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "overallRating": {
+            "maximum": 5,
+            "minimum": 1,
             "type": "number",
-            "format": "double",
+            "format": "double"
+          },
+          "strengths": {
+            "type": "string",
             "nullable": true
           },
-          "managerId": {
-            "type": "integer",
-            "format": "int32",
+          "areasForImprovement": {
+            "type": "string",
             "nullable": true
           },
-          "currentPositionId": {
-            "type": "integer",
-            "format": "int32",
+          "goals": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -1497,15 +3221,11 @@
             "type": "string",
             "nullable": true
           },
-          "department": {
-            "type": "string",
-            "nullable": true
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
           },
           "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "level": {
             "type": "string",
             "nullable": true
           },
@@ -1519,12 +3239,35 @@
             "format": "double",
             "nullable": true
           },
-          "minYearsExperience": {
-            "type": "integer",
-            "format": "int32"
+          "level": {
+            "type": "string",
+            "nullable": true
           },
           "isKeyPosition": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRequestDto": {
+        "type": "object",
+        "properties": {
+          "requesterId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetEmployeeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "requestType": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1547,220 +3290,14 @@
         },
         "additionalProperties": false
       },
-      "CriticalGapDto": {
+      "CreateSuccessionPlanDto": {
         "type": "object",
         "properties": {
-          "positionTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "requiredLevel": {
+          "positionId": {
             "type": "integer",
             "format": "int32"
           },
-          "employeesAtLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "gap": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DepartmentGapDto": {
-        "type": "object",
-        "properties": {
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "employeeCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "averageProficiency": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxProficiency": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "minProficiency": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "EmployeeDetailDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "hireDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "salary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "managerId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "managerName": {
-            "type": "string",
-            "nullable": true
-          },
-          "currentPositionId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "currentPositionTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "skills": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EmployeeSkillDto"
-            },
-            "nullable": true
-          },
-          "directReports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EmployeeSummaryDto"
-            },
-            "nullable": true
-          },
-          "careerGoals": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CareerGoalSummaryDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EmployeeDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "hireDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "salary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "managerId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "managerName": {
-            "type": "string",
-            "nullable": true
-          },
-          "currentPositionId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "currentPositionTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "skills": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EmployeeSkillDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EmployeeSkillDto": {
-        "type": "object",
-        "properties": {
-          "skillId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "skillName": {
-            "type": "string",
-            "nullable": true
-          },
-          "skillCategory": {
-            "type": "string",
-            "nullable": true
-          },
-          "proficiencyLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "acquiredDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastAssessedDate": {
+          "reviewDate": {
             "type": "string",
             "format": "date-time",
             "nullable": true
@@ -1768,63 +3305,9 @@
           "notes": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EmployeeSkillSummaryDto": {
-        "type": "object",
-        "properties": {
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
           },
-          "employeeName": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "proficiencyLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "acquiredDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastAssessedDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EmployeeSummaryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
+          "autoDiscoverCandidates": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -1843,202 +3326,7 @@
         },
         "additionalProperties": false
       },
-      "PositionDetailDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "level": {
-            "type": "string",
-            "nullable": true
-          },
-          "minSalary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "maxSalary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "minYearsExperience": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isKeyPosition": {
-            "type": "boolean"
-          },
-          "isActive": {
-            "type": "boolean"
-          },
-          "currentEmployeeCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requiredSkillsCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "currentEmployees": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EmployeeSummaryDto"
-            },
-            "nullable": true
-          },
-          "requiredSkills": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PositionSkillDto"
-            },
-            "nullable": true
-          },
-          "hasSuccessionPlan": {
-            "type": "boolean"
-          },
-          "successionCandidatesCount": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PositionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "level": {
-            "type": "string",
-            "nullable": true
-          },
-          "minSalary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "maxSalary": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "minYearsExperience": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isKeyPosition": {
-            "type": "boolean"
-          },
-          "isActive": {
-            "type": "boolean"
-          },
-          "currentEmployeeCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requiredSkillsCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PositionSkillDto": {
-        "type": "object",
-        "properties": {
-          "skillId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "skillName": {
-            "type": "string",
-            "nullable": true
-          },
-          "skillCategory": {
-            "type": "string",
-            "nullable": true
-          },
-          "requiredLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMandatory": {
-            "type": "boolean"
-          },
-          "weight": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PositionSkillSummaryDto": {
-        "type": "object",
-        "properties": {
-          "positionId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "positionTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
-          "requiredLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMandatory": {
-            "type": "boolean"
-          },
-          "weight": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "RegisterRequestDto": {
+      "RegistrationRequestDto": {
         "type": "object",
         "properties": {
           "username": {
@@ -2056,38 +3344,74 @@
           "role": {
             "type": "string",
             "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "hireDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "RegistrationResultDto": {
+      "RejectionDto": {
         "type": "object",
         "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserDto"
-          },
-          "message": {
+          "reason": {
             "type": "string",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "SkillDetailDto": {
+      "RetirementPlanningDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "employeeId": {
             "type": "integer",
             "format": "int32"
           },
-          "name": {
+          "expectedRetirementDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateCareerPathDto": {
+        "type": "object",
+        "properties": {
+          "minYearsInCurrentRole": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "minTotalExperience": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "minPerformanceRating": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "requiredCertifications": {
             "type": "string",
             "nullable": true
           },
-          "category": {
+          "requiredEducationLevel": {
             "type": "string",
             "nullable": true
           },
@@ -2096,53 +3420,16 @@
             "nullable": true
           },
           "isActive": {
-            "type": "boolean"
-          },
-          "employeeCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "positionCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "employeesWithSkill": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EmployeeSkillSummaryDto"
-            },
-            "nullable": true
-          },
-          "positionsRequiring": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PositionSkillSummaryDto"
-            },
-            "nullable": true
-          },
-          "proficiencyDistribution": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            },
+            "type": "boolean",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "SkillDto": {
+      "UpdateDepartmentDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
           "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "category": {
             "type": "string",
             "nullable": true
           },
@@ -2151,113 +3438,7 @@
             "nullable": true
           },
           "isActive": {
-            "type": "boolean"
-          },
-          "employeeCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "positionCount": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SkillGapAnalysisDto": {
-        "type": "object",
-        "properties": {
-          "skillId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "skillName": {
-            "type": "string",
-            "nullable": true
-          },
-          "totalEmployeesWithSkill": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "averageProficiencyLevel": {
-            "type": "number",
-            "format": "double"
-          },
-          "positionsRequiringSkill": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "averageRequiredLevel": {
-            "type": "number",
-            "format": "double"
-          },
-          "gapsByDepartment": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DepartmentGapDto"
-            },
-            "nullable": true
-          },
-          "gapsByLevel": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
-          },
-          "criticalGaps": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CriticalGapDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "SkillMatchDto": {
-        "type": "object",
-        "properties": {
-          "skillName": {
-            "type": "string",
-            "nullable": true
-          },
-          "requiredLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "employeeLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMandatory": {
-            "type": "boolean"
-          },
-          "gap": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SkillSummaryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "category": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
+            "type": "boolean",
             "nullable": true
           }
         },
@@ -2274,15 +3455,7 @@
             "type": "string",
             "nullable": true
           },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
           "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
             "type": "string",
             "nullable": true
           },
@@ -2291,14 +3464,9 @@
             "format": "double",
             "nullable": true
           },
-          "managerId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "currentPositionId": {
-            "type": "integer",
-            "format": "int32",
+          "hireDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },
@@ -2309,11 +3477,59 @@
         "properties": {
           "proficiencyLevel": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
+          },
+          "acquiredDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "notes": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePerformanceReviewDto": {
+        "required": [
+          "overallRating",
+          "reviewPeriodEnd",
+          "reviewPeriodStart",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "reviewPeriodStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewPeriodEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "overallRating": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "number",
+            "format": "double"
+          },
+          "strengths": {
+            "type": "string",
+            "nullable": true
+          },
+          "areasForImprovement": {
+            "type": "string",
+            "nullable": true
+          },
+          "goals": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2325,15 +3541,7 @@
             "type": "string",
             "nullable": true
           },
-          "department": {
-            "type": "string",
-            "nullable": true
-          },
           "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "level": {
             "type": "string",
             "nullable": true
           },
@@ -2347,32 +3555,17 @@
             "format": "double",
             "nullable": true
           },
-          "minYearsExperience": {
-            "type": "integer",
-            "format": "int32"
+          "level": {
+            "type": "string",
+            "nullable": true
           },
           "isKeyPosition": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "isActive": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdatePositionSkillDto": {
-        "type": "object",
-        "properties": {
-          "requiredLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMandatory": {
-            "type": "boolean"
-          },
-          "weight": {
-            "type": "integer",
-            "format": "int32"
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2393,39 +3586,51 @@
             "nullable": true
           },
           "isActive": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "UserDto": {
+      "UpdateSuccessionCandidateDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "priority": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
-          "username": {
+          "matchScore": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
             "type": "string",
             "nullable": true
           },
-          "email": {
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateSuccessionPlanDto": {
+        "type": "object",
+        "properties": {
+          "status": {
             "type": "string",
             "nullable": true
           },
-          "role": {
+          "reviewDate": {
             "type": "string",
+            "format": "date-time",
             "nullable": true
           },
-          "isActive": {
-            "type": "boolean"
-          },
-          "createdAt": {
+          "notes": {
             "type": "string",
-            "format": "date-time"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/EmployeeDto"
+            "nullable": true
           }
         },
         "additionalProperties": false

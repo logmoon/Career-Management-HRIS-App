@@ -22,86 +22,7 @@ namespace career_module.server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("career_module.server.Entities.CareerGoal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("GoalDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("TargetDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("TargetPositionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("TargetPositionId");
-
-                    b.ToTable("CareerGoals");
-                });
-
-            modelBuilder.Entity("career_module.server.Entities.DevelopmentAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ActionType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CareerGoalId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CareerGoalId");
-
-                    b.ToTable("DevelopmentActions");
-                });
-
-            modelBuilder.Entity("career_module.server.Entities.Employee", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.CareerPath", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -110,20 +31,182 @@ namespace career_module.server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int?>("CurrentPositionId")
+                    b.Property<int>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Department")
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FromPositionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MinPerformanceRating")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<int>("MinTotalExperience")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinYearsInCurrentRole")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequiredCertifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequiredEducationLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ToPositionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ToPositionId");
+
+                    b.HasIndex("FromPositionId", "ToPositionId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CareerPath_From_To");
+
+                    b.ToTable("CareerPaths");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.CareerPathSkill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CareerPathId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MinProficiencyLevel")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("CareerPathId", "SkillId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CareerPathSkill_Path_Skill");
+
+                    b.ToTable("CareerPathSkills");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("HeadOfDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.HasKey("Id");
+
+                    b.HasIndex("HeadOfDepartmentId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Administrative functions",
+                            IsActive = true,
+                            Name = "Administration"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "HR and people management",
+                            IsActive = true,
+                            Name = "Human Resources"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Software development and engineering",
+                            IsActive = true,
+                            Name = "Engineering"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Sales and business development",
+                            IsActive = true,
+                            Name = "Sales"
+                        });
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int?>("CurrentPositionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -143,32 +226,244 @@ namespace career_module.server.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal?>("Salary")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CurrentPositionId");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("ManagerId");
 
                     b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CurrentPositionId = 1,
+                            DepartmentId = 1,
+                            FirstName = "Admin",
+                            HireDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastName = "User",
+                            Phone = "555-0001",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CurrentPositionId = 2,
+                            DepartmentId = 2,
+                            FirstName = "HR",
+                            HireDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastName = "Representative",
+                            ManagerId = 1,
+                            Phone = "555-0002",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CurrentPositionId = 3,
+                            DepartmentId = 3,
+                            FirstName = "John",
+                            HireDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastName = "Employee",
+                            ManagerId = 4,
+                            Phone = "555-0003",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CurrentPositionId = 4,
+                            DepartmentId = 3,
+                            FirstName = "Jane",
+                            HireDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastName = "Manager",
+                            ManagerId = 1,
+                            Phone = "555-0004",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = 4
+                        });
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.EmployeeSkill", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeEducation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Degree")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldOfStudy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("GraduationYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Institution")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployeeEducations");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeExperience", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployeeExperiences");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ApprovedByHRId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ApprovedByManagerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("HRApprovalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ManagerApprovalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("RequestType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TargetEmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByHRId");
+
+                    b.HasIndex("ApprovedByManagerId");
+
+                    b.HasIndex("RequestType")
+                        .HasDatabaseName("IX_EmployeeRequest_Type");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_EmployeeRequest_Status");
+
+                    b.HasIndex("TargetEmployeeId");
+
+                    b.HasIndex("RequesterId", "Status")
+                        .HasDatabaseName("IX_EmployeeRequest_Requester_Status");
+
+                    b.ToTable("EmployeeRequests");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeSkill", b =>
                 {
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -195,7 +490,57 @@ namespace career_module.server.Migrations
                     b.ToTable("EmployeeSkills");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.PerformanceReview", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("RelatedEntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Notifications_CreatedAt");
+
+                    b.HasIndex("UserId", "IsRead")
+                        .HasDatabaseName("IX_Notifications_UserId_IsRead");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.PerformanceReview", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,8 +551,10 @@ namespace career_module.server.Migrations
                     b.Property<string>("AreasForImprovement")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -236,6 +583,11 @@ namespace career_module.server.Migrations
                     b.Property<string>("Strengths")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
@@ -245,7 +597,7 @@ namespace career_module.server.Migrations
                     b.ToTable("PerformanceReviews");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.Position", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Position", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,12 +606,12 @@ namespace career_module.server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -284,15 +636,19 @@ namespace career_module.server.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("MinYearsExperience")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Positions");
 
@@ -301,77 +657,53 @@ namespace career_module.server.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "IT",
+                            DepartmentId = 1,
                             Description = "",
                             IsActive = true,
-                            IsKeyPosition = false,
-                            Level = "Mid",
-                            MinYearsExperience = 2,
-                            Title = "Software Developer"
+                            IsKeyPosition = true,
+                            Level = "Senior",
+                            Title = "Administrator",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "IT",
+                            DepartmentId = 2,
                             Description = "",
                             IsActive = true,
-                            IsKeyPosition = true,
-                            Level = "Senior",
-                            MinYearsExperience = 5,
-                            Title = "Senior Developer"
+                            IsKeyPosition = false,
+                            Level = "Mid",
+                            Title = "HR Representative",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "IT",
+                            DepartmentId = 3,
                             Description = "",
                             IsActive = true,
-                            IsKeyPosition = true,
-                            Level = "Lead",
-                            MinYearsExperience = 7,
-                            Title = "Team Lead"
+                            IsKeyPosition = false,
+                            Level = "Mid",
+                            Title = "Software Developer",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "HR",
+                            DepartmentId = 3,
                             Description = "",
                             IsActive = true,
-                            IsKeyPosition = false,
-                            Level = "Mid",
-                            MinYearsExperience = 3,
-                            Title = "HR Specialist"
+                            IsKeyPosition = true,
+                            Level = "Manager",
+                            Title = "Engineering Manager",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.PositionSkill", b =>
-                {
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SkillId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsMandatory")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("RequiredLevel")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Weight")
-                        .HasColumnType("int");
-
-                    b.HasKey("PositionId", "SkillId");
-
-                    b.HasIndex("SkillId");
-
-                    b.ToTable("PositionSkills");
-                });
-
-            modelBuilder.Entity("career_module.server.Entities.Skill", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Skill", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -383,6 +715,11 @@ namespace career_module.server.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -408,6 +745,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 1,
                             Category = "Technical",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "C# Programming"
@@ -416,6 +754,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 2,
                             Category = "Technical",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "JavaScript"
@@ -424,6 +763,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 3,
                             Category = "Soft Skills",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "Leadership"
@@ -432,6 +772,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 4,
                             Category = "Management",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "Project Management"
@@ -440,6 +781,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 5,
                             Category = "Technical",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "SQL Database"
@@ -448,6 +790,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 6,
                             Category = "Technical",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "Angular"
@@ -456,6 +799,7 @@ namespace career_module.server.Migrations
                         {
                             Id = 7,
                             Category = "Soft Skills",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "Communication"
@@ -464,13 +808,14 @@ namespace career_module.server.Migrations
                         {
                             Id = 8,
                             Category = "Soft Skills",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "",
                             IsActive = true,
                             Name = "Problem Solving"
                         });
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.SuccessionCandidate", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.SuccessionCandidate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,8 +823,10 @@ namespace career_module.server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AddedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("AddedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -502,16 +849,23 @@ namespace career_module.server.Migrations
                     b.Property<int>("SuccessionPlanId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
-                    b.HasIndex("SuccessionPlanId");
+                    b.HasIndex("SuccessionPlanId", "Priority")
+                        .IsUnique()
+                        .HasDatabaseName("IX_SuccessionCandidate_Plan_Priority");
 
                     b.ToTable("SuccessionCandidates");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.SuccessionPlan", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.SuccessionPlan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -519,11 +873,13 @@ namespace career_module.server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -539,6 +895,11 @@ namespace career_module.server.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
@@ -548,7 +909,7 @@ namespace career_module.server.Migrations
                     b.ToTable("SuccessionPlans");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.User", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -557,7 +918,9 @@ namespace career_module.server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -575,6 +938,11 @@ namespace career_module.server.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -596,106 +964,200 @@ namespace career_module.server.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@company.com",
+                            Email = "admin@admin.admin",
                             IsActive = true,
-                            PasswordHash = "$2a$11$example",
+                            PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO",
                             Role = "Admin",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Username = "admin"
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "hr@company.com",
+                            Email = "hr@hr.hr",
                             IsActive = true,
-                            PasswordHash = "$2a$11$example",
+                            PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO",
                             Role = "HR",
-                            Username = "hr_manager"
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "hr"
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "john.doe@company.com",
+                            Email = "employee@employee.employee",
                             IsActive = true,
-                            PasswordHash = "$2a$11$example",
+                            PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO",
                             Role = "Employee",
-                            Username = "john.doe"
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "employee"
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "jane.smith@company.com",
+                            Email = "manager@manager.manager",
                             IsActive = true,
-                            PasswordHash = "$2a$11$example",
+                            PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO",
                             Role = "Manager",
-                            Username = "jane.smith"
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "manager"
                         });
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.CareerGoal", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.CareerPath", b =>
                 {
-                    b.HasOne("career_module.server.Entities.Employee", "Employee")
-                        .WithMany("CareerGoals")
-                        .HasForeignKey("EmployeeId")
+                    b.HasOne("career_module.server.Models.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("career_module.server.Models.Entities.Position", "FromPosition")
+                        .WithMany("FromCareerPaths")
+                        .HasForeignKey("FromPositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("career_module.server.Models.Entities.Position", "ToPosition")
+                        .WithMany("ToCareerPaths")
+                        .HasForeignKey("ToPositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("FromPosition");
+
+                    b.Navigation("ToPosition");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.CareerPathSkill", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.CareerPath", "CareerPath")
+                        .WithMany("RequiredSkills")
+                        .HasForeignKey("CareerPathId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.Position", "TargetPosition")
-                        .WithMany("TargetCareerGoals")
-                        .HasForeignKey("TargetPositionId")
+                    b.HasOne("career_module.server.Models.Entities.Skill", "Skill")
+                        .WithMany("CareerPathSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CareerPath");
+
+                    b.Navigation("Skill");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.Department", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.Employee", "HeadOfDepartment")
+                        .WithMany()
+                        .HasForeignKey("HeadOfDepartmentId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Employee");
-
-                    b.Navigation("TargetPosition");
+                    b.Navigation("HeadOfDepartment");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.DevelopmentAction", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Employee", b =>
                 {
-                    b.HasOne("career_module.server.Entities.CareerGoal", "CareerGoal")
-                        .WithMany("DevelopmentActions")
-                        .HasForeignKey("CareerGoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CareerGoal");
-                });
-
-            modelBuilder.Entity("career_module.server.Entities.Employee", b =>
-                {
-                    b.HasOne("career_module.server.Entities.Position", "CurrentPosition")
+                    b.HasOne("career_module.server.Models.Entities.Position", "CurrentPosition")
                         .WithMany("CurrentEmployees")
                         .HasForeignKey("CurrentPositionId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("career_module.server.Entities.Employee", "Manager")
+                    b.HasOne("career_module.server.Models.Entities.Department", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Manager")
                         .WithMany("DirectReports")
                         .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("career_module.server.Entities.User", "User")
+                    b.HasOne("career_module.server.Models.Entities.User", "User")
                         .WithOne("Employee")
-                        .HasForeignKey("career_module.server.Entities.Employee", "UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("career_module.server.Models.Entities.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentPosition");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Manager");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.EmployeeSkill", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeEducation", b =>
                 {
-                    b.HasOne("career_module.server.Entities.Employee", "Employee")
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Employee")
+                        .WithMany("EmployeeEducations")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeExperience", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Employee")
+                        .WithMany("EmployeeExperiences")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeRequest", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.Employee", "ApprovedByHR")
+                        .WithMany("RequestsIApprovedAsHR")
+                        .HasForeignKey("ApprovedByHRId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("career_module.server.Models.Entities.Employee", "ApprovedByManager")
+                        .WithMany("RequestsIApprovedAsManager")
+                        .HasForeignKey("ApprovedByManagerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Requester")
+                        .WithMany("RequestsMade")
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("career_module.server.Models.Entities.Employee", "TargetEmployee")
+                        .WithMany("RequestsForMe")
+                        .HasForeignKey("TargetEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApprovedByHR");
+
+                    b.Navigation("ApprovedByManager");
+
+                    b.Navigation("Requester");
+
+                    b.Navigation("TargetEmployee");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.EmployeeSkill", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Employee")
                         .WithMany("EmployeeSkills")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.Skill", "Skill")
+                    b.HasOne("career_module.server.Models.Entities.Skill", "Skill")
                         .WithMany("EmployeeSkills")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -706,15 +1168,26 @@ namespace career_module.server.Migrations
                     b.Navigation("Skill");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.PerformanceReview", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Notification", b =>
                 {
-                    b.HasOne("career_module.server.Entities.Employee", "Employee")
-                        .WithMany("PerformanceReviews")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("career_module.server.Models.Entities.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.Employee", "Reviewer")
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.PerformanceReview", b =>
+                {
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Employee")
+                        .WithMany("PerformanceReviews")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Reviewer")
                         .WithMany()
                         .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -725,34 +1198,26 @@ namespace career_module.server.Migrations
                     b.Navigation("Reviewer");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.PositionSkill", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Position", b =>
                 {
-                    b.HasOne("career_module.server.Entities.Position", "Position")
-                        .WithMany("RequiredSkills")
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("career_module.server.Models.Entities.Department", "Department")
+                        .WithMany("Positions")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.Skill", "Skill")
-                        .WithMany("PositionSkills")
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Position");
-
-                    b.Navigation("Skill");
+                    b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.SuccessionCandidate", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.SuccessionCandidate", b =>
                 {
-                    b.HasOne("career_module.server.Entities.Employee", "Employee")
+                    b.HasOne("career_module.server.Models.Entities.Employee", "Employee")
                         .WithMany("SuccessionCandidates")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.SuccessionPlan", "SuccessionPlan")
+                    b.HasOne("career_module.server.Models.Entities.SuccessionPlan", "SuccessionPlan")
                         .WithMany("Candidates")
                         .HasForeignKey("SuccessionPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -763,15 +1228,15 @@ namespace career_module.server.Migrations
                     b.Navigation("SuccessionPlan");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.SuccessionPlan", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.SuccessionPlan", b =>
                 {
-                    b.HasOne("career_module.server.Entities.User", "CreatedBy")
+                    b.HasOne("career_module.server.Models.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("career_module.server.Entities.Position", "Position")
+                    b.HasOne("career_module.server.Models.Entities.Position", "Position")
                         .WithMany("SuccessionPlans")
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -782,50 +1247,69 @@ namespace career_module.server.Migrations
                     b.Navigation("Position");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.CareerGoal", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.CareerPath", b =>
                 {
-                    b.Navigation("DevelopmentActions");
+                    b.Navigation("RequiredSkills");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.Employee", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Department", b =>
                 {
-                    b.Navigation("CareerGoals");
+                    b.Navigation("Employees");
 
+                    b.Navigation("Positions");
+                });
+
+            modelBuilder.Entity("career_module.server.Models.Entities.Employee", b =>
+                {
                     b.Navigation("DirectReports");
+
+                    b.Navigation("EmployeeEducations");
+
+                    b.Navigation("EmployeeExperiences");
 
                     b.Navigation("EmployeeSkills");
 
                     b.Navigation("PerformanceReviews");
 
+                    b.Navigation("RequestsForMe");
+
+                    b.Navigation("RequestsIApprovedAsHR");
+
+                    b.Navigation("RequestsIApprovedAsManager");
+
+                    b.Navigation("RequestsMade");
+
                     b.Navigation("SuccessionCandidates");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.Position", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Position", b =>
                 {
                     b.Navigation("CurrentEmployees");
 
-                    b.Navigation("RequiredSkills");
+                    b.Navigation("FromCareerPaths");
 
                     b.Navigation("SuccessionPlans");
 
-                    b.Navigation("TargetCareerGoals");
+                    b.Navigation("ToCareerPaths");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.Skill", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.Skill", b =>
                 {
-                    b.Navigation("EmployeeSkills");
+                    b.Navigation("CareerPathSkills");
 
-                    b.Navigation("PositionSkills");
+                    b.Navigation("EmployeeSkills");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.SuccessionPlan", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.SuccessionPlan", b =>
                 {
                     b.Navigation("Candidates");
                 });
 
-            modelBuilder.Entity("career_module.server.Entities.User", b =>
+            modelBuilder.Entity("career_module.server.Models.Entities.User", b =>
                 {
                     b.Navigation("Employee");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

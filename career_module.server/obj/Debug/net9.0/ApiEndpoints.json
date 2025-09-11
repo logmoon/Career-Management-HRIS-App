@@ -13,17 +13,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.AuthResultDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.AuthController",
@@ -35,25 +25,579 @@
     "Parameters": [
       {
         "Name": "request",
-        "Type": "career_module.server.Models.DTOs.RegisterRequestDto",
+        "Type": "career_module.server.Models.DTOs.RegistrationRequestDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.AuthController",
+    "Method": "ValidateToken",
+    "RelativePath": "api/Auth/validate-token",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Type": "career_module.server.Models.DTOs.RegistrationResultDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": false
       }
-    ]
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "CreateCareerPath",
+    "RelativePath": "api/CareerPath",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.CreateCareerPathDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetAllCareerPaths",
+    "RelativePath": "api/CareerPath",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "includeInactive",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "AnalyzeMyReadiness",
+    "RelativePath": "api/CareerPath/{careerPathId}/analyze",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "AnalyzeEmployeeReadiness",
+    "RelativePath": "api/CareerPath/{careerPathId}/analyze/{employeeId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetMySkillGaps",
+    "RelativePath": "api/CareerPath/{careerPathId}/skill-gaps",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetEmployeeSkillGaps",
+    "RelativePath": "api/CareerPath/{careerPathId}/skill-gaps/{employeeId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "AddRequiredSkill",
+    "RelativePath": "api/CareerPath/{careerPathId}/skills",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.AddCareerPathSkillDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetRequiredSkills",
+    "RelativePath": "api/CareerPath/{careerPathId}/skills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "RemoveRequiredSkill",
+    "RelativePath": "api/CareerPath/{careerPathId}/skills/{skillId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "careerPathId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "skillId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetCareerPath",
+    "RelativePath": "api/CareerPath/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "UpdateCareerPath",
+    "RelativePath": "api/CareerPath/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateCareerPathDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "DeleteCareerPath",
+    "RelativePath": "api/CareerPath/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetEmployeeRecommendations",
+    "RelativePath": "api/CareerPath/employee/{employeeId}/recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetPathsFromPosition",
+    "RelativePath": "api/CareerPath/from-position/{positionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "positionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetMyRecommendations",
+    "RelativePath": "api/CareerPath/recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetEmployeeCareerRoadmap",
+    "RelativePath": "api/CareerPath/roadmap/{employeeId}/to-position/{targetPositionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "targetPositionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetMyCareerRoadmap",
+    "RelativePath": "api/CareerPath/roadmap/to-position/{targetPositionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "targetPositionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerPathController",
+    "Method": "GetPathsToPosition",
+    "RelativePath": "api/CareerPath/to-position/{positionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "positionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "GetAllDepartments",
+    "RelativePath": "api/Departments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "includeInactive",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "CreateDepartment",
+    "RelativePath": "api/Departments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.CreateDepartmentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "GetDepartmentById",
+    "RelativePath": "api/Departments/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "UpdateDepartment",
+    "RelativePath": "api/Departments/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateDepartmentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "DeactivateDepartment",
+    "RelativePath": "api/Departments/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "GetDepartmentEmployees",
+    "RelativePath": "api/Departments/{id}/employees",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "AssignHeadOfDepartment",
+    "RelativePath": "api/Departments/{id}/head",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.AssignHeadDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.DepartmentsController",
+    "Method": "GetDepartmentsWithStats",
+    "RelativePath": "api/Departments/with-stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "CreateRequest",
+    "RelativePath": "api/EmployeeRequests",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Models.DTOs.CreateRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "GetRequestById",
+    "RelativePath": "api/EmployeeRequests/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "ApproveRequest",
+    "RelativePath": "api/EmployeeRequests/{id}/approve",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.ApprovalDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "RejectRequest",
+    "RelativePath": "api/EmployeeRequests/{id}/reject",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.RejectionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "GetMyRequests",
+    "RelativePath": "api/EmployeeRequests/my-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "GetPendingRequests",
+    "RelativePath": "api/EmployeeRequests/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "GetRequestTypes",
+    "RelativePath": "api/EmployeeRequests/types",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "GetEmployees",
+    "Method": "GetAllEmployees",
     "RelativePath": "api/Employees",
     "HttpMethod": "GET",
     "IsController": true,
@@ -65,12 +609,7 @@
         "IsRequired": false
       },
       {
-        "Name": "managerId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "search",
+        "Name": "role",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -85,94 +624,11 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.EmployeeDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "CreateEmployee",
-    "RelativePath": "api/Employees",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "createEmployeeDto",
-        "Type": "career_module.server.Models.DTOs.CreateEmployeeDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.EmployeeDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "UpdateEmployeeSkill",
-    "RelativePath": "api/Employees/{employeeId}/skills/{skillId}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "employeeId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "skillId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "updateSkillDto",
-        "Type": "career_module.server.Models.DTOs.UpdateEmployeeSkillDto",
-        "IsRequired": true
-      }
-    ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "RemoveEmployeeSkill",
-    "RelativePath": "api/Employees/{employeeId}/skills/{skillId}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "employeeId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "skillId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "GetEmployee",
+    "Method": "GetEmployeeById",
     "RelativePath": "api/Employees/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -184,17 +640,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.EmployeeDetailDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeesController",
@@ -210,8 +656,8 @@
         "IsRequired": true
       },
       {
-        "Name": "updateEmployeeDto",
-        "Type": "career_module.server.Models.DTOs.UpdateEmployeeDto",
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateEmployeeDto",
         "IsRequired": true
       }
     ],
@@ -219,8 +665,468 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "DeleteEmployee",
-    "RelativePath": "api/Employees/{id}",
+    "Method": "ChangeDepartment",
+    "RelativePath": "api/Employees/{id}/department",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.ChangeDepartmentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeesController",
+    "Method": "GetDirectReports",
+    "RelativePath": "api/Employees/{id}/direct-reports",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeesController",
+    "Method": "ChangeManager",
+    "RelativePath": "api/Employees/{id}/manager",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.ChangeManagerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeesController",
+    "Method": "GetMyProfile",
+    "RelativePath": "api/Employees/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeesController",
+    "Method": "GetOrganizationChart",
+    "RelativePath": "api/Employees/org-chart",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeesController",
+    "Method": "SearchEmployees",
+    "RelativePath": "api/Employees/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "searchTerm",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetAttritionRisks",
+    "RelativePath": "api/intelligence/attrition-risks",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetIntelligentDashboard",
+    "RelativePath": "api/intelligence/dashboard",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetDepartmentIntelligence",
+    "RelativePath": "api/intelligence/department/{departmentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "departmentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetEmployeeCareerIntelligence",
+    "RelativePath": "api/intelligence/employee/{employeeId}/career-intelligence",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetCareerOpportunities",
+    "RelativePath": "api/intelligence/employee/{employeeId}/opportunities",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetPerformanceInsights",
+    "RelativePath": "api/intelligence/employee/{employeeId}/performance-insights",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetPromotionReadiness",
+    "RelativePath": "api/intelligence/employee/{employeeId}/promotion-readiness",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetSkillDevelopmentRecommendations",
+    "RelativePath": "api/intelligence/employee/{employeeId}/skill-recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetMyCareerIntelligence",
+    "RelativePath": "api/intelligence/my-career-intelligence",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetMyTeamDynamics",
+    "RelativePath": "api/intelligence/my-team",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetOrganizationIntelligence",
+    "RelativePath": "api/intelligence/organization",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "ProcessEmployeeRequestCompletion",
+    "RelativePath": "api/intelligence/process/employee-request/{requestId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "requestId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "ProcessPerformanceReviewCompletion",
+    "RelativePath": "api/intelligence/process/performance-review/{reviewId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reviewId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetQuickInsights",
+    "RelativePath": "api/intelligence/quick-insights",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetSmartRecommendations",
+    "RelativePath": "api/intelligence/recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "SearchIntelligence",
+    "RelativePath": "api/intelligence/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "query",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetSkillsIntelligence",
+    "RelativePath": "api/intelligence/skills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "departmentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetTalentRisks",
+    "RelativePath": "api/intelligence/talent-risks",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetTeamDynamics",
+    "RelativePath": "api/intelligence/team/{managerId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "managerId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.NotificationsController",
+    "Method": "MarkAsRead",
+    "RelativePath": "api/Notifications/{id}/mark-read",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.NotificationsController",
+    "Method": "GetMyNotifications",
+    "RelativePath": "api/Notifications/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetReviews",
+    "RelativePath": "api/PerformanceReview",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "employeeId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "reviewerId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "CreateReview",
+    "RelativePath": "api/PerformanceReview",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Models.DTOs.CreatePerformanceReviewDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetReviewById",
+    "RelativePath": "api/PerformanceReview/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "UpdateReview",
+    "RelativePath": "api/PerformanceReview/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Models.DTOs.UpdatePerformanceReviewDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "DeleteReview",
+    "RelativePath": "api/PerformanceReview/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -234,9 +1140,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "career_module.server.Controllers.EmployeesController",
-    "Method": "AddEmployeeSkill",
-    "RelativePath": "api/Employees/{id}/skills",
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "ApproveReview",
+    "RelativePath": "api/PerformanceReview/{id}/approve",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -245,70 +1151,129 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
-      },
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "SubmitReview",
+    "RelativePath": "api/PerformanceReview/{id}/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Name": "addSkillDto",
-        "Type": "career_module.server.Models.DTOs.AddEmployeeSkillDto",
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetPerformanceAnalytics",
+    "RelativePath": "api/PerformanceReview/employee/{employeeId}/analytics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetEmployeeAverageRating",
+    "RelativePath": "api/PerformanceReview/employee/{employeeId}/average-rating",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "lastNReviews",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetEmployeeReviewHistory",
+    "RelativePath": "api/PerformanceReview/employee/{employeeId}/history",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetPendingReviews",
+    "RelativePath": "api/PerformanceReview/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetRatingScale",
+    "RelativePath": "api/PerformanceReview/rating-scale",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.PerformanceReviewController",
+    "Method": "GetReviewTemplates",
+    "RelativePath": "api/PerformanceReview/templates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "GetPositions",
+    "Method": "GetAllPositions",
     "RelativePath": "api/Positions",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "department",
-        "Type": "System.String",
+        "Name": "includeInactive",
+        "Type": "System.Boolean",
         "IsRequired": false
       },
       {
-        "Name": "level",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "isKeyPosition",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "isActive",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "search",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "pageSize",
-        "Type": "System.Int32",
+        "Name": "departmentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.PositionDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
@@ -319,26 +1284,16 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "createPositionDto",
-        "Type": "career_module.server.Models.DTOs.CreatePositionDto",
+        "Name": "dto",
+        "Type": "career_module.server.Services.CreatePositionDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.PositionDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "GetPosition",
+    "Method": "GetPositionById",
     "RelativePath": "api/Positions/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -350,17 +1305,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.PositionDetailDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
@@ -376,8 +1321,8 @@
         "IsRequired": true
       },
       {
-        "Name": "updatePositionDto",
-        "Type": "career_module.server.Models.DTOs.UpdatePositionDto",
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdatePositionDto",
         "IsRequired": true
       }
     ],
@@ -385,7 +1330,7 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "DeletePosition",
+    "Method": "DeactivatePosition",
     "RelativePath": "api/Positions/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -401,8 +1346,8 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "GetPositionCandidates",
-    "RelativePath": "api/Positions/{id}/candidates",
+    "Method": "GetPositionEmployees",
+    "RelativePath": "api/Positions/{id}/employees",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -413,80 +1358,18 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.CandidateMatchDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "AddPositionSkill",
-    "RelativePath": "api/Positions/{id}/skills",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "addSkillDto",
-        "Type": "career_module.server.Models.DTOs.AddPositionSkillDto",
-        "IsRequired": true
-      }
-    ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "UpdatePositionSkill",
-    "RelativePath": "api/Positions/{positionId}/skills/{skillId}",
-    "HttpMethod": "PUT",
+    "Method": "GetPositionsByDepartment",
+    "RelativePath": "api/Positions/by-department/{departmentId}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "positionId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "skillId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "updateSkillDto",
-        "Type": "career_module.server.Models.DTOs.UpdatePositionSkillDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "RemovePositionSkill",
-    "RelativePath": "api/Positions/{positionId}/skills/{skillId}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "positionId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "skillId",
+        "Name": "departmentId",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -495,89 +1378,96 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "GetDepartments",
-    "RelativePath": "api/Positions/departments",
+    "Method": "GetVacantKeyPositions",
+    "RelativePath": "api/Positions/vacant-key-positions",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
-    "ContainingType": "career_module.server.Controllers.PositionsController",
-    "Method": "GetPositionLevels",
-    "RelativePath": "api/Positions/levels",
+    "ContainingType": "career_module.server.Controllers.ReportsController",
+    "Method": "GetDashboardData",
+    "RelativePath": "api/Reports/dashboard",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.ReportsController",
+    "Method": "GetDepartmentAnalytics",
+    "RelativePath": "api/Reports/department-analytics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.ReportsController",
+    "Method": "GetPerformanceStatistics",
+    "RelativePath": "api/Reports/performance-statistics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "departmentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
-    ]
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.ReportsController",
+    "Method": "GetRequestSummary",
+    "RelativePath": "api/Reports/request-summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.ReportsController",
+    "Method": "GetSkillsAnalytics",
+    "RelativePath": "api/Reports/skills-analytics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "departmentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "GetSkills",
+    "Method": "GetAllSkills",
     "RelativePath": "api/Skills",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
+        "Name": "includeInactive",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
         "Name": "category",
         "Type": "System.String",
         "IsRequired": false
-      },
-      {
-        "Name": "isActive",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "search",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "pageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.SkillDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
@@ -588,26 +1478,16 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "createSkillDto",
-        "Type": "career_module.server.Models.DTOs.CreateSkillDto",
+        "Name": "dto",
+        "Type": "career_module.server.Services.CreateSkillDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.SkillDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "GetSkill",
+    "Method": "GetSkillById",
     "RelativePath": "api/Skills/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -619,17 +1499,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.SkillDetailDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
@@ -645,8 +1515,8 @@
         "IsRequired": true
       },
       {
-        "Name": "updateSkillDto",
-        "Type": "career_module.server.Models.DTOs.UpdateSkillDto",
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateSkillDto",
         "IsRequired": true
       }
     ],
@@ -654,7 +1524,7 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "DeleteSkill",
+    "Method": "DeactivateSkill",
     "RelativePath": "api/Skills/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -670,8 +1540,228 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "GetSkillGapAnalysis",
-    "RelativePath": "api/Skills/{id}/gap-analysis",
+    "Method": "GetEmployeesWithSkill",
+    "RelativePath": "api/Skills/{id}/employees",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "minProficiencyLevel",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "GetSkillCategories",
+    "RelativePath": "api/Skills/categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "AddEmployeeSkill",
+    "RelativePath": "api/Skills/employee",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.AddEmployeeSkillDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "GetEmployeeSkills",
+    "RelativePath": "api/Skills/employee/{employeeId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "GetSkillGaps",
+    "RelativePath": "api/Skills/employee/{employeeId}/gap-analysis/{targetPositionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "targetPositionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "UpdateEmployeeSkill",
+    "RelativePath": "api/Skills/employee/{employeeId}/skill/{skillId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "skillId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateEmployeeSkillDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "RemoveEmployeeSkill",
+    "RelativePath": "api/Skills/employee/{employeeId}/skill/{skillId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "skillId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SkillsController",
+    "Method": "GetProficiencyLevels",
+    "RelativePath": "api/Skills/proficiency-levels",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "UpdateCandidate",
+    "RelativePath": "api/SuccessionPlanning/candidates/{candidateId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "candidateId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateSuccessionCandidateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "RemoveCandidate",
+    "RelativePath": "api/SuccessionPlanning/candidates/{candidateId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "candidateId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionDashboard",
+    "RelativePath": "api/SuccessionPlanning/dashboard",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "CreateSuccessionPlan",
+    "RelativePath": "api/SuccessionPlanning/plans",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.CreateSuccessionPlanDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetAllSuccessionPlans",
+    "RelativePath": "api/SuccessionPlanning/plans",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionPlan",
+    "RelativePath": "api/SuccessionPlanning/plans/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -682,62 +1772,190 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "career_module.server.Models.DTOs.SkillGapAnalysisDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
-    "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "GetSkillCategories",
-    "RelativePath": "api/Skills/categories",
-    "HttpMethod": "GET",
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "UpdateSuccessionPlan",
+    "RelativePath": "api/SuccessionPlanning/plans/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
+    "Parameters": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.CategoryStatsDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Services.UpdateSuccessionPlanDto",
+        "IsRequired": true
       }
-    ]
+    ],
+    "ReturnTypes": []
   },
   {
-    "ContainingType": "career_module.server.Controllers.SkillsController",
-    "Method": "SearchSkills",
-    "RelativePath": "api/Skills/search",
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "DeleteSuccessionPlan",
+    "RelativePath": "api/SuccessionPlanning/plans/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "AddCandidateToSuccessionPlan",
+    "RelativePath": "api/SuccessionPlanning/plans/{successionPlanId}/candidates",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "successionPlanId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.AddSuccessionCandidateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetCandidatesForPlan",
+    "RelativePath": "api/SuccessionPlanning/plans/{successionPlanId}/candidates",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "query",
-        "Type": "System.String",
+        "Name": "successionPlanId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionPlansForPosition",
+    "RelativePath": "api/SuccessionPlanning/plans/position/{positionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "positionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "AnalyzePotentialCandidates",
+    "RelativePath": "api/SuccessionPlanning/positions/{positionId}/analyze-candidates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "positionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSmartCandidatesForPosition",
+    "RelativePath": "api/SuccessionPlanning/positions/{positionId}/smart-candidates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "positionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionRecommendations",
+    "RelativePath": "api/SuccessionPlanning/recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionMetrics",
+    "RelativePath": "api/SuccessionPlanning/reports/metrics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionReadinessReport",
+    "RelativePath": "api/SuccessionPlanning/reports/readiness",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "departmentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "GetSuccessionRisks",
+    "RelativePath": "api/SuccessionPlanning/reports/risks",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.SuccessionPlanningController",
+    "Method": "ProcessRetirementPlanning",
+    "RelativePath": "api/SuccessionPlanning/retirement-planning",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[career_module.server.Models.DTOs.SkillSummaryDto, career_module.server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "dto",
+        "Type": "career_module.server.Controllers.RetirementPlanningDto",
+        "IsRequired": true
       }
-    ]
+    ],
+    "ReturnTypes": []
   }
 ]
