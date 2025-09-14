@@ -28,7 +28,6 @@ namespace career_module.server.Controllers
 
         /// <summary>
         /// Get the intelligent dashboard - personalized for each user role
-        /// This replaces the old basic dashboard with smart insights
         /// </summary>
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetIntelligentDashboard()

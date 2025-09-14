@@ -36,6 +36,9 @@ export interface JwtPayload {
   unique_name: string;
   email: string;
   role: string;
+  FirstName?: string;
+  LastName?: string;
+  DepartmentId?: string;
   exp: number;
   iss: string;
   aud: string;
@@ -46,8 +49,8 @@ export interface JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7049/api';
-  private tokenKey = 'career_app_token';
+  private apiUrl = 'https://localhost:7130/api';
+  private tokenKey = 'career_module_token';
   private userSubject = new BehaviorSubject<User | null>(null);
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
 
@@ -73,9 +76,10 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/Auth/login`, credentials).pipe(
       tap((response: any) => {
-        if (response.token) {
-          this.setToken(response.token);
-          const decodedToken = this.decodeToken(response.token);
+        // Access token from the nested structure
+        if (response.data && response.data.token) {
+          this.setToken(response.data.token);
+          const decodedToken = this.decodeToken(response.data.token);
           if (decodedToken) {
             this.setAuthState(true, this.createUserFromToken(decodedToken));
           }
@@ -91,7 +95,7 @@ export class AuthService {
   logout(): void {
     this.clearToken();
     this.clearAuthState();
-    this.router.navigate(['/login']);
+    this.router.navigate(['auth/login']);
   }
 
   validateToken(): Observable<boolean> {
@@ -137,12 +141,13 @@ export class AuthService {
 
   private createUserFromToken(decodedToken: JwtPayload): User {
     return {
-        id: parseInt(decodedToken.nameid),
-        username: decodedToken.unique_name,
-        email: decodedToken.email,
-        firstName: '', // Will be populated from API call if needed
-        lastName: '',
-        role: decodedToken.role
+      id: parseInt(decodedToken.nameid),
+      username: decodedToken.unique_name,
+      email: decodedToken.email,
+      firstName: decodedToken.FirstName || '',
+      lastName: decodedToken.LastName || '',
+      role: decodedToken.role,
+      departmentId: decodedToken.DepartmentId ? parseInt(decodedToken.DepartmentId) : undefined
     };
   }
 

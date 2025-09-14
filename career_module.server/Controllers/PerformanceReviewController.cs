@@ -3,7 +3,6 @@ using career_module.server.Models.DTOs;
 using career_module.server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace career_module.server.Controllers
 {

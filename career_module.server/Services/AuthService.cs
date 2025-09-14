@@ -51,7 +51,6 @@ namespace career_module.server.Services
                 {
                     Success = true,
                     Token = token,
-                    User = DtoTranslator.ToUserDto(user),
                     Message = "Login successful"
                 };
 
@@ -122,7 +121,6 @@ namespace career_module.server.Services
                 var registrationResult = new RegistrationResultDto
                 {
                     Success = true,
-                    User = DtoTranslator.ToUserDto(userWithEmployee),
                     Message = "User and employee profile created successfully"
                 };
 
@@ -213,13 +211,21 @@ namespace career_module.server.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim("nameid", user.Id.ToString()),
+                new Claim("unique_name", user.Username),
+                new Claim("email", user.Email),
+                new Claim("role", user.Role)
             };
+
+            // Add employee information if available
+            if (user.Employee != null)
+            {
+                claims.Add(new Claim("FirstName", user.Employee.FirstName));
+                claims.Add(new Claim("LastName", user.Employee.LastName));
+                claims.Add(new Claim("DepartmentId", user.Employee.DepartmentId.ToString()));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"] ?? "CareerManagement",
@@ -230,7 +236,6 @@ namespace career_module.server.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
         #endregion
     }
 }

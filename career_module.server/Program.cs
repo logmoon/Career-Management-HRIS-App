@@ -1,14 +1,21 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using career_module.server.Infrastructure.Data;
 using career_module.server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    }
+);
 
 // Database Configuration
 builder.Services.AddDbContext<CareerManagementDbContext>(options =>
@@ -38,6 +45,16 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmployeeRequestService, EmployeeRequestService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<ICareerIntelligenceService, CareerIntelligenceService>();
+builder.Services.AddScoped<ICareerPathService, CareerPathService>();
+builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IEmployeeSkillService, EmployeeSkillService>();
+builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<ISuccessionPlanningService, SuccessionPlanningService>();
+
+
+
 
 // CORS for Angular frontend
 builder.Services.AddCors(options =>

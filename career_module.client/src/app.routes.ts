@@ -29,6 +29,10 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { AppLayout } from '@/layout/component/app.layout';
 import { Notfound } from '@/pages/notfound/notfound';
+import { Dashboard } from '@/pages/dashboard/dashboard';
+import { Employees } from '@/pages/employee/employees';
+import { Profile } from '@/pages/employee/my-profile';
+import { Organization } from '@/pages/organization/organization';
 
 // Components
 /*
@@ -50,19 +54,17 @@ export const appRoutes: Routes = [
         component: AppLayout,
         canActivate: [AuthGuard],
         children: [
-        /*
+
         { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-        { path: 'dashboard', component: DashboardComponent },
+        { path: 'dashboard', component: Dashboard },
         
         // Employee Management
-        { path: 'employees', component: EmployeeListComponent },
-        { path: 'employees/:id', component: EmployeeDetailComponent },
-        { path: 'profile', component: MyProfileComponent },
-        { 
-            path: 'org-chart', 
-            loadComponent: () => import('./components/employees/org-chart/org-chart.component').then(c => c.OrgChartComponent)
-        },
+        { path: 'employees', component: Employees },
+        { path: 'profile', component: Profile },
 
+        { path: 'organization', component: Organization },
+
+        /*
         // Department Management
         { 
             path: 'departments', 

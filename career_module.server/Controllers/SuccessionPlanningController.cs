@@ -313,7 +313,7 @@ namespace career_module.server.Controllers
             var risksResult = await _successionPlanningService.IdentifySuccessionRisksAsync();
             var recommendationsResult = await _successionPlanningService.GetSuccessionRecommendationsAsync();
 
-            var dashboard = new SuccessionDashboard
+            var dashboard = new SuccessionDashboardDto
             {
                 Metrics = metricsResult.IsSuccess ? metricsResult.Data : null,
                 TopRisks = risksResult.IsSuccess ? risksResult.Data?.Take(5).ToList() : new List<SuccessionRisk>(),
@@ -340,7 +340,7 @@ namespace career_module.server.Controllers
         public DateTime ExpectedRetirementDate { get; set; }
     }
 
-    public class SuccessionDashboard
+    public class SuccessionDashboardDto
     {
         public SuccessionMetrics? Metrics { get; set; }
         public List<SuccessionRisk> TopRisks { get; set; } = new List<SuccessionRisk>();

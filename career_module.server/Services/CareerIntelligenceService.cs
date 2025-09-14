@@ -1234,10 +1234,10 @@ namespace career_module.server.Services
                 score += 20;
 
             // Performance factor
-            var recentReview = employee.PerformanceReviews
+            var recentReview = await Task.Run(() => employee.PerformanceReviews
                 ?.Where(pr => pr.Status == "Completed")
                 ?.OrderByDescending(pr => pr.ReviewPeriodEnd)
-                ?.FirstOrDefault();
+                ?.FirstOrDefault());
 
             if (recentReview != null && recentReview.OverallRating >= 3.5m)
                 score += 20;
@@ -1327,7 +1327,7 @@ namespace career_module.server.Services
         {
             if (!employee.EmployeeSkills.Any()) return 50; // Default if no skills
 
-            var avgProficiency = employee.EmployeeSkills.Average(es => es.ProficiencyLevel);
+            var avgProficiency = await Task.Run(() => employee.EmployeeSkills.Average(es => es.ProficiencyLevel));
             return Math.Min(100, avgProficiency * 20); // Convert 1-5 scale to 0-100
         }
 
