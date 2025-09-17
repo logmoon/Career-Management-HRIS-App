@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 import { Employee } from './employee.service';
-import { Skill } from './skills.service';
+import { Skill, SkillGap } from './skills.service';
 import { CareerPathRecommendation } from './career-path.service';
 
 // Core Interfaces
@@ -138,15 +138,20 @@ export interface DepartmentIntelligence {
   recommendations: string[];
 }
 
+export interface SkillStatistics {
+  skill: Skill;
+  employeeCount: number;
+  averageProficiency: number;
+  highProficiencyCount: number;
+}
+
 export interface SkillsIntelligence {
   analysisDate: Date;
   departmentId?: number;
-  departmentName?: string;
-  topSkills: any[];
-  skillGaps: any[];
-  emergingSkills: any[];
-  skillDemand: any[];
-  recommendations: string[];
+  mostCommonSkills: SkillStatistics[];
+  skillGaps: SkillGap[];
+  emergingSkills: SkillStatistics[];
+  recommendations: SkillDevelopmentRecommendation[];
 }
 
 export interface OrganizationIntelligenceReport {

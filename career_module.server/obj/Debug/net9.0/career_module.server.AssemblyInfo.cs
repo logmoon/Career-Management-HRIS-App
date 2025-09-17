@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("career_module.server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58174ae8b57df26aacfd0b638e7cf0e1a8680314")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+227718ed433cac7900f8423e85ca13eb583a423c")]
 [assembly: System.Reflection.AssemblyProductAttribute("career_module.server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("career_module.server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

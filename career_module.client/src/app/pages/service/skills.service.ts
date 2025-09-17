@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 
-// Interfaces based on your DTOs
 export interface SkillGap {
   skillId: number;
   skillName: string;
@@ -80,14 +79,6 @@ export interface ProficiencyLevel {
   description: string;
 }
 
-export interface EmployeeWithSkill {
-  employeeId: number;
-  employeeName: string;
-  proficiencyLevel: number;
-  acquiredDate?: Date;
-  notes?: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -127,17 +118,6 @@ export class SkillsService extends BaseApiService {
 
   getSkillCategories(): Observable<string[]> {
     return this.get<string[]>('/skills/categories');
-  }
-
-  getEmployeesWithSkill(skillId: number, minProficiencyLevel?: number): Observable<EmployeeWithSkill[]> {
-    let params = new HttpParams();
-    
-    if (minProficiencyLevel !== undefined) {
-      params = params.set('minProficiencyLevel', minProficiencyLevel.toString());
-    }
-
-    const endpoint = `/skills/${skillId}/employees${params.toString() ? '?' + params.toString() : ''}`;
-    return this.get<EmployeeWithSkill[]>(endpoint);
   }
 
   // Employee Skills operations

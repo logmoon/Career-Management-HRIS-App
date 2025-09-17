@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../service/auth.service';
 import { EmployeeService, Employee, UpdateEmployeeDto } from '../service/employee.service';
 import { SkillsService, EmployeeSkill, AddEmployeeSkill, UpdateEmployeeSkill } from '../service/skills.service';
-import { PerformanceReviewService, PerformanceAnalyticsDto } from '../service/performance-review.service';
-import { IntelligenceService, CareerIntelligenceReport, CareerPerformanceInsight } from '../service/intelligence.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';

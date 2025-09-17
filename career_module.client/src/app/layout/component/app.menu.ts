@@ -28,51 +28,15 @@ export class AppMenu {
                 label: 'Orginization',
                 items: [
                     { label: 'Employees', icon: 'pi pi-fw pi-users', routerLink: ['/employees'] },
-                    { label: 'Orginization', icon: 'pi pi-fw pi-chart-pie', routerLink: ['/organization'] },
+                    { label: 'Departments', icon: 'pi pi-fw pi-objects-column', routerLink: ['/departments'] },
+                    { label: 'Positions', icon: 'pi pi-fw pi-briefcase', routerLink: ['/positions'] },
+                    { label: 'Skills', icon: 'pi pi-fw pi-trophy', routerLink: ['/skills'] },
                 ]
             },
             {
-                label: 'Skills & Development',
+                label: 'Career',
                 items: [
-                    {
-                        label: 'Submenu 1',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 1.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 1.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Submenu 2',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 2.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 2.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    }
+                    { label: 'Career Development', icon: 'pi pi-fw pi-users', routerLink: ['/career-path'] },
                 ]
             }
         ];

@@ -1,30 +1,3 @@
-/*
-import { Routes } from '@angular/router';
-import { AppLayout } from './app/layout/component/app.layout';
-import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Documentation } from './app/pages/documentation/documentation';
-import { Landing } from './app/pages/landing/landing';
-import { Notfound } from './app/pages/notfound/notfound';
-
-export const appRoutes: Routes = [
-    {
-        path: '',
-        component: AppLayout,
-        children: [
-            { path: '', component: Dashboard },
-            { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
-            { path: 'documentation', component: Documentation },
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
-        ]
-    },
-    { path: 'landing', component: Landing },
-    { path: 'notfound', component: Notfound },
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
-    { path: '**', redirectTo: '/notfound' }
-];
-*/
-
-
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { AppLayout } from '@/layout/component/app.layout';
@@ -32,7 +5,10 @@ import { Notfound } from '@/pages/notfound/notfound';
 import { Dashboard } from '@/pages/dashboard/dashboard';
 import { Employees } from '@/pages/employee/employees';
 import { EmployeeDetail } from '@/pages/employee/employee-detail';
-import { Organization } from '@/pages/organization/organization';
+import { Departments } from '@/pages/organization/departments';
+import { Positions } from '@/pages/organization/positions';
+import { Skills } from '@/pages/organization/skills';
+import { CareerDevelopment } from '@/pages/career/career-path';
 
 // Components
 /*
@@ -57,22 +33,33 @@ export const appRoutes: Routes = [
 
         { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
         { path: 'dashboard', component: Dashboard },
+
+        { path: 'career-path', component: CareerDevelopment },
         
-        // Employee Management
-        { path: 'employees', component: Employees },
-        { path: 'employee-detail/:id', component: EmployeeDetail },
+        { path: 'employees', component: Employees, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },
+        { path: 'employee-detail/:id', component: EmployeeDetail, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },
         { path: 'profile', component: EmployeeDetail },
-
-        { path: 'organization', component: Organization },
-
-        /*
-        // Department Management
         { 
             path: 'departments', 
-            component: DepartmentListComponent,
+            component: Departments,
             canActivate: [AuthGuard],
             data: { roles: ['Admin', 'HR', 'Manager'] }
         },
+        { 
+            path: 'positions', 
+            component: Positions,
+            canActivate: [AuthGuard],
+            data: { roles: ['Admin', 'HR', 'Manager'] }
+        },
+        { 
+            path: 'skills', 
+            component: Skills,
+            canActivate: [AuthGuard],
+            data: { roles: ['Admin', 'HR', 'Manager'] }
+        },
+
+        /*
+        // Department Management
         { 
             path: 'departments/:id', 
             component: DepartmentDetailComponent,
