@@ -1,32 +1,74 @@
 ﻿using career_module.server.Infrastructure.Data;
-using career_module.server.Models.DTOs;
 using career_module.server.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace career_module.server.Services
 {
+    public interface IEmployeeRequestFactory
+    {
+        EmployeeRequest? CreateRequest(string requestType);
+        List<object> GetAvailableRequestTypes();
+        T? CreateRequest<T>() where T : EmployeeRequest, new();
+    }
+
+    public class EmployeeRequestFactory : IEmployeeRequestFactory
+    {
+        public EmployeeRequest? CreateRequest(string requestType)
+        {
+            return requestType switch
+            {
+                "Promotion" => new PromotionRequest(),
+                "DepartmentChange" => new DepartmentChangeRequest(),
+                _ => null
+            };
+        }
+
+        public T? CreateRequest<T>() where T : EmployeeRequest, new()
+        {
+            return new T();
+        }
+
+        public List<object> GetAvailableRequestTypes()
+        {
+            return new List<object>
+            {
+                new { Value = "Promotion", Label = "Promotion Request", Description = "Request a promotion to a higher position" },
+                new { Value = "DepartmentChange", Label = "Department Change", Description = "Request to change department" }
+            };
+        }
+    }
+
     public interface IEmployeeRequestService
     {
-        Task<ServiceResult<EmployeeRequest>> CreateRequestAsync(CreateRequestDto request);
+        Task<ServiceResult<EmployeeRequest>> CreateRequestAsync<T>(T requestData) where T : EmployeeRequest;
         Task<ServiceResult<EmployeeRequest>> ApproveRequestAsync(int requestId, int approverId, string? notes = null);
         Task<ServiceResult<EmployeeRequest>> RejectRequestAsync(int requestId, int rejectorId, string reason);
         Task<ServiceResult<List<EmployeeRequest>>> GetPendingRequestsForUserAsync(int userId, string userRole);
         Task<ServiceResult<List<EmployeeRequest>>> GetRequestsByRequesterAsync(int requesterId);
         Task<ServiceResult<EmployeeRequest>> GetRequestByIdAsync(int requestId);
+
+        // Service-specific methods for creating requests from other services
+        Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int newPositionId, decimal? proposedSalary = null, string? justification = null);
+        Task<ServiceResult<DepartmentChangeRequest>> CreateDepartmentChangeRequestAsync(int requesterId, int targetEmployeeId, int newDepartmentId, int? newManagerId = null, string? reason = null);
     }
 
     public class EmployeeRequestService : IEmployeeRequestService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IEmployeeRequestFactory _requestFactory;
 
-        public EmployeeRequestService(CareerManagementDbContext context, INotificationService notificationService)
+        public EmployeeRequestService(
+            CareerManagementDbContext context,
+            IServiceProvider serviceProvider,
+            IEmployeeRequestFactory requestFactory)
         {
             _context = context;
-            _notificationService = notificationService;
+            _serviceProvider = serviceProvider;
+            _requestFactory = requestFactory;
         }
 
-        public async Task<ServiceResult<EmployeeRequest>> CreateRequestAsync(CreateRequestDto request)
+        public async Task<ServiceResult<EmployeeRequest>> CreateRequestAsync<T>(T requestData) where T : EmployeeRequest
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -34,47 +76,37 @@ namespace career_module.server.Services
                 // Load requester with user info for role checking
                 var requester = await _context.Employees
                     .Include(e => e.User)
-                    .FirstOrDefaultAsync(e => e.Id == request.RequesterId);
+                    .FirstOrDefaultAsync(e => e.Id == requestData.RequesterId);
 
                 if (requester == null)
                     return ServiceResult<EmployeeRequest>.Failure("Requester not found");
 
                 // Load target employee if specified
                 Employee? targetEmployee = null;
-                if (request.TargetEmployeeId.HasValue)
+                if (requestData.TargetEmployeeId.HasValue)
                 {
                     targetEmployee = await _context.Employees
                         .Include(e => e.User)
                         .Include(e => e.Manager)
-                        .FirstOrDefaultAsync(e => e.Id == request.TargetEmployeeId.Value);
+                        .FirstOrDefaultAsync(e => e.Id == requestData.TargetEmployeeId.Value);
 
                     if (targetEmployee == null)
                         return ServiceResult<EmployeeRequest>.Failure("Target employee not found");
                 }
 
-                // Create the request
-                var employeeRequest = new EmployeeRequest
-                {
-                    RequesterId = request.RequesterId,
-                    TargetEmployeeId = request.TargetEmployeeId,
-                    RequestType = request.RequestType,
-                    Notes = request.Notes,
-                    Requester = requester,
-                    TargetEmployee = targetEmployee
-                };
+                // Set navigation properties
+                requestData.Requester = requester;
+                requestData.TargetEmployee = targetEmployee;
 
                 // Set initial status based on requester role
-                employeeRequest.SetInitialStatus();
+                requestData.SetInitialStatus();
 
-                _context.EmployeeRequests.Add(employeeRequest);
+                _context.EmployeeRequests.Add(requestData);
                 await _context.SaveChangesAsync();
-
-                // Send notifications based on status
-                await SendRequestNotificationsAsync(employeeRequest);
 
                 await transaction.CommitAsync();
 
-                return ServiceResult<EmployeeRequest>.Success(employeeRequest);
+                return ServiceResult<EmployeeRequest>.Success(requestData);
             }
             catch (Exception ex)
             {
@@ -112,7 +144,6 @@ namespace career_module.server.Services
 
                 if (request.Status == "Pending")
                 {
-                    // Check if this is a manager approval
                     if (request.CanApproveAsManager(approverId))
                     {
                         isManagerApproval = true;
@@ -120,7 +151,6 @@ namespace career_module.server.Services
                         request.ApprovedByManagerId = approverId;
                         request.ManagerApprovalDate = DateTime.UtcNow;
                     }
-                    // Or direct HR/Admin approval
                     else if (request.CanApproveAsHR(approverRole))
                     {
                         isHRApproval = true;
@@ -135,7 +165,6 @@ namespace career_module.server.Services
                 }
                 else if (request.Status == "ManagerApproved")
                 {
-                    // Only HR can give final approval
                     if (request.CanApproveAsHR(approverRole))
                     {
                         isHRApproval = true;
@@ -161,11 +190,17 @@ namespace career_module.server.Services
                         : $"{request.Notes}\nApproval notes: {notes}";
                 }
 
+                // Execute the request if fully approved
+                if (request.Status == "HRApproved")
+                {
+                    var executed = await request.ExecuteRequestAsync(_serviceProvider);
+                    if (!executed)
+                    {
+                        return ServiceResult<EmployeeRequest>.Failure("Request approved but execution failed");
+                    }
+                }
+
                 await _context.SaveChangesAsync();
-
-                // Send notifications
-                await SendApprovalNotificationsAsync(request, approver, isManagerApproval, isHRApproval);
-
                 await transaction.CommitAsync();
 
                 return ServiceResult<EmployeeRequest>.Success(request);
@@ -219,10 +254,6 @@ namespace career_module.server.Services
                 request.RejectionReason = reason;
 
                 await _context.SaveChangesAsync();
-
-                // Send rejection notifications
-                await SendRejectionNotificationsAsync(request, rejector, reason);
-
                 await transaction.CommitAsync();
 
                 return ServiceResult<EmployeeRequest>.Success(request);
@@ -334,134 +365,43 @@ namespace career_module.server.Services
             }
         }
 
-        #region Private Notification Methods
-
-        private async Task SendRequestNotificationsAsync(EmployeeRequest request)
+        // Service-specific methods for creating requests from other services
+        public async Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int newPositionId, decimal? proposedSalary = null, string? justification = null)
         {
-            string requesterName = $"{request.Requester.FirstName} {request.Requester.LastName}";
-            string requestTitle = GetRequestTitle(request.RequestType);
-
-            switch (request.Status)
+            var request = new PromotionRequest
             {
-                case "Pending":
-                    // Notify manager first
-                    if (request.TargetEmployee?.ManagerId != null || request.Requester.ManagerId != null)
-                    {
-                        int targetEmployeeId = request.TargetEmployeeId ?? request.RequesterId;
-                        await _notificationService.NotifyManagerAsync(
-                            targetEmployeeId,
-                            $"New {requestTitle} Request",
-                            $"{requesterName} has submitted a {requestTitle.ToLower()} request that requires your approval",
-                            request.RequestType,
-                            request.Id,
-                            request.RequesterId
-                        );
-                    }
-                    else
-                    {
-                        // No manager, send directly to HR
-                        await _notificationService.NotifyHRAsync(
-                            $"New {requestTitle} Request",
-                            $"{requesterName} has submitted a {requestTitle.ToLower()} request that requires approval",
-                            request.RequestType,
-                            request.Id,
-                            request.RequesterId
-                        );
-                    }
-                    break;
-
-                case "ManagerApproved":
-                    // Notify HR for final approval
-                    await _notificationService.NotifyHRAsync(
-                        $"{requestTitle} Request - Manager Approved",
-                        $"A {requestTitle.ToLower()} request from {requesterName} has been approved by their manager and awaits HR approval",
-                        request.RequestType,
-                        request.Id
-                    );
-                    break;
-
-                case "AutoApproved":
-                    // Notify requester of auto-approval
-                    await _notificationService.NotifyAsync(
-                        request.Requester.User.Id,
-                        $"{requestTitle} Request Approved",
-                        $"Your {requestTitle.ToLower()} request has been automatically approved",
-                        request.RequestType,
-                        request.Id
-                    );
-                    break;
-            }
-        }
-
-        private async Task SendApprovalNotificationsAsync(EmployeeRequest request, Employee approver, bool isManagerApproval, bool isHRApproval)
-        {
-            string requestTitle = GetRequestTitle(request.RequestType);
-            string approverName = $"{approver.FirstName} {approver.LastName}";
-
-            if (isManagerApproval)
-            {
-                // Notify requester of manager approval
-                await _notificationService.NotifyAsync(
-                    request.Requester.User.Id,
-                    $"{requestTitle} Request - Manager Approved",
-                    $"Your {requestTitle.ToLower()} request has been approved by {approverName} and is now awaiting HR approval",
-                    request.RequestType,
-                    request.Id
-                );
-            }
-            else if (isHRApproval)
-            {
-                // Notify requester of final approval
-                await _notificationService.NotifyAsync(
-                    request.Requester.User.Id,
-                    $"{requestTitle} Request Approved",
-                    $"Your {requestTitle.ToLower()} request has been fully approved by {approverName}",
-                    request.RequestType,
-                    request.Id
-                );
-
-                // If there was a target employee different from requester, notify them too
-                if (request.TargetEmployee != null && request.TargetEmployee.Id != request.RequesterId)
-                {
-                    await _notificationService.NotifyAsync(
-                        request.TargetEmployee.User.Id,
-                        $"{requestTitle} Request Approved",
-                        $"A {requestTitle.ToLower()} request concerning you has been approved",
-                        request.RequestType,
-                        request.Id
-                    );
-                }
-            }
-        }
-
-        private async Task SendRejectionNotificationsAsync(EmployeeRequest request, Employee rejector, string reason)
-        {
-            string requestTitle = GetRequestTitle(request.RequestType);
-            string rejectorName = $"{rejector.FirstName} {rejector.LastName}";
-
-            // Notify requester of rejection
-            await _notificationService.NotifyAsync(
-                request.Requester.User.Id,
-                $"{requestTitle} Request Rejected",
-                $"Your {requestTitle.ToLower()} request has been rejected by {rejectorName}. Reason: {reason}",
-                request.RequestType,
-                request.Id
-            );
-        }
-
-        private string GetRequestTitle(string requestType)
-        {
-            return requestType switch
-            {
-                "Promotion" => "Promotion",
-                "DepartmentChange" => "Department Change",
-                "Training" => "Training",
-                "LeaveRequest" => "Leave Request",
-                "SalaryReview" => "Salary Review",
-                _ => "Employee Request"
+                RequesterId = requesterId,
+                TargetEmployeeId = targetEmployeeId,
+                NewPositionId = newPositionId,
+                ProposedSalary = proposedSalary,
+                Justification = justification,
+                EffectiveDate = DateTime.UtcNow.AddDays(30) // Default to 30 days from now
             };
+
+            var result = await CreateRequestAsync(request);
+            if (result.IsSuccess)
+                return ServiceResult<PromotionRequest>.Success((PromotionRequest)result.Data!);
+
+            return ServiceResult<PromotionRequest>.Failure(result.ErrorMessage!);
         }
 
-        #endregion
+        public async Task<ServiceResult<DepartmentChangeRequest>> CreateDepartmentChangeRequestAsync(int requesterId, int targetEmployeeId, int newDepartmentId, int? newManagerId = null, string? reason = null)
+        {
+            var request = new DepartmentChangeRequest
+            {
+                RequesterId = requesterId,
+                TargetEmployeeId = targetEmployeeId,
+                NewDepartmentId = newDepartmentId,
+                NewManagerId = newManagerId,
+                Reason = reason,
+                EffectiveDate = DateTime.UtcNow.AddDays(14)
+            };
+
+            var result = await CreateRequestAsync(request);
+            if (result.IsSuccess)
+                return ServiceResult<DepartmentChangeRequest>.Success((DepartmentChangeRequest)result.Data!);
+
+            return ServiceResult<DepartmentChangeRequest>.Failure(result.ErrorMessage!);
+        }
     }
 }

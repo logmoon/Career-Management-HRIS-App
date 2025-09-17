@@ -234,7 +234,7 @@ import { EmployeeService } from '../service/employee.service';
                             pTooltip="Edit Department">
                           </p-button>
                           <p-button 
-                            *ngIf="canManageDepartments()"
+                            *ngIf="canDeleteDepartments()"
                             icon="pi pi-trash"
                             size="small"
                             severity="danger"
@@ -874,12 +874,12 @@ export class Organization implements OnInit {
   careerPathsTo = signal<CareerPath[]>([]);
 
   constructor(
+    private employeeService: EmployeeService,
     private departmentService: DepartmentService,
     private positionService: PositionService,
     private careerPathService: CareerPathService,
     private intelligenceService: IntelligenceService,
     private authService: AuthService,
-    private employeeService: EmployeeService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
@@ -1220,7 +1220,7 @@ export class Organization implements OnInit {
               detail: 'Position deleted successfully'
             });
           },
-          error: (error) => {
+          error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -1339,6 +1339,11 @@ export class Organization implements OnInit {
   canManageDepartments(): boolean {
     const user = this.authService.getCurrentUser();
     return user?.role === 'HR' || user?.role === 'Admin';
+  }
+
+  canDeleteDepartments(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.role === 'Admin';
   }
 
   canManagePositions(): boolean {

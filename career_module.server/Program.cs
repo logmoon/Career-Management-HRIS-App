@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IEmployeeRequestFactory, EmployeeRequestFactory>();
 builder.Services.AddScoped<IEmployeeRequestService, EmployeeRequestService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
@@ -52,8 +52,6 @@ builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IEmployeeSkillService, EmployeeSkillService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<ISuccessionPlanningService, SuccessionPlanningService>();
-
-
 
 
 // CORS for Angular frontend

@@ -10,7 +10,6 @@ import { RippleModule } from 'primeng/ripple';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AuthService, LoginRequest } from '../service/auth.service';
-import { NotificationService } from '../service/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -121,7 +120,6 @@ export class Login implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private notificationService: NotificationService,
     private router: Router
   ) {}
 
@@ -146,8 +144,6 @@ export class Login implements OnInit {
     this.authService.login(this.loginData).subscribe({
       next: () => {
         this.isLoading = false;
-        // Start notification polling immediately after login
-        this.notificationService.startPolling();
         // Redirect to dashboard
         this.router.navigate(['/dashboard']);
       },

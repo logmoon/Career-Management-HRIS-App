@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
+import { User } from './auth.service';
+import { Department } from './department.service';
+import { Position } from './position.service';
 
 export interface Employee {
   id: number;
@@ -18,28 +21,35 @@ export interface Employee {
   updatedAt: Date;
   fullName: string;
   email: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    role: string;
-    isActive: boolean;
-  };
-  department: {
-    id: number;
-    name: string;
-    description: string;
-  };
-  currentPosition?: {
-    id: number;
-    title: string;
-    description: string;
-  };
+  user: User;
+  department: Department;
+  currentPosition?: Position;
   manager?: Employee;
   directReports: Employee[];
   employeeSkills?: any[];
-  employeeExperiences?: any[];
-  employeeEducations?: any[];
+  employeeExperiences?: EmployeeExperience[];
+  employeeEducations?: EmployeeEducation[];
+}
+
+export interface EmployeeExperience {
+  id: number;
+  employeeId: number;
+  jobTitle: string;
+  company: string;
+  startDate: Date;
+  endDate?: Date;
+  description: string;
+  createdAt: Date;
+}
+
+export interface EmployeeEducation {
+  id: number;
+  employeeId: number;
+  degree: string;
+  institution: string;
+  graduationYear?: number;
+  fieldOfStudy: string;
+  createdAt: Date;
 }
 
 export interface UpdateEmployeeDto {
@@ -58,11 +68,42 @@ export interface ChangeManagerDto {
   newManagerId?: number;
 }
 
+export interface CreateExperienceDto {
+  jobTitle: string;
+  company: string;
+  startDate: Date;
+  endDate?: Date;
+  description?: string;
+}
+
+export interface UpdateExperienceDto {
+  jobTitle?: string;
+  company?: string;
+  startDate?: Date;
+  endDate?: Date;
+  clearEndDate?: boolean;
+  description?: string;
+}
+
+export interface CreateEducationDto {
+  degree: string;
+  institution: string;
+  graduationYear?: number;
+  fieldOfStudy?: string;
+}
+
+export interface UpdateEducationDto {
+  degree?: string;
+  institution?: string;
+  graduationYear?: number;
+  fieldOfStudy?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService extends BaseApiService {
-  
+  // Employee Basic Operations
   getAllEmployees(department?: string, role?: string, page = 1, pageSize = 50): Observable<Employee[]> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -104,5 +145,39 @@ export class EmployeeService extends BaseApiService {
   searchEmployees(searchTerm: string): Observable<Employee[]> {
     const params = new HttpParams().set('searchTerm', searchTerm);
     return this.get<Employee[]>(`/employees/search?${params.toString()}`);
+  }
+
+  // Employee Experience Operations
+  getEmployeeExperiences(employeeId: number): Observable<EmployeeExperience[]> {
+    return this.get<EmployeeExperience[]>(`/employees/${employeeId}/experiences`);
+  }
+
+  addEmployeeExperience(employeeId: number, dto: CreateExperienceDto): Observable<EmployeeExperience> {
+    return this.post<EmployeeExperience>(`/employees/${employeeId}/experiences`, dto);
+  }
+
+  updateEmployeeExperience(experienceId: number, dto: UpdateExperienceDto): Observable<EmployeeExperience> {
+    return this.put<EmployeeExperience>(`/employees/experiences/${experienceId}`, dto);
+  }
+
+  deleteEmployeeExperience(experienceId: number): Observable<void> {
+    return this.delete<void>(`/employees/experiences/${experienceId}`);
+  }
+
+  // Employee Education Operations
+  getEmployeeEducations(employeeId: number): Observable<EmployeeEducation[]> {
+    return this.get<EmployeeEducation[]>(`/employees/${employeeId}/educations`);
+  }
+
+  addEmployeeEducation(employeeId: number, dto: CreateEducationDto): Observable<EmployeeEducation> {
+    return this.post<EmployeeEducation>(`/employees/${employeeId}/educations`, dto);
+  }
+
+  updateEmployeeEducation(educationId: number, dto: UpdateEducationDto): Observable<EmployeeEducation> {
+    return this.put<EmployeeEducation>(`/employees/educations/${educationId}`, dto);
+  }
+
+  deleteEmployeeEducation(educationId: number): Observable<void> {
+    return this.delete<void>(`/employees/educations/${educationId}`);
   }
 }

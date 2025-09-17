@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -25,14 +25,9 @@ export class AppMenu {
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
             {
-                label: 'Employee Management',
-                items: [
-                    { label: 'Employees', icon: 'pi pi-fw pi-users', routerLink: ['/employees'] },
-                ]
-            },
-            {
                 label: 'Orginization',
                 items: [
+                    { label: 'Employees', icon: 'pi pi-fw pi-users', routerLink: ['/employees'] },
                     { label: 'Orginization', icon: 'pi pi-fw pi-chart-pie', routerLink: ['/organization'] },
                 ]
             },

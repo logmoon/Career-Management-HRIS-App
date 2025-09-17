@@ -3,60 +3,76 @@
   "WorkspaceRootPath": "C:\\000\\Programming\\stage1\\career_module.server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\models\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:models\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\employeerequestservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\employeerequestservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\careerintelligenceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\careerintelligenceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\employeescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\employeescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\infrastructure\\data\\careermanagementdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:infrastructure\\data\\careermanagementdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\successionplanningservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\successionplanningservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\models\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:models\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\careerpathservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\careerpathservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\successionplanningservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\successionplanningservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\careerintelligenceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\careerintelligenceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\serviceresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\serviceresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\skillsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\skillsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\skillscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\skillscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\employeerequestscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\employeerequestscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\notificationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\notificationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\employeerequestservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\employeerequestservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\careerpathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\careerpathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\positionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\positionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\performancereviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\performancereviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\successionplanningcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -67,32 +83,20 @@
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\positionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\positionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\positionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\performancereviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\performancereviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\careerpathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\careerpathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\careerintelligencecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\careerintelligencecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\performancereviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\performancereviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\performancereviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\performancereviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\skillscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\skillscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\employeescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\employeescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -101,18 +105,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\models\\dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:models\\dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\infrastructure\\data\\careermanagementdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:infrastructure\\data\\careermanagementdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\services\\serviceresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:services\\serviceresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|solutionrelative:controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B74DA9A-FC58-4F96-B006-44CA116A31A6}|career_module.server.csproj|c:\\000\\programming\\stage1\\career_module.server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -142,15 +134,55 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DepartmentService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\DepartmentService.cs",
-              "RelativeDocumentMoniker": "Services\\DepartmentService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\DepartmentService.cs",
-              "RelativeToolTip": "Services\\DepartmentService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAkAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "Entities.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\Entities\\Entities.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Entities.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\Entities\\Entities.cs",
+              "RelativeToolTip": "Models\\Entities\\Entities.cs",
+              "ViewState": "AgIAAMIBAAAAAAAAAAAQwMwBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T06:48:06.868Z"
+              "WhenOpened": "2025-09-13T05:39:03.071Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CareerManagementDbContext.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Infrastructure\\Data\\CareerManagementDbContext.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Data\\CareerManagementDbContext.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Infrastructure\\Data\\CareerManagementDbContext.cs",
+              "RelativeToolTip": "Infrastructure\\Data\\CareerManagementDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T22:30:56.02Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CareerPathService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerPathService.cs",
+              "RelativeDocumentMoniker": "Services\\CareerPathService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerPathService.cs",
+              "RelativeToolTip": "Services\\CareerPathService.cs",
+              "ViewState": "AgIAAE4BAAAAAAAAAAAuwGQBAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T09:43:40.102Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EmployeeService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeService.cs",
+              "RelativeDocumentMoniker": "Services\\EmployeeService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeService.cs",
+              "RelativeToolTip": "Services\\EmployeeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T06:43:36.816Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -160,304 +192,92 @@
               "RelativeDocumentMoniker": "Services\\SuccessionPlanningService.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\SuccessionPlanningService.cs",
               "RelativeToolTip": "Services\\SuccessionPlanningService.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAA9wBYAAAA4AAAAAAAAAA==",
+              "ViewState": "AgIAACwBAAAAAAAAAAAEwDYBAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T15:19:07.986Z"
+              "WhenOpened": "2025-09-11T15:19:07.986Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "EmployeeService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeService.cs",
-              "RelativeDocumentMoniker": "Services\\EmployeeService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeService.cs",
-              "RelativeToolTip": "Services\\EmployeeService.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAiwDAAAABNAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "EmployeesController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EmployeesController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeesController.cs",
+              "RelativeToolTip": "Controllers\\EmployeesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T06:43:36.816Z"
+              "WhenOpened": "2025-09-01T12:27:07.714Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "CareerIntelligenceService.cs",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerIntelligenceService.cs",
               "RelativeDocumentMoniker": "Services\\CareerIntelligenceService.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerIntelligenceService.cs",
               "RelativeToolTip": "Services\\CareerIntelligenceService.cs",
-              "ViewState": "AgIAAFsFAAAAAAAAAAAqwF0FAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAANcCAAAAAAAAAAAawAsDAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-11T21:48:04.905Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 9,
+              "Title": "SkillsController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SkillsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SkillsController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SkillsController.cs",
+              "RelativeToolTip": "Controllers\\SkillsController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAJQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T07:07:42.372Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "EmployeeRequestService.cs",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeRequestService.cs",
               "RelativeDocumentMoniker": "Services\\EmployeeRequestService.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\EmployeeRequestService.cs",
               "RelativeToolTip": "Services\\EmployeeRequestService.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAkwFUAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAACgAAAAAAAAAAAAwwDAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-10T18:47:39.803Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Entities.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\Entities\\Entities.cs",
-              "RelativeDocumentMoniker": "Models\\Entities\\Entities.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\Entities\\Entities.cs",
-              "RelativeToolTip": "Models\\Entities\\Entities.cs",
-              "ViewState": "AgIAAKYAAAAAAAAAAIA/wLYAAABDAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-13T05:39:03.071Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CareerPathService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerPathService.cs",
-              "RelativeDocumentMoniker": "Services\\CareerPathService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\CareerPathService.cs",
-              "RelativeToolTip": "Services\\CareerPathService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T09:43:40.102Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "Services\\AuthService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\AuthService.cs",
-              "RelativeToolTip": "Services\\AuthService.cs",
-              "ViewState": "AgIAAMYAAAAAAAAAAAAuwNkAAAAuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T00:34:45.49Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "SkillsService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\SkillsService.cs",
-              "RelativeDocumentMoniker": "Services\\SkillsService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\SkillsService.cs",
-              "RelativeToolTip": "Services\\SkillsService.cs",
-              "ViewState": "AgIAADUBAAAAAAAAAAAAAEYBAAA6AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T07:06:45.697Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAAADMAAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T03:23:34.981Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 12,
-              "Title": "NotificationService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\NotificationService.cs",
-              "RelativeDocumentMoniker": "Services\\NotificationService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\NotificationService.cs",
-              "RelativeToolTip": "Services\\NotificationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-09T21:11:39.069Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
               "Title": "EmployeeRequestsController.cs",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeeRequestsController.cs",
               "RelativeDocumentMoniker": "Controllers\\EmployeeRequestsController.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeeRequestsController.cs",
               "RelativeToolTip": "Controllers\\EmployeeRequestsController.cs",
-              "ViewState": "AgIAAH0AAAAAAAAAAAAIwJsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T06:54:34.818Z"
+              "WhenOpened": "2025-09-11T06:54:34.818Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "NotificationController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\NotificationController.cs",
-              "RelativeDocumentMoniker": "Controllers\\NotificationController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\NotificationController.cs",
-              "RelativeToolTip": "Controllers\\NotificationController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA8AAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "SkillsService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\SkillsService.cs",
+              "RelativeDocumentMoniker": "Services\\SkillsService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\SkillsService.cs",
+              "RelativeToolTip": "Services\\SkillsService.cs",
+              "ViewState": "AgIAAE4BAAAAAAAAAAAAAPoAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-09T21:04:54.679Z"
+              "WhenOpened": "2025-09-11T07:06:45.697Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "CareerPathController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerPathController.cs",
-              "RelativeDocumentMoniker": "Controllers\\CareerPathController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerPathController.cs",
-              "RelativeToolTip": "Controllers\\CareerPathController.cs",
-              "ViewState": "AgIAABIBAAAAAAAAAAAIwDABAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T10:04:11.088Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "SuccessionPlanningController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SuccessionPlanningController.cs",
-              "RelativeDocumentMoniker": "Controllers\\SuccessionPlanningController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SuccessionPlanningController.cs",
-              "RelativeToolTip": "Controllers\\SuccessionPlanningController.cs",
-              "ViewState": "AgIAAEQBAAAAAAAAAAAkwF4BAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T15:21:59.046Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "PositionsController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PositionsController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PositionsController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PositionsController.cs",
-              "RelativeToolTip": "Controllers\\PositionsController.cs",
-              "ViewState": "AgIAAFkAAAAAAAAAAAA4wHoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T07:07:18.306Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "PositionService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PositionService.cs",
-              "RelativeDocumentMoniker": "Services\\PositionService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PositionService.cs",
-              "RelativeToolTip": "Services\\PositionService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T07:06:30.683Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "DepartmentController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\DepartmentController.cs",
-              "RelativeDocumentMoniker": "Controllers\\DepartmentController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\DepartmentController.cs",
-              "RelativeToolTip": "Controllers\\DepartmentController.cs",
-              "ViewState": "AgIAAF4AAAAAAAAAAAAUwH0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T06:54:09.031Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "CareerIntelligenceController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerIntelligenceController.cs",
-              "RelativeDocumentMoniker": "Controllers\\CareerIntelligenceController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerIntelligenceController.cs",
-              "RelativeToolTip": "Controllers\\CareerIntelligenceController.cs",
-              "ViewState": "AgIAABECAAAAAAAAAAAYwCkCAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T21:51:02.22Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "PerformanceReviewController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PerformanceReviewController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PerformanceReviewController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PerformanceReviewController.cs",
-              "RelativeToolTip": "Controllers\\PerformanceReviewController.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAYwCEAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T08:34:22.034Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "PerformanceReviewService.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PerformanceReviewService.cs",
-              "RelativeDocumentMoniker": "Services\\PerformanceReviewService.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PerformanceReviewService.cs",
-              "RelativeToolTip": "Services\\PerformanceReviewService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAoAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T07:09:46.494Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "SkillsController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SkillsController.cs",
-              "RelativeDocumentMoniker": "Controllers\\SkillsController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SkillsController.cs",
-              "RelativeToolTip": "Controllers\\SkillsController.cs",
-              "ViewState": "AgIAAM4AAAAAAAAAAAAmwPAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-11T07:07:42.372Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "EmployeesController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeesController.cs",
-              "RelativeDocumentMoniker": "Controllers\\EmployeesController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\EmployeesController.cs",
-              "RelativeToolTip": "Controllers\\EmployeesController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABkAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-01T12:27:07.714Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "Controllers\\AuthController.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAYwCkAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T03:42:54.228Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "DTOs.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\DTOs\\DTOs.cs",
-              "RelativeDocumentMoniker": "Models\\DTOs\\DTOs.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\DTOs\\DTOs.cs",
-              "RelativeToolTip": "Models\\DTOs\\DTOs.cs",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAwwD4AAAA3AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-13T04:09:51.273Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "CareerManagementDbContext.cs",
-              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Infrastructure\\Data\\CareerManagementDbContext.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Data\\CareerManagementDbContext.cs",
-              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Infrastructure\\Data\\CareerManagementDbContext.cs",
-              "RelativeToolTip": "Infrastructure\\Data\\CareerManagementDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-09T22:30:56.02Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 7,
               "Title": "ServiceResult.cs",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\ServiceResult.cs",
               "RelativeDocumentMoniker": "Services\\ServiceResult.cs",
@@ -465,23 +285,194 @@
               "RelativeToolTip": "Services\\ServiceResult.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T19:23:45.548Z"
+              "WhenOpened": "2025-09-10T19:23:45.548Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 10,
+              "Title": "DepartmentController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\DepartmentController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DepartmentController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\DepartmentController.cs",
+              "RelativeToolTip": "Controllers\\DepartmentController.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAqwCsAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T06:54:09.031Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DepartmentService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\DepartmentService.cs",
+              "RelativeDocumentMoniker": "Services\\DepartmentService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\DepartmentService.cs",
+              "RelativeToolTip": "Services\\DepartmentService.cs",
+              "ViewState": "AgIAAEwBAAAAAAAAAAAAwFYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T06:48:06.868Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAAAD8AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-20T03:23:34.981Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PositionService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PositionService.cs",
+              "RelativeDocumentMoniker": "Services\\PositionService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PositionService.cs",
+              "RelativeToolTip": "Services\\PositionService.cs",
+              "ViewState": "AgIAAFEBAAAAAAAAAAA2wPkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T07:06:30.683Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "PerformanceReviewService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PerformanceReviewService.cs",
+              "RelativeDocumentMoniker": "Services\\PerformanceReviewService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\PerformanceReviewService.cs",
+              "RelativeToolTip": "Services\\PerformanceReviewService.cs",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAAwFABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T07:09:46.494Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Services\\AuthService.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Services\\AuthService.cs",
+              "RelativeToolTip": "Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAG0AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-12T00:34:45.49Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "SuccessionPlanningController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SuccessionPlanningController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SuccessionPlanningController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\SuccessionPlanningController.cs",
+              "RelativeToolTip": "Controllers\\SuccessionPlanningController.cs",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAkwFEBAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T15:21:59.046Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "PositionsController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PositionsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PositionsController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PositionsController.cs",
+              "RelativeToolTip": "Controllers\\PositionsController.cs",
+              "ViewState": "AgIAAFkAAAAAAAAAAAA2wGkAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T07:07:18.306Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "PerformanceReviewController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PerformanceReviewController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PerformanceReviewController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\PerformanceReviewController.cs",
+              "RelativeToolTip": "Controllers\\PerformanceReviewController.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAA1wCUAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T08:34:22.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "CareerPathController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerPathController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CareerPathController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerPathController.cs",
+              "RelativeToolTip": "Controllers\\CareerPathController.cs",
+              "ViewState": "AgIAABABAAAAAAAAAAAIwCMBAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T10:04:11.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "CareerIntelligenceController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerIntelligenceController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CareerIntelligenceController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\CareerIntelligenceController.cs",
+              "RelativeToolTip": "Controllers\\CareerIntelligenceController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T21:51:02.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
               "Title": "BaseController.cs",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\BaseController.cs",
               "RelativeDocumentMoniker": "Controllers\\BaseController.cs",
               "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\BaseController.cs",
               "RelativeToolTip": "Controllers\\BaseController.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAA/wCcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-01T12:34:38.88Z"
+              "WhenOpened": "2025-09-01T12:34:38.88Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 24,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-20T03:42:54.228Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "DTOs.cs",
+              "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\DTOs\\DTOs.cs",
+              "RelativeDocumentMoniker": "Models\\DTOs\\DTOs.cs",
+              "ToolTip": "C:\\000\\Programming\\stage1\\career_module.server\\Models\\DTOs\\DTOs.cs",
+              "RelativeToolTip": "Models\\DTOs\\DTOs.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAADwvz4AAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-13T04:09:51.273Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\000\\Programming\\stage1\\career_module.server\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",

@@ -1,8 +1,9 @@
 ﻿using career_module.server.Infrastructure.Data;
-using career_module.server.Models.DTOs;
+using career_module.server.Models.Entities;
 using career_module.server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace career_module.server.Controllers
 {
@@ -12,38 +13,74 @@ namespace career_module.server.Controllers
     public class EmployeeRequestsController : BaseController
     {
         private readonly IEmployeeRequestService _requestService;
+        private readonly IEmployeeRequestFactory _requestFactory;
 
-        public EmployeeRequestsController(CareerManagementDbContext context, IEmployeeRequestService requestService) : base(context)
+        public EmployeeRequestsController(
+            CareerManagementDbContext context,
+            IEmployeeRequestService requestService,
+            IEmployeeRequestFactory requestFactory) : base(context)
         {
             _requestService = requestService;
+            _requestFactory = requestFactory;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRequest([FromBody] CreateRequestDto dto)
+        public async Task<IActionResult> CreateRequest([FromBody] JsonElement requestData)
         {
-            if (string.IsNullOrWhiteSpace(dto.RequestType))
-                return BadRequest(new { message = "Request type is required" });
-
-            var currentUserId = GetCurrentUserId();
-            var currentEmployeeId = GetCurrentEmployeeId();
-
-            // If no requester specified, use current user
-            if (dto.RequesterId == 0)
-                dto.RequesterId = currentEmployeeId;
-
-            // Validate permissions: users can only create requests for themselves unless they're HR/Admin
-            var currentUserRole = GetCurrentUserRole();
-            if (currentUserRole != "HR" && currentUserRole != "Admin" && dto.RequesterId != currentEmployeeId)
+            try
             {
-                return Forbid("You can only create requests for yourself");
+                // Extract request type from the JSON
+                if (!requestData.TryGetProperty("requestType", out var requestTypeElement))
+                    return BadRequest(new { message = "Request type is required" });
+
+                var requestType = requestTypeElement.GetString();
+                if (string.IsNullOrWhiteSpace(requestType))
+                    return BadRequest(new { message = "Valid request type is required" });
+
+                // Create the appropriate request object using the factory
+                var request = _requestFactory.CreateRequest(requestType);
+                if (request == null)
+                    return BadRequest(new { message = $"Unknown request type: {requestType}" });
+
+                // Deserialize the JSON into the specific request type
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                request = JsonSerializer.Deserialize(requestData.GetRawText(), request.GetType(), options) as EmployeeRequest;
+                if (request == null)
+                    return BadRequest(new { message = "Failed to parse request data" });
+
+                var currentUserId = GetCurrentUserId();
+                var currentEmployeeId = GetCurrentEmployeeId();
+                var currentUserRole = GetCurrentUserRole();
+
+                // If no requester specified, use current user
+                if (request.RequesterId == 0)
+                    request.RequesterId = currentEmployeeId;
+
+                // Validate permissions: users can only create requests for themselves unless they're HR/Admin
+                if (currentUserRole != "HR" && currentUserRole != "Admin" && request.RequesterId != currentEmployeeId)
+                {
+                    return Forbid("You can only create requests for yourself");
+                }
+
+                var result = await _requestService.CreateRequestAsync(request);
+
+                if (!result.IsSuccess)
+                    return BadRequest(new { message = result.ErrorMessage });
+
+                return CreatedAtAction(nameof(GetRequestById), new { id = result.Data!.Id }, result.Data);
             }
-
-            var result = await _requestService.CreateRequestAsync(dto);
-
-            if (!result.IsSuccess)
-                return BadRequest(new { message = result.ErrorMessage });
-
-            return CreatedAtAction(nameof(GetRequestById), new { id = result.Data!.Id }, result.Data);
+            catch (JsonException)
+            {
+                return BadRequest(new { message = "Invalid JSON format" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Failed to create request: {ex.Message}" });
+            }
         }
 
         [HttpGet("{id}")]
@@ -125,21 +162,39 @@ namespace career_module.server.Controllers
             return Ok(result.Data);
         }
 
-        [HttpGet("types")]
-        public IActionResult GetRequestTypes()
+        // Convenience endpoints for creating specific request types from other services
+        [HttpPost("promotion")]
+        public async Task<IActionResult> CreatePromotionRequest([FromBody] CreatePromotionRequestDto dto)
         {
-            var requestTypes = new[]
-            {
-                new { Value = "Promotion", Label = "Promotion Request" },
-                new { Value = "DepartmentChange", Label = "Department Change" },
-                new { Value = "Training", Label = "Training Request" },
-                new { Value = "LeaveRequest", Label = "Leave Request" },
-                new { Value = "SalaryReview", Label = "Salary Review" },
-                new { Value = "RoleChange", Label = "Role Change" },
-                new { Value = "Other", Label = "Other Request" }
-            };
+            var currentEmployeeId = GetCurrentEmployeeId();
+            var result = await _requestService.CreatePromotionRequestAsync(
+                dto.RequesterId > 0 ? dto.RequesterId : currentEmployeeId,
+                dto.TargetEmployeeId,
+                dto.NewPositionId,
+                dto.ProposedSalary,
+                dto.Justification);
 
-            return Ok(requestTypes);
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return CreatedAtAction(nameof(GetRequestById), new { id = result.Data!.Id }, result.Data);
+        }
+
+        [HttpPost("department-change")]
+        public async Task<IActionResult> CreateDepartmentChangeRequest([FromBody] CreateDepartmentChangeRequestDto dto)
+        {
+            var currentEmployeeId = GetCurrentEmployeeId();
+            var result = await _requestService.CreateDepartmentChangeRequestAsync(
+                dto.RequesterId > 0 ? dto.RequesterId : currentEmployeeId,
+                dto.TargetEmployeeId,
+                dto.NewDepartmentId,
+                dto.NewManagerId,
+                dto.Reason);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return CreatedAtAction(nameof(GetRequestById), new { id = result.Data!.Id }, result.Data);
         }
     }
 
@@ -152,5 +207,24 @@ namespace career_module.server.Controllers
     public class RejectionDto
     {
         public string Reason { get; set; } = string.Empty;
+    }
+
+    // Specific DTOs for convenience endpoints
+    public class CreatePromotionRequestDto
+    {
+        public int RequesterId { get; set; }
+        public int TargetEmployeeId { get; set; }
+        public int NewPositionId { get; set; }
+        public decimal? ProposedSalary { get; set; }
+        public string? Justification { get; set; }
+    }
+
+    public class CreateDepartmentChangeRequestDto
+    {
+        public int RequesterId { get; set; }
+        public int TargetEmployeeId { get; set; }
+        public int NewDepartmentId { get; set; }
+        public int? NewManagerId { get; set; }
+        public string? Reason { get; set; }
     }
 }

@@ -10,7 +10,6 @@ namespace career_module.server.Infrastructure.Data
         }
 
         // DbSets
-        public DbSet<Notification> Notifications { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -20,49 +19,19 @@ namespace career_module.server.Infrastructure.Data
         public DbSet<EmployeeEducation> EmployeeEducations { get; set; }
         public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
         public DbSet<PerformanceReview> PerformanceReviews { get; set; }
-        public DbSet<EmployeeRequest> EmployeeRequests { get; set; }
         public DbSet<SuccessionPlan> SuccessionPlans { get; set; }
         public DbSet<SuccessionCandidate> SuccessionCandidates { get; set; }
         public DbSet<CareerPath> CareerPaths { get; set; }
         public DbSet<CareerPathSkill> CareerPathSkills { get; set; }
 
+        // Employee Request DbSets - using Table Per Hierarchy (TPH)
+        public DbSet<EmployeeRequest> EmployeeRequests { get; set; }
+        public DbSet<PromotionRequest> PromotionRequests { get; set; }
+        public DbSet<DepartmentChangeRequest> DepartmentChangeRequests { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Notification Configuration
-            modelBuilder.Entity<Notification>(entity =>
-            {
-                entity.HasKey(n => n.Id);
-
-                entity.Property(n => n.Title)
-                      .IsRequired()
-                      .HasMaxLength(200);
-
-                entity.Property(n => n.Message)
-                      .IsRequired()
-                      .HasMaxLength(1000);
-
-                entity.Property(n => n.ActionType)
-                      .HasMaxLength(50);
-
-                entity.Property(n => n.IsRead)
-                      .HasDefaultValue(false);
-
-                entity.Property(n => n.CreatedAt)
-                      .HasDefaultValueSql("GETUTCDATE()");
-
-                entity.HasOne(n => n.User)
-                      .WithMany(u => u.Notifications)
-                      .HasForeignKey(n => n.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasIndex(n => new { n.UserId, n.IsRead })
-                      .HasDatabaseName("IX_Notifications_UserId_IsRead");
-
-                entity.HasIndex(n => n.CreatedAt)
-                      .HasDatabaseName("IX_Notifications_CreatedAt");
-            });
 
             // User Configuration
             modelBuilder.Entity<User>(entity =>
@@ -233,11 +202,17 @@ namespace career_module.server.Infrastructure.Data
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // EmployeeRequest Configuration
+            #region Employee Requests
+            // Configure inheritance for EmployeeRequest using Table Per Hierarchy (TPH)
+            modelBuilder.Entity<EmployeeRequest>()
+                .HasDiscriminator<string>("RequestType")
+                .HasValue<PromotionRequest>("Promotion")
+                .HasValue<DepartmentChangeRequest>("DepartmentChange");
+
+            // Configure base EmployeeRequest
             modelBuilder.Entity<EmployeeRequest>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.RequestType).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.Status).HasMaxLength(50);
                 entity.Property(e => e.RequestDate).HasDefaultValueSql("GETUTCDATE()");
                 entity.Property(e => e.RejectionReason).HasColumnType("nvarchar(max)");
@@ -264,16 +239,41 @@ namespace career_module.server.Infrastructure.Data
                       .HasForeignKey(r => r.ApprovedByHRId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                // Indexes for common queries
+                // Indexes
                 entity.HasIndex(e => e.Status)
                       .HasDatabaseName("IX_EmployeeRequest_Status");
 
                 entity.HasIndex(e => new { e.RequesterId, e.Status })
                       .HasDatabaseName("IX_EmployeeRequest_Requester_Status");
-
-                entity.HasIndex(e => e.RequestType)
-                      .HasDatabaseName("IX_EmployeeRequest_Type");
             });
+
+            // Configure specific request types
+            modelBuilder.Entity<PromotionRequest>(entity =>
+            {
+                entity.Property(e => e.Justification).HasColumnType("nvarchar(max)");
+                entity.Property(e => e.ProposedSalary).HasPrecision(18, 2);
+
+                entity.HasOne(p => p.NewPosition)
+                      .WithMany()
+                      .HasForeignKey(p => p.NewPositionId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<DepartmentChangeRequest>(entity =>
+            {
+                entity.Property(e => e.Reason).HasColumnType("nvarchar(max)");
+
+                entity.HasOne(d => d.NewDepartment)
+                      .WithMany()
+                      .HasForeignKey(d => d.NewDepartmentId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.NewManager)
+                      .WithMany()
+                      .HasForeignKey(d => d.NewManagerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
 
             // SuccessionPlan Configuration
             modelBuilder.Entity<SuccessionPlan>(entity =>

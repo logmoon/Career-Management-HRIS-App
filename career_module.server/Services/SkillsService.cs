@@ -244,12 +244,10 @@ namespace career_module.server.Services
     public class EmployeeSkillService : IEmployeeSkillService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
-        public EmployeeSkillService(CareerManagementDbContext context, INotificationService notificationService)
+        public EmployeeSkillService(CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<List<EmployeeSkill>>> GetEmployeeSkillsAsync(int employeeId)

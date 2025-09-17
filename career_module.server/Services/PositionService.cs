@@ -19,12 +19,10 @@ namespace career_module.server.Services
     public class PositionService : IPositionService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
-        public PositionService(CareerManagementDbContext context, INotificationService notificationService)
+        public PositionService(CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<List<Position>>> GetAllPositionsAsync(bool activeOnly = true, int? departmentId = null)
@@ -131,18 +129,6 @@ namespace career_module.server.Services
 
                 _context.Positions.Add(position);
                 await _context.SaveChangesAsync();
-
-                // Notify department head if exists
-                if (department.HeadOfDepartmentId.HasValue)
-                {
-                    await _notificationService.NotifyAsync(
-                        department.HeadOfDepartment!.User.Id,
-                        "New Position Created",
-                        $"A new position '{position.Title}' has been created in your department",
-                        "PositionCreated",
-                        position.Id
-                    );
-                }
 
                 await transaction.CommitAsync();
 
@@ -261,18 +247,6 @@ namespace career_module.server.Services
                 position.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-
-                // Notify department head
-                if (position.Department.HeadOfDepartmentId.HasValue)
-                {
-                    await _notificationService.NotifyAsync(
-                        position.Department.HeadOfDepartment!.User.Id,
-                        "Position Deactivated",
-                        $"The position '{position.Title}' has been deactivated",
-                        "PositionDeactivated",
-                        id
-                    );
-                }
 
                 await transaction.CommitAsync();
 

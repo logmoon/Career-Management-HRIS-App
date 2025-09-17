@@ -39,20 +39,17 @@ namespace career_module.server.Services
     public class CareerIntelligenceService : ICareerIntelligenceService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
         private readonly ICareerPathService _careerPathService;
         private readonly ISuccessionPlanningService _successionPlanningService;
         private readonly IPerformanceReviewService _performanceService;
 
         public CareerIntelligenceService(
             CareerManagementDbContext context,
-            INotificationService notificationService,
             ICareerPathService careerPathService,
             ISuccessionPlanningService successionPlanningService,
             IPerformanceReviewService performanceService)
         {
             _context = context;
-            _notificationService = notificationService;
             _careerPathService = careerPathService;
             _successionPlanningService = successionPlanningService;
             _performanceService = performanceService;
@@ -554,6 +551,7 @@ namespace career_module.server.Services
                 // Trigger career intelligence analysis
                 var intelligenceReport = await GenerateEmployeeCareerIntelligenceAsync(review.EmployeeId);
 
+                /*
                 // Send proactive notifications based on performance
                 if (review.OverallRating >= 4.0m)
                 {
@@ -573,6 +571,7 @@ namespace career_module.server.Services
                         review.EmployeeId
                     );
                 }
+                */
 
                 return ServiceResult<bool>.Success(true);
             }
@@ -603,15 +602,6 @@ namespace career_module.server.Services
                     {
                         await _successionPlanningService.GetSmartCandidatesForPositionAsync(employee.CurrentPositionId.Value);
                     }
-
-                    // Send congratulatory notification with next steps
-                    await _notificationService.NotifyAsync(
-                        request.Requester.User.Id,
-                        "Promotion Approved - Next Steps",
-                        "Congratulations! Your promotion has been approved. We'll update your career profile and identify new development opportunities.",
-                        "PromotionApproved",
-                        requestId
-                    );
                 }
 
                 return ServiceResult<bool>.Success(true);
@@ -773,7 +763,7 @@ namespace career_module.server.Services
 
                     // Factor 4: Skills vs. market demand
                     var hasMarketableSkills = employee.EmployeeSkills
-                        .Any(es => es.ProficiencyLevel >= 4 &&
+                        .Any(es => es.ProficiencyLevel >= 4 && es.Skill != null &&
                                   (es.Skill.Category == "Technical" || es.Skill.Category == "Leadership"));
 
                     if (hasMarketableSkills)

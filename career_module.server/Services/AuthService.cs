@@ -20,13 +20,11 @@ namespace career_module.server.Services
     {
         private readonly CareerManagementDbContext _context;
         private readonly IConfiguration _configuration;
-        private readonly INotificationService _notificationService;
 
-        public AuthService(CareerManagementDbContext context, IConfiguration configuration, INotificationService notificationService)
+        public AuthService(CareerManagementDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<AuthResultDto>> LoginAsync(string username, string password)
@@ -109,8 +107,7 @@ namespace career_module.server.Services
 
                 await transaction.CommitAsync();
 
-                // Send notifications
-                await SendRegistrationNotificationsAsync(employee);
+                // TODO: Send Request
 
                 // Load the full user with employee for the response
                 var userWithEmployee = await _context.Users
@@ -184,26 +181,10 @@ namespace career_module.server.Services
             return pendingDept;
         }
 
-        private async Task SendRegistrationNotificationsAsync(Employee employee)
+        private async Task SendRegistrationRequestAsync(Employee employee)
         {
             string employeeName = $"{employee.FirstName} {employee.LastName}";
-
-            // Notify HR about new registration
-            await _notificationService.NotifyHRAsync(
-                "New Employee Registration",
-                $"{employeeName} has registered and needs department assignment",
-                "NewEmployeeRegistration",
-                employee.Id
-            );
-
-            // Notify admins as well
-            await _notificationService.NotifyRoleAsync(
-                "Admin",
-                "New Employee Registration",
-                $"{employeeName} has registered and needs department assignment",
-                "NewEmployeeRegistration",
-                employee.Id
-            );
+            // TODO: Notify HR about new registration
         }
 
         private string GenerateJwtToken(User user)

@@ -22,12 +22,10 @@ namespace career_module.server.Services
     public class PerformanceReviewService : IPerformanceReviewService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
-        public PerformanceReviewService(CareerManagementDbContext context, INotificationService notificationService)
+        public PerformanceReviewService(CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<List<PerformanceReview>>> GetReviewsAsync(string? status = null, int? employeeId = null, int? reviewerId = null)
@@ -159,15 +157,6 @@ namespace career_module.server.Services
                 _context.PerformanceReviews.Add(review);
                 await _context.SaveChangesAsync();
 
-                // Notify reviewer
-                await _notificationService.NotifyAsync(
-                    reviewer.User.Id,
-                    "New Performance Review Assigned",
-                    $"You have been assigned to review {employee.FirstName} {employee.LastName} for the period {dto.ReviewPeriodStart:MMM yyyy} - {dto.ReviewPeriodEnd:MMM yyyy}",
-                    "PerformanceReviewAssigned",
-                    review.Id
-                );
-
                 await transaction.CommitAsync();
 
                 // Reload with includes
@@ -294,42 +283,10 @@ namespace career_module.server.Services
 
                 await _context.SaveChangesAsync();
 
-                // Notify employee about completed review
-                await _notificationService.NotifyAsync(
-                    review.Employee.User.Id,
-                    "Performance Review Completed",
-                    $"Your performance review for {review.ReviewPeriodStart:MMM yyyy} - {review.ReviewPeriodEnd:MMM yyyy} has been completed by {review.Reviewer.FirstName} {review.Reviewer.LastName}",
-                    "PerformanceReviewCompleted",
-                    review.Id
-                );
-
-                // Notify manager (if different from reviewer)
-                if (review.Employee.Manager != null && review.Employee.ManagerId != review.ReviewerId)
-                {
-                    await _notificationService.NotifyAsync(
-                        review.Employee.Manager.User.Id,
-                        "Team Member Review Completed",
-                        $"Performance review for {review.Employee.FirstName} {review.Employee.LastName} has been completed",
-                        "PerformanceReviewCompleted",
-                        review.Id
-                    );
-                }
-
                 // Notify HR
                 var hrUsers = await _context.Users
                     .Where(u => u.Role == "HR" && u.IsActive)
                     .ToListAsync();
-
-                foreach (var hrUser in hrUsers)
-                {
-                    await _notificationService.NotifyAsync(
-                        hrUser.Id,
-                        "Performance Review Ready for Approval",
-                        $"Performance review for {review.Employee.FirstName} {review.Employee.LastName} is ready for approval",
-                        "PerformanceReviewCompleted",
-                        review.Id
-                    );
-                }
 
                 await transaction.CommitAsync();
 
@@ -377,24 +334,6 @@ namespace career_module.server.Services
                 review.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-
-                // Notify employee
-                await _notificationService.NotifyAsync(
-                    review.Employee.User.Id,
-                    "Performance Review Approved",
-                    $"Your performance review for {review.ReviewPeriodStart:MMM yyyy} - {review.ReviewPeriodEnd:MMM yyyy} has been officially approved",
-                    "PerformanceReviewApproved",
-                    review.Id
-                );
-
-                // Notify reviewer
-                await _notificationService.NotifyAsync(
-                    review.Reviewer.User.Id,
-                    "Performance Review Approved",
-                    $"The performance review for {review.Employee.FirstName} {review.Employee.LastName} has been approved",
-                    "PerformanceReviewApproved",
-                    review.Id
-                );
 
                 await transaction.CommitAsync();
 

@@ -6,6 +6,7 @@ import { PerformanceReviewService, PerformanceAnalyticsDto } from '../service/pe
 import { IntelligenceService, CareerIntelligenceReport, CareerPerformanceInsight } from '../service/intelligence.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 // PrimeNG Imports
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -346,101 +347,68 @@ import { Checkbox } from "primeng/checkbox";
             <!-- Profile Tab -->
             <p-tabpanel header="Profile" leftIcon="pi pi-user">
               <div class="space-y-4">
+                <!-- Action Button - Only show if user can edit -->
+                <div *ngIf="canEditEmployee()" class="flex justify-end mb-4">
+                  <p-button 
+                    label="More About Employee" 
+                    icon="pi pi-external-link"
+                    severity="primary"
+                    (click)="navigateToEmployeeDetail()"
+                    pTooltip="View detailed profile and edit information">
+                  </p-button>
+                </div>
+
                 <!-- Basic Info Card -->
                 <p-card header="Basic Information">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
                     <div>
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         First Name
                       </label>
-                      <input 
-                        pInputText 
-                        [(ngModel)]="editingEmployee.firstName"
-                        [disabled]="!isEditingProfile"
-                        class="w-full">
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.firstName }}
+                      </div>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         Last Name
                       </label>
-                      <input 
-                        pInputText 
-                        [(ngModel)]="editingEmployee.lastName"
-                        [disabled]="!isEditingProfile"
-                        class="w-full">
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.lastName }}
+                      </div>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         Email
                       </label>
-                      <input 
-                        pInputText 
-                        [value]="selectedEmployee.email"
-                        disabled
-                        class="w-full">
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.email }}
+                      </div>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         Phone
                       </label>
-                      <input 
-                        pInputText 
-                        [(ngModel)]="editingEmployee.phone"
-                        [disabled]="!isEditingProfile"
-                        class="w-full">
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.phone || 'Not provided' }}
+                      </div>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         Hire Date
                       </label>
-                      <p-datepicker
-                        [(ngModel)]="editingEmployee.hireDate"
-                        [disabled]="!isEditingProfile"
-                        dateFormat="dd/mm/yy"
-                        [showIcon]="true"
-                        styleClass="w-full">
-                      </p-datepicker>
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.hireDate | date:'mediumDate' }}
+                      </div>
                     </div>
                     <div *ngIf="userRole === 'HR' || userRole === 'Admin'">
                       <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                         Salary
                       </label>
-                      <p-inputNumber 
-                        [(ngModel)]="editingEmployee.salary"
-                        [disabled]="!isEditingProfile"
-                        mode="currency" 
-                        currency="TND"
-                        styleClass="w-full">
-                      </p-inputNumber>
+                      <div class="text-surface-900 dark:text-surface-0 font-medium">
+                        {{ selectedEmployee.salary | currency:'TND':'symbol':'1.0-0' }}
+                      </div>
                     </div>
-                  </div>
-
-                  <!-- Edit Actions -->
-                  <div class="flex gap-2 mt-4" *ngIf="canEditEmployee()">
-                    <p-button 
-                      *ngIf="!isEditingProfile"
-                      label="Edit" 
-                      icon="pi pi-pencil"
-                      size="small"
-                      (click)="startEditingProfile()">
-                    </p-button>
-                    <p-button 
-                      *ngIf="isEditingProfile"
-                      label="Save" 
-                      icon="pi pi-check"
-                      size="small"
-                      (click)="saveEmployeeProfile()"
-                      [loading]="isSavingProfile">
-                    </p-button>
-                    <p-button 
-                      *ngIf="isEditingProfile"
-                      label="Cancel" 
-                      icon="pi pi-times"
-                      severity="secondary"
-                      [outlined]="true"
-                      size="small"
-                      (click)="cancelEditingProfile()">
-                    </p-button>
                   </div>
                 </p-card>
 
@@ -473,540 +441,9 @@ import { Checkbox } from "primeng/checkbox";
                 </p-card>
               </div>
             </p-tabpanel>
-
-            <!-- Skills Tab -->
-            <p-tabpanel header="Skills" leftIcon="pi pi-star">
-              <div class="space-y-4">
-                <!-- Skills Loading -->
-                <div *ngIf="loadingSkills" class="text-center py-8">
-                  <p-progressSpinner styleClass="w-2rem h-2rem"></p-progressSpinner>
-                  <p class="text-surface-600 dark:text-surface-300 mt-2">Loading skills...</p>
-                </div>
-
-                <!-- Skills List -->
-                <div *ngIf="!loadingSkills && employeeSkills.length" class="space-y-3">
-                  <div class="flex justify-between items-center">
-                    <h4 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">
-                      Skills ({{ employeeSkills.length }})
-                    </h4>
-                    <p-button 
-                      icon="pi pi-plus"
-                      size="small"
-                      severity="secondary"
-                      [outlined]="true"
-                      (click)="showAddSkillDialog = true"
-                      pTooltip="Add Skill">
-                    </p-button>
-                  </div>
-
-                  <div *ngFor="let skill of employeeSkills" 
-                       class="p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
-                    <div class="flex justify-between items-start mb-2">
-                      <div>
-                        <h5 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
-                          {{ skill.skill.name }}
-                        </h5>
-                        <p-tag 
-                          *ngIf="skill.skill.category" 
-                          [value]="skill.skill.category" 
-                          severity="secondary"
-                          styleClass="text-xs">
-                        </p-tag>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <p-rating 
-                          [(ngModel)]="skill.proficiencyLevel"
-                          [readonly]="true"
-                          [stars]="5">
-                        </p-rating>
-                        <span class="text-sm text-surface-600 dark:text-surface-300">
-                          ({{ skillsService.getProficiencyLabel(skill.proficiencyLevel) }})
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div *ngIf="skill.notes" class="text-sm text-surface-600 dark:text-surface-300 mb-2">
-                      {{ skill.notes }}
-                    </div>
-
-                    <div class="flex justify-between items-center text-xs text-surface-500 dark:text-surface-400">
-                      <span *ngIf="skill.acquiredDate">
-                        Acquired: {{ skill.acquiredDate | date:'mediumDate' }}
-                      </span>
-                      <div class="flex gap-1" *ngIf="canEditEmployee()">
-                        <p-button 
-                          icon="pi pi-pencil"
-                          size="small"
-                          severity="secondary"
-                          [text]="true"
-                          (click)="editSkill(skill)">
-                        </p-button>
-                        <p-button 
-                          icon="pi pi-trash"
-                          size="small"
-                          severity="danger"
-                          [text]="true"
-                          (click)="deleteSkill(skill)">
-                        </p-button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- No Skills -->
-                <div *ngIf="!loadingSkills && !employeeSkills.length" class="text-center py-8">
-                  <i class="pi pi-star text-4xl text-surface-300 dark:text-surface-600 mb-3 block"></i>
-                  <p class="text-surface-500 dark:text-surface-400 mb-3">No skills recorded yet</p>
-                  <p-button 
-                    *ngIf="canEditEmployee()"
-                    label="Add First Skill"
-                    icon="pi pi-plus"
-                    size="small"
-                    (click)="showAddSkillDialog = true">
-                  </p-button>
-                </div>
-              </div>
-            </p-tabpanel>
-
-            <!-- Performance Tab -->
-            <p-tabpanel header="Performance" leftIcon="pi pi-chart-line">
-              <div class="space-y-4">
-                <!-- Performance Loading -->
-                <div *ngIf="loadingPerformance" class="text-center py-8">
-                  <p-progressSpinner styleClass="w-2rem h-2rem"></p-progressSpinner>
-                  <p class="text-surface-600 dark:text-surface-300 mt-2">Loading performance data...</p>
-                </div>
-
-                <!-- Performance Overview -->
-                <div *ngIf="!loadingPerformance && performanceAnalytics">
-                  <p-card header="Performance Overview">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div class="text-center">
-                        <div class="text-2xl font-bold text-primary">
-                          {{ performanceAnalytics.totalReviews }}
-                        </div>
-                        <div class="text-sm text-surface-600 dark:text-surface-300">
-                          Total Reviews
-                        </div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-2xl font-bold text-primary">
-                          {{ performanceAnalytics.averageRating | number:'1.1-1' }}
-                        </div>
-                        <div class="text-sm text-surface-600 dark:text-surface-300">
-                          Average Rating
-                        </div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-2xl font-bold text-primary">
-                          {{ performanceAnalytics.latestRating | number:'1.1-1' }}
-                        </div>
-                        <div class="text-sm text-surface-600 dark:text-surface-300">
-                          Latest Rating
-                        </div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-2xl font-bold" 
-                             [ngClass]="{
-                               'text-green-500': performanceAnalytics.ratingTrend === 'Improving',
-                               'text-yellow-500': performanceAnalytics.ratingTrend === 'Stable',
-                               'text-red-500': performanceAnalytics.ratingTrend === 'Declining'
-                             }">
-                          {{ performanceAnalytics.ratingTrend }}
-                        </div>
-                        <div class="text-sm text-surface-600 dark:text-surface-300">
-                          Trend
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Performance Progress -->
-                    <div class="mb-4">
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium">Performance vs Department Average</span>
-                        <span class="text-sm text-surface-600 dark:text-surface-300">
-                          {{ performanceAnalytics.departmentAverage | number:'1.1-1' }} dept avg
-                        </span>
-                      </div>
-                      <p-progressBar 
-                        [value]="(performanceAnalytics.averageRating / 5) * 100"
-                        [showValue]="false">
-                      </p-progressBar>
-                    </div>
-                  </p-card>
-
-                  <!-- Performance History -->
-                  <p-card header="Performance History" *ngIf="performanceAnalytics.performanceHistory?.length">
-                    <p-timeline 
-                      [value]="performanceAnalytics.performanceHistory"
-                      layout="vertical"
-                      align="alternate">
-                      <ng-template pTemplate="content" let-item>
-                        <p-card styleClass="shadow-sm">
-                          <div class="flex justify-between items-start mb-2">
-                            <div>
-                              <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0">
-                                {{ item.reviewPeriodStart | date:'MMM yyyy' }} - 
-                                {{ item.reviewPeriodEnd | date:'MMM yyyy' }}
-                              </h6>
-                              <p-tag 
-                                [value]="item.status" 
-                                [severity]="getStatusSeverity(item.status)">
-                              </p-tag>
-                            </div>
-                            <div class="text-right">
-                              <p-rating 
-                                [ngModel]="item.rating"
-                                [readonly]="true"
-                                [stars]="5">
-                              </p-rating>
-                              <div class="text-sm text-surface-600 dark:text-surface-300">
-                                {{ item.rating }}/5
-                              </div>
-                            </div>
-                          </div>
-                        </p-card>
-                      </ng-template>
-                    </p-timeline>
-                  </p-card>
-                </div>
-
-                <!-- No Performance Data -->
-                <div *ngIf="!loadingPerformance && !performanceAnalytics" class="text-center py-8">
-                  <i class="pi pi-chart-line text-4xl text-surface-300 dark:text-surface-600 mb-3 block"></i>
-                  <p class="text-surface-500 dark:text-surface-400">No performance data available</p>
-                </div>
-              </div>
-            </p-tabpanel>
-
-            <!-- Career Intelligence Tab -->
-            <p-tabpanel header="Career Intelligence" leftIcon="pi pi-lightbulb">
-              <div class="space-y-4">
-                <!-- Career Intelligence Loading -->
-                <div *ngIf="loadingCareerIntelligence" class="text-center py-8">
-                  <p-progressSpinner styleClass="w-2rem h-2rem"></p-progressSpinner>
-                  <p class="text-surface-600 dark:text-surface-300 mt-2">Loading career insights...</p>
-                </div>
-
-                <!-- Career Intelligence Content -->
-                <div *ngIf="!loadingCareerIntelligence && careerIntelligence">
-                  <!-- Career Opportunities -->
-                  <p-card header="Career Opportunities" *ngIf="careerIntelligence.careerOpportunities?.length">
-                    <div class="space-y-3">
-                      <div *ngFor="let opportunity of careerIntelligence.careerOpportunities"
-                           class="p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
-                        <div class="flex justify-between items-start mb-2">
-                          <div>
-                            <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
-                              {{ opportunity.title }}
-                            </h6>
-                            <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
-                              {{ opportunity.department }}
-                            </p>
-                          </div>
-                          <div class="text-right">
-                            <div class="text-sm font-semibold text-primary">
-                              {{ opportunity.matchScore }}% match
-                            </div>
-                            <p-tag 
-                              [value]="opportunity.priority" 
-                              [severity]="getPrioritySeverity(opportunity.priority)">
-                            </p-tag>
-                          </div>
-                        </div>
-                        <p class="text-sm text-surface-700 dark:text-surface-200 mb-2">
-                          {{ opportunity.description }}
-                        </p>
-                        <div class="text-xs text-surface-500 dark:text-surface-400">
-                          <strong>Recommended Action:</strong> {{ opportunity.recommendedAction }}
-                        </div>
-                      </div>
-                    </div>
-                  </p-card>
-
-                  <!-- Skill Development Recommendations -->
-                  <p-card header="Skill Development" *ngIf="careerIntelligence.skillDevelopmentRecommendations?.length">
-                    <div class="space-y-3">
-                      <div *ngFor="let skillRec of careerIntelligence.skillDevelopmentRecommendations"
-                           class="p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
-                        <div class="flex justify-between items-start mb-2">
-                          <div>
-                            <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0">
-                              {{ skillRec.skill.name }}
-                            </h6>
-                            <p-tag 
-                              *ngIf="skillRec.skill.category" 
-                              [value]="skillRec.skill.category" 
-                              severity="secondary"
-                              styleClass="text-xs mt-1">
-                            </p-tag>
-                          </div>
-                          <p-tag 
-                            [value]="skillRec.priority" 
-                            [severity]="getPrioritySeverity(skillRec.priority)">
-                          </p-tag>
-                        </div>
-                        
-                        <div class="flex items-center gap-4 mb-2">
-                          <div class="text-center">
-                            <div class="text-xs text-surface-500 dark:text-surface-400 mb-1">Current</div>
-                            <p-rating 
-                              [ngModel]="skillRec.currentLevel"
-                              [readonly]="true"
-                              [stars]="5">
-                            </p-rating>
-                          </div>
-                          <i class="pi pi-arrow-right text-surface-400"></i>
-                          <div class="text-center">
-                            <div class="text-xs text-surface-500 dark:text-surface-400 mb-1">Target</div>
-                            <p-rating 
-                              [ngModel]="skillRec.recommendedLevel"
-                              [readonly]="true"
-                              [stars]="5">
-                            </p-rating>
-                          </div>
-                          <div class="ml-auto text-center">
-                            <div class="text-xs text-surface-500 dark:text-surface-400 mb-1">Gap</div>
-                            <p-badge [value]="skillRec.gap" severity="warn"></p-badge>
-                          </div>
-                        </div>
-
-                        <p class="text-sm text-surface-600 dark:text-surface-300 mb-2">
-                          <strong>Reason:</strong> {{ skillRec.reason }}
-                        </p>
-
-                        <div *ngIf="skillRec.suggestedActions?.length" class="text-xs">
-                          <strong class="text-surface-700 dark:text-surface-200">Suggested Actions:</strong>
-                          <ul class="list-disc list-inside mt-1 text-surface-600 dark:text-surface-300">
-                            <li *ngFor="let action of skillRec.suggestedActions">{{ action }}</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </p-card>
-
-                  <!-- Performance Insights -->
-                  <p-card header="Performance Insights" *ngIf="performanceInsights">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <!-- Key Strengths -->
-                      <div>
-                        <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-2">Key Strengths</h6>
-                        <div class="space-y-1">
-                          <p-chip 
-                            *ngFor="let strength of performanceInsights.keyStrengths"
-                            [label]="strength"
-                            styleClass="mr-1 mb-1">
-                          </p-chip>
-                        </div>
-                      </div>
-
-                      <!-- Development Areas -->
-                      <div>
-                        <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-2">Development Areas</h6>
-                        <div class="space-y-1">
-                          <p-chip 
-                            *ngFor="let area of performanceInsights.developmentAreas"
-                            [label]="area"
-                            styleClass="mr-1 mb-1"
-                            [removable]="false">
-                          </p-chip>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="mt-4 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                      <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-2">Career Trajectory</h6>
-                      <p class="text-surface-700 dark:text-surface-200 m-0">
-                        {{ performanceInsights.careerTrajectory }}
-                      </p>
-                    </div>
-
-                    <div *ngIf="performanceInsights.insights?.length" class="mt-4">
-                      <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-2">Insights</h6>
-                      <ul class="list-disc list-inside space-y-1 text-surface-600 dark:text-surface-300">
-                        <li *ngFor="let insight of performanceInsights.insights">{{ insight }}</li>
-                      </ul>
-                    </div>
-                  </p-card>
-
-                  <!-- Career Path Recommendations -->
-                  <p-card header="Career Path Recommendations" *ngIf="careerIntelligence.careerPathRecommendations?.length">
-                    <div class="space-y-3">
-                      <div *ngFor="let pathRec of careerIntelligence.careerPathRecommendations"
-                           class="p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
-                        <p class="text-sm text-surface-600 dark:text-surface-300">
-                          {{ pathRec.careerPath.description }}
-                        </p>
-                      </div>
-                    </div>
-                  </p-card>
-
-                  <!-- Smart Insights -->
-                  <p-card header="Smart Insights" *ngIf="careerIntelligence.smartInsights?.length">
-                    <div class="space-y-2">
-                      <div *ngFor="let insight of careerIntelligence.smartInsights"
-                           class="flex items-start gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <i class="pi pi-lightbulb text-blue-500 mt-0.5"></i>
-                        <span class="text-sm text-surface-700 dark:text-surface-200">{{ insight }}</span>
-                      </div>
-                    </div>
-                  </p-card>
-                </div>
-
-                <!-- No Career Intelligence Data -->
-                <div *ngIf="!loadingCareerIntelligence && !careerIntelligence" class="text-center py-8">
-                  <i class="pi pi-lightbulb text-4xl text-surface-300 dark:text-surface-600 mb-3 block"></i>
-                  <p class="text-surface-500 dark:text-surface-400">No career intelligence data available</p>
-                </div>
-              </div>
-            </p-tabpanel>
           </p-tabs>
         </div>
       </p-drawer>
-
-      <!-- Add Skill Dialog -->
-      <p-dialog 
-        header="Add Skill" 
-        [(visible)]="showAddSkillDialog" 
-        [modal]="true"
-        styleClass="w-full max-w-md">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Skill
-            </label>
-            <p-select
-              [(ngModel)]="newSkill.skillId"
-              [options]="availableSkills"
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Select a skill"
-              [filter]="true"
-              filterBy="name"
-              styleClass="w-full">
-            </p-select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Proficiency Level
-            </label>
-            <p-rating 
-              [(ngModel)]="newSkill.proficiencyLevel"
-              [stars]="5">
-            </p-rating>
-            <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-              {{ skillsService.getProficiencyLabel(newSkill.proficiencyLevel) }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Acquired Date (Optional)
-            </label>
-            <p-datepicker
-              [(ngModel)]="newSkill.acquiredDate"
-              dateFormat="dd/mm/yy"
-              [showIcon]="true"
-              styleClass="w-full">
-            </p-datepicker>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Notes (Optional)
-            </label>
-            <textarea 
-              pInputTextarea 
-              [(ngModel)]="newSkill.notes"
-              rows="3"
-              class="w-full"
-              placeholder="Add any notes about this skill...">
-            </textarea>
-          </div>
-        </div>
-        
-        <ng-template pTemplate="footer">
-          <p-button 
-            label="Cancel" 
-            severity="secondary" 
-            [outlined]="true"
-            (click)="showAddSkillDialog = false">
-          </p-button>
-          <p-button 
-            label="Add Skill" 
-            (click)="addSkill()"
-            [disabled]="!newSkill.skillId || !newSkill.proficiencyLevel"
-            [loading]="isAddingSkill">
-          </p-button>
-        </ng-template>
-      </p-dialog>
-
-      <!-- Edit Skill Dialog -->
-      <p-dialog 
-        header="Edit Skill" 
-        [(visible)]="showEditSkillDialog" 
-        [modal]="true"
-        styleClass="w-full max-w-md">
-        <div class="space-y-4" *ngIf="editingSkill">
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Skill
-            </label>
-            <input 
-              pInputText 
-              [value]="editingSkill.skill.name"
-              disabled
-              class="w-full">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Proficiency Level
-            </label>
-            <p-rating 
-              [(ngModel)]="editingSkill.proficiencyLevel"
-              [stars]="5">
-            </p-rating>
-            <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-              {{ skillsService.getProficiencyLabel(editingSkill.proficiencyLevel) }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Acquired Date (Optional)
-            </label>
-            <p-datepicker
-              [(ngModel)]="editingSkill.acquiredDate"
-              dateFormat="dd/mm/yy"
-              [showIcon]="true"
-              styleClass="w-full">
-            </p-datepicker>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Notes (Optional)
-            </label>
-            <textarea 
-              pInputTextarea 
-              [(ngModel)]="editingSkill.notes"
-              rows="3"
-              class="w-full"
-              placeholder="Add any notes about this skill...">
-            </textarea>
-          </div>
-        </div>
-        
-        <ng-template pTemplate="footer">
-          <p-button 
-            label="Cancel" 
-            severity="secondary" 
-            [outlined]="true"
-            (click)="showEditSkillDialog = false">
-          </p-button>
-          <p-button 
-            label="Update Skill" 
-            (click)="updateSkill()"
-            [loading]="isUpdatingSkill">
-          </p-button>
-        </ng-template>
-      </p-dialog>
     </div>
   `,
 })
@@ -1016,9 +453,6 @@ export class Employees implements OnInit {
   loadingSkills = false;
   loadingPerformance = false;
   loadingCareerIntelligence = false;
-  isSavingProfile = false;
-  isAddingSkill = false;
-  isUpdatingSkill = false;
 
   // Error handling
   errorMessage = '';
@@ -1054,36 +488,14 @@ export class Employees implements OnInit {
   // Profile sidebar
   showProfileSidebar = false;
   selectedEmployee: Employee | null = null;
-  isEditingProfile = false;
-  editingEmployee: any = {};
-
-  // Skills management
-  employeeSkills: EmployeeSkill[] = [];
-  availableSkills: any[] = [];
-  showAddSkillDialog = false;
-  showEditSkillDialog = false;
-  newSkill: AddEmployeeSkill = {
-    employeeId: 0,
-    skillId: 0,
-    proficiencyLevel: 1
-  };
-  editingSkill: EmployeeSkill | null = null;
-
-  // Performance data
-  performanceAnalytics: PerformanceAnalyticsDto | null = null;
-
-  // Career intelligence
-  careerIntelligence: CareerIntelligenceReport | null = null;
-  performanceInsights: CareerPerformanceInsight | null = null;
 
   constructor(
-    private authService: AuthService,
     private employeeService: EmployeeService,
+    private authService: AuthService,
     public skillsService: SkillsService,
-    private performanceService: PerformanceReviewService,
-    private intelligenceService: IntelligenceService,
     private messageService: MessageService,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -1091,7 +503,6 @@ export class Employees implements OnInit {
     this.userRole = user?.role || 'Employee';
     this.loadData();
     this.loadDepartmentOptions();
-    this.loadAvailableSkills();
   }
 
   loadData() {
@@ -1118,6 +529,12 @@ export class Employees implements OnInit {
     });
   }
 
+  navigateToEmployeeDetail() {
+    if (this.selectedEmployee) {
+      this.router.navigate(['/employee-detail', this.selectedEmployee.id]);
+    }
+  }
+
   loadDepartmentOptions() {
     this.departmentService.getAllDepartments().subscribe({
       next: (departments) => {
@@ -1125,17 +542,6 @@ export class Employees implements OnInit {
       },
       error: (error) => {
         console.error('Error loading departments:', error);
-      }
-    });
-  }
-
-  loadAvailableSkills() {
-    this.skillsService.getAllSkills().subscribe({
-      next: (skills) => {
-        this.availableSkills = skills;
-      },
-      error: (error) => {
-        console.error('Error loading skills:', error);
       }
     });
   }
@@ -1227,240 +633,7 @@ export class Employees implements OnInit {
 
   openEmployeeProfile(employee: Employee) {
     this.selectedEmployee = employee;
-    this.resetEditingEmployee();
     this.showProfileSidebar = true;
-    this.loadEmployeeSkills();
-    this.loadEmployeePerformance();
-    this.loadEmployeeCareerIntelligence();
-  }
-
-  resetEditingEmployee() {
-    if (this.selectedEmployee) {
-      this.editingEmployee = {
-        firstName: this.selectedEmployee.firstName,
-        lastName: this.selectedEmployee.lastName,
-        phone: this.selectedEmployee.phone,
-        salary: this.selectedEmployee.salary,
-        hireDate: new Date(this.selectedEmployee.hireDate)
-      };
-    }
-    this.isEditingProfile = false;
-  }
-
-  startEditingProfile() {
-    this.isEditingProfile = true;
-  }
-
-  cancelEditingProfile() {
-    this.resetEditingEmployee();
-  }
-
-  saveEmployeeProfile() {
-    if (!this.selectedEmployee) return;
-
-    this.isSavingProfile = true;
-    const updateDto: UpdateEmployeeDto = {
-      firstName: this.editingEmployee.firstName,
-      lastName: this.editingEmployee.lastName,
-      phone: this.editingEmployee.phone,
-      salary: this.editingEmployee.salary,
-      hireDate: this.editingEmployee.hireDate
-    };
-
-    this.employeeService.updateEmployee(this.selectedEmployee.id, updateDto).subscribe({
-      next: (updatedEmployee) => {
-        this.selectedEmployee = updatedEmployee;
-        this.isEditingProfile = false;
-        this.isSavingProfile = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Profile updated successfully'
-        });
-        // Update the employee in the main list
-        const index = this.employees.findIndex(emp => emp.id === updatedEmployee.id);
-        if (index !== -1) {
-          this.employees[index] = updatedEmployee;
-          this.onFilterChange();
-        }
-      },
-      error: (error) => {
-        this.isSavingProfile = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to update profile'
-        });
-        console.error('Error updating profile:', error);
-      }
-    });
-  }
-
-  loadEmployeeSkills() {
-    if (!this.selectedEmployee) return;
-
-    this.loadingSkills = true;
-    this.skillsService.getEmployeeSkills(this.selectedEmployee.id).subscribe({
-      next: (skills) => {
-        this.employeeSkills = skills;
-        this.loadingSkills = false;
-      },
-      error: (error) => {
-        this.loadingSkills = false;
-        console.error('Error loading skills:', error);
-      }
-    });
-  }
-
-  loadEmployeePerformance() {
-    if (!this.selectedEmployee) return;
-
-    this.loadingPerformance = true;
-    this.performanceService.getPerformanceAnalytics(this.selectedEmployee.id).subscribe({
-      next: (analytics) => {
-        this.performanceAnalytics = analytics;
-        this.loadingPerformance = false;
-      },
-      error: (error) => {
-        this.loadingPerformance = false;
-        console.error('Error loading performance:', error);
-      }
-    });
-  }
-
-  loadEmployeeCareerIntelligence() {
-    if (!this.selectedEmployee) return;
-
-    this.loadingCareerIntelligence = true;
-
-    // Load career intelligence
-    this.intelligenceService.getEmployeeCareerIntelligence(this.selectedEmployee.id).subscribe({
-      next: (intelligence) => {
-        this.careerIntelligence = intelligence;
-        this.loadingCareerIntelligence = false;
-      },
-      error: (error) => {
-        this.loadingCareerIntelligence = false;
-        console.error('Error loading career intelligence:', error);
-      }
-    });
-
-    // Load performance insights
-    this.intelligenceService.getPerformanceInsights(this.selectedEmployee.id).subscribe({
-      next: (insights) => {
-        this.performanceInsights = insights;
-      },
-      error: (error) => {
-        console.error('Error loading performance insights:', error);
-      }
-    });
-  }
-
-  addSkill() {
-    if (!this.selectedEmployee || !this.newSkill.skillId) return;
-
-    this.isAddingSkill = true;
-    this.newSkill.employeeId = this.selectedEmployee.id;
-
-    this.skillsService.addEmployeeSkill(this.newSkill).subscribe({
-      next: (skill) => {
-        this.employeeSkills.push(skill);
-        this.showAddSkillDialog = false;
-        this.resetNewSkill();
-        this.isAddingSkill = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Skill added successfully'
-        });
-      },
-      error: (error) => {
-        this.isAddingSkill = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to add skill'
-        });
-        console.error('Error adding skill:', error);
-      }
-    });
-  }
-
-  editSkill(skill: EmployeeSkill) {
-    this.editingSkill = { ...skill };
-    this.showEditSkillDialog = true;
-  }
-
-  updateSkill() {
-    if (!this.editingSkill || !this.selectedEmployee) return;
-
-    this.isUpdatingSkill = true;
-    const updateDto: UpdateEmployeeSkill = {
-      proficiencyLevel: this.editingSkill.proficiencyLevel,
-      acquiredDate: this.editingSkill.acquiredDate,
-      notes: this.editingSkill.notes
-    };
-
-    this.skillsService.updateEmployeeSkill(
-      this.selectedEmployee.id,
-      this.editingSkill.skillId,
-      updateDto
-    ).subscribe({
-      next: (updatedSkill) => {
-        const index = this.employeeSkills.findIndex(s => s.id === updatedSkill.id);
-        if (index !== -1) {
-          this.employeeSkills[index] = updatedSkill;
-        }
-        this.showEditSkillDialog = false;
-        this.editingSkill = null;
-        this.isUpdatingSkill = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Skill updated successfully'
-        });
-      },
-      error: (error) => {
-        this.isUpdatingSkill = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to update skill'
-        });
-        console.error('Error updating skill:', error);
-      }
-    });
-  }
-
-  deleteSkill(skill: EmployeeSkill) {
-    if (!this.selectedEmployee) return;
-
-    this.skillsService.removeEmployeeSkill(this.selectedEmployee.id, skill.skillId).subscribe({
-      next: () => {
-        this.employeeSkills = this.employeeSkills.filter(s => s.id !== skill.id);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Skill removed successfully'
-        });
-      },
-      error: (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to remove skill'
-        });
-        console.error('Error removing skill:', error);
-      }
-    });
-  }
-
-  resetNewSkill() {
-    this.newSkill = {
-      employeeId: 0,
-      skillId: 0,
-      proficiencyLevel: 1
-    };
   }
 
   canEditEmployee(): boolean {
@@ -1468,9 +641,6 @@ export class Employees implements OnInit {
     
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) return false;
-
-    console.log('Current User:', currentUser);
-    console.log('Current User Role', currentUser.role);
 
     // HR and Admin can edit anyone
     if (currentUser.role === 'HR' || currentUser.role === 'Admin') {

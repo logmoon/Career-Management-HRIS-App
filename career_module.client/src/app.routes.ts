@@ -31,7 +31,7 @@ import { AppLayout } from '@/layout/component/app.layout';
 import { Notfound } from '@/pages/notfound/notfound';
 import { Dashboard } from '@/pages/dashboard/dashboard';
 import { Employees } from '@/pages/employee/employees';
-import { Profile } from '@/pages/employee/my-profile';
+import { EmployeeDetail } from '@/pages/employee/employee-detail';
 import { Organization } from '@/pages/organization/organization';
 
 // Components
@@ -60,7 +60,8 @@ export const appRoutes: Routes = [
         
         // Employee Management
         { path: 'employees', component: Employees },
-        { path: 'profile', component: Profile },
+        { path: 'employee-detail/:id', component: EmployeeDetail },
+        { path: 'profile', component: EmployeeDetail },
 
         { path: 'organization', component: Organization },
 

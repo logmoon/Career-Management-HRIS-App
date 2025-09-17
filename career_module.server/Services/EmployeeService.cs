@@ -15,17 +15,27 @@ namespace career_module.server.Services
         Task<ServiceResult<List<Employee>>> GetDirectReportsAsync(int employeeId);
         Task<ServiceResult<List<Employee>>> GetOrganizationHierarchyAsync();
         Task<ServiceResult<List<Employee>>> SearchEmployeesAsync(string searchTerm);
+
+        // Employee Experience methods
+        Task<ServiceResult<List<EmployeeExperience>>> GetEmployeeExperiencesAsync(int employeeId);
+        Task<ServiceResult<EmployeeExperience>> AddEmployeeExperienceAsync(int employeeId, CreateExperienceDto dto, int requestingUserId);
+        Task<ServiceResult<EmployeeExperience>> UpdateEmployeeExperienceAsync(int experienceId, UpdateExperienceDto dto, int requestingUserId);
+        Task<ServiceResult<bool>> DeleteEmployeeExperienceAsync(int experienceId, int requestingUserId);
+
+        // Employee Education methods
+        Task<ServiceResult<List<EmployeeEducation>>> GetEmployeeEducationsAsync(int employeeId);
+        Task<ServiceResult<EmployeeEducation>> AddEmployeeEducationAsync(int employeeId, CreateEducationDto dto, int requestingUserId);
+        Task<ServiceResult<EmployeeEducation>> UpdateEmployeeEducationAsync(int educationId, UpdateEducationDto dto, int requestingUserId);
+        Task<ServiceResult<bool>> DeleteEmployeeEducationAsync(int educationId, int requestingUserId);
     }
 
     public class EmployeeService : IEmployeeService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
-        public EmployeeService(CareerManagementDbContext context, INotificationService notificationService)
+        public EmployeeService(CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<List<Employee>>> GetAllEmployeesAsync(string? department = null, string? role = null, int page = 1, int pageSize = 50)
@@ -211,15 +221,6 @@ namespace career_module.server.Services
 
                 await _context.SaveChangesAsync();
 
-                // Send notifications
-                await _notificationService.NotifyAsync(
-                    employee.User.Id,
-                    "Department Assignment",
-                    $"You have been assigned to the {newDepartment.Name} department by {changedBy.FirstName} {changedBy.LastName}",
-                    "DepartmentChange",
-                    employeeId
-                );
-
                 await transaction.CommitAsync();
 
                 // Reload with includes
@@ -282,27 +283,6 @@ namespace career_module.server.Services
                 employee.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-
-                // Send notifications
-                if (newManager != null)
-                {
-                    await _notificationService.NotifyAsync(
-                        employee.User.Id,
-                        "Manager Assignment",
-                        $"Your manager has been changed to {newManager.FirstName} {newManager.LastName}",
-                        "ManagerChange",
-                        employeeId
-                    );
-
-                    await _notificationService.NotifyAsync(
-                        newManager.User.Id,
-                        "New Direct Report",
-                        $"{employee.FirstName} {employee.LastName} now reports to you",
-                        "DirectReportAdded",
-                        employeeId
-                    );
-                }
-
                 await transaction.CommitAsync();
 
                 // Reload with includes
@@ -390,6 +370,344 @@ namespace career_module.server.Services
             }
         }
 
+        #region Employee Experience Methods
+
+        public async Task<ServiceResult<List<EmployeeExperience>>> GetEmployeeExperiencesAsync(int employeeId)
+        {
+            try
+            {
+                var experiences = await _context.EmployeeExperiences
+                    .Where(e => e.EmployeeId == employeeId)
+                    .OrderByDescending(e => e.StartDate)
+                    .ToListAsync();
+
+                return ServiceResult<List<EmployeeExperience>>.Success(experiences);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<EmployeeExperience>>.Failure($"Failed to get employee experiences: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<EmployeeExperience>> AddEmployeeExperienceAsync(int employeeId, CreateExperienceDto dto, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Check if employee exists
+                var employee = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.Id == employeeId);
+
+                if (employee == null)
+                    return ServiceResult<EmployeeExperience>.Failure("Employee not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<EmployeeExperience>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, employeeId);
+                if (!canEdit)
+                    return ServiceResult<EmployeeExperience>.Failure("Insufficient permissions to add experience");
+
+                // Validate dates
+                if (dto.EndDate.HasValue && dto.EndDate.Value < dto.StartDate)
+                    return ServiceResult<EmployeeExperience>.Failure("End date cannot be before start date");
+
+                var experience = new EmployeeExperience
+                {
+                    EmployeeId = employeeId,
+                    JobTitle = dto.JobTitle,
+                    Company = dto.Company,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    Description = dto.Description ?? string.Empty,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.EmployeeExperiences.Add(experience);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<EmployeeExperience>.Success(experience);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<EmployeeExperience>.Failure($"Failed to add experience: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<EmployeeExperience>> UpdateEmployeeExperienceAsync(int experienceId, UpdateExperienceDto dto, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var experience = await _context.EmployeeExperiences
+                    .Include(e => e.Employee)
+                    .ThenInclude(emp => emp.User)
+                    .FirstOrDefaultAsync(e => e.Id == experienceId);
+
+                if (experience == null)
+                    return ServiceResult<EmployeeExperience>.Failure("Experience not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<EmployeeExperience>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, experience.EmployeeId);
+                if (!canEdit)
+                    return ServiceResult<EmployeeExperience>.Failure("Insufficient permissions to update experience");
+
+                // Update fields
+                if (!string.IsNullOrEmpty(dto.JobTitle))
+                    experience.JobTitle = dto.JobTitle;
+
+                if (!string.IsNullOrEmpty(dto.Company))
+                    experience.Company = dto.Company;
+
+                if (dto.StartDate.HasValue)
+                    experience.StartDate = dto.StartDate.Value;
+
+                if (dto.EndDate.HasValue)
+                    experience.EndDate = dto.EndDate.Value;
+                else if (dto.ClearEndDate)
+                    experience.EndDate = null;
+
+                if (dto.Description != null)
+                    experience.Description = dto.Description;
+
+                // Validate dates
+                if (experience.EndDate.HasValue && experience.EndDate.Value < experience.StartDate)
+                    return ServiceResult<EmployeeExperience>.Failure("End date cannot be before start date");
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<EmployeeExperience>.Success(experience);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<EmployeeExperience>.Failure($"Failed to update experience: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<bool>> DeleteEmployeeExperienceAsync(int experienceId, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var experience = await _context.EmployeeExperiences
+                    .FirstOrDefaultAsync(e => e.Id == experienceId);
+
+                if (experience == null)
+                    return ServiceResult<bool>.Failure("Experience not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<bool>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, experience.EmployeeId);
+                if (!canEdit)
+                    return ServiceResult<bool>.Failure("Insufficient permissions to delete experience");
+
+                _context.EmployeeExperiences.Remove(experience);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<bool>.Failure($"Failed to delete experience: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Employee Education Methods
+
+        public async Task<ServiceResult<List<EmployeeEducation>>> GetEmployeeEducationsAsync(int employeeId)
+        {
+            try
+            {
+                var educations = await _context.EmployeeEducations
+                    .Where(e => e.EmployeeId == employeeId)
+                    .OrderByDescending(e => e.GraduationYear ?? 0)
+                    .ToListAsync();
+
+                return ServiceResult<List<EmployeeEducation>>.Success(educations);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<EmployeeEducation>>.Failure($"Failed to get employee educations: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<EmployeeEducation>> AddEmployeeEducationAsync(int employeeId, CreateEducationDto dto, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Check if employee exists
+                var employee = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.Id == employeeId);
+
+                if (employee == null)
+                    return ServiceResult<EmployeeEducation>.Failure("Employee not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<EmployeeEducation>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, employeeId);
+                if (!canEdit)
+                    return ServiceResult<EmployeeEducation>.Failure("Insufficient permissions to add education");
+
+                // Validate graduation year
+                if (dto.GraduationYear.HasValue)
+                {
+                    var currentYear = DateTime.UtcNow.Year;
+                    if (dto.GraduationYear.Value < 1900 || dto.GraduationYear.Value > currentYear + 10)
+                        return ServiceResult<EmployeeEducation>.Failure("Invalid graduation year");
+                }
+
+                var education = new EmployeeEducation
+                {
+                    EmployeeId = employeeId,
+                    Degree = dto.Degree,
+                    Institution = dto.Institution,
+                    GraduationYear = dto.GraduationYear,
+                    FieldOfStudy = dto.FieldOfStudy ?? string.Empty,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.EmployeeEducations.Add(education);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<EmployeeEducation>.Success(education);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<EmployeeEducation>.Failure($"Failed to add education: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<EmployeeEducation>> UpdateEmployeeEducationAsync(int educationId, UpdateEducationDto dto, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var education = await _context.EmployeeEducations
+                    .Include(e => e.Employee)
+                    .ThenInclude(emp => emp.User)
+                    .FirstOrDefaultAsync(e => e.Id == educationId);
+
+                if (education == null)
+                    return ServiceResult<EmployeeEducation>.Failure("Education not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<EmployeeEducation>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, education.EmployeeId);
+                if (!canEdit)
+                    return ServiceResult<EmployeeEducation>.Failure("Insufficient permissions to update education");
+
+                // Update fields
+                if (!string.IsNullOrEmpty(dto.Degree))
+                    education.Degree = dto.Degree;
+
+                if (!string.IsNullOrEmpty(dto.Institution))
+                    education.Institution = dto.Institution;
+
+                if (dto.GraduationYear.HasValue)
+                {
+                    var currentYear = DateTime.UtcNow.Year;
+                    if (dto.GraduationYear.Value < 1900 || dto.GraduationYear.Value > currentYear + 10)
+                        return ServiceResult<EmployeeEducation>.Failure("Invalid graduation year");
+
+                    education.GraduationYear = dto.GraduationYear.Value;
+                }
+
+                if (dto.FieldOfStudy != null)
+                    education.FieldOfStudy = dto.FieldOfStudy;
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<EmployeeEducation>.Success(education);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<EmployeeEducation>.Failure($"Failed to update education: {ex.Message}");
+            }
+        }
+
+        public async Task<ServiceResult<bool>> DeleteEmployeeEducationAsync(int educationId, int requestingUserId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var education = await _context.EmployeeEducations
+                    .FirstOrDefaultAsync(e => e.Id == educationId);
+
+                if (education == null)
+                    return ServiceResult<bool>.Failure("Education not found");
+
+                // Check permissions
+                var requestingUser = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.UserId == requestingUserId);
+
+                if (requestingUser == null)
+                    return ServiceResult<bool>.Failure("Requesting user not found");
+
+                var canEdit = CanEditEmployeeProfile(requestingUser.User.Role, requestingUser.Id, education.EmployeeId);
+                if (!canEdit)
+                    return ServiceResult<bool>.Failure("Insufficient permissions to delete education");
+
+                _context.EmployeeEducations.Remove(education);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult<bool>.Failure($"Failed to delete education: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #region Private Methods
 
         private async Task<bool> IsCircularManagementAsync(int employeeId, int potentialManagerId)
@@ -419,6 +737,16 @@ namespace career_module.server.Services
             return false; // No circular reference
         }
 
+        private static bool CanEditEmployeeProfile(string userRole, int requestingEmployeeId, int targetEmployeeId)
+        {
+            // HR and Admin can edit anyone's profile
+            if (userRole == "HR" || userRole == "Admin")
+                return true;
+
+            // Users can edit their own profile
+            return requestingEmployeeId == targetEmployeeId;
+        }
+
         #endregion
     }
 
@@ -430,5 +758,42 @@ namespace career_module.server.Services
         public string? Phone { get; set; }
         public decimal? Salary { get; set; }
         public DateTime? HireDate { get; set; }
+    }
+
+    // Experience DTOs
+    public class CreateExperienceDto
+    {
+        public string JobTitle { get; set; } = string.Empty;
+        public string Company { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Description { get; set; }
+    }
+
+    public class UpdateExperienceDto
+    {
+        public string? JobTitle { get; set; }
+        public string? Company { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool ClearEndDate { get; set; } = false;
+        public string? Description { get; set; }
+    }
+
+    // Education DTOs
+    public class CreateEducationDto
+    {
+        public string Degree { get; set; } = string.Empty;
+        public string Institution { get; set; } = string.Empty;
+        public int? GraduationYear { get; set; }
+        public string? FieldOfStudy { get; set; }
+    }
+
+    public class UpdateEducationDto
+    {
+        public string? Degree { get; set; }
+        public string? Institution { get; set; }
+        public int? GraduationYear { get; set; }
+        public string? FieldOfStudy { get; set; }
     }
 }

@@ -37,18 +37,15 @@ namespace career_module.server.Services
     public class SuccessionPlanningService : ISuccessionPlanningService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
         private readonly ICareerPathService _careerPathService;
         private readonly IPerformanceReviewService _performanceService;
 
         public SuccessionPlanningService(
             CareerManagementDbContext context,
-            INotificationService notificationService,
             ICareerPathService careerPathService,
             IPerformanceReviewService performanceService)
         {
             _context = context;
-            _notificationService = notificationService;
             _careerPathService = careerPathService;
             _performanceService = performanceService;
         }
@@ -111,9 +108,6 @@ namespace career_module.server.Services
                 }
 
                 await transaction.CommitAsync();
-
-                // Send notifications
-                await NotifyStakeholdersOfNewSuccessionPlan(successionPlan);
 
                 return await GetSuccessionPlanByIdAsync(successionPlan.Id);
             }
@@ -400,9 +394,6 @@ namespace career_module.server.Services
 
                 _context.SuccessionCandidates.Add(newCandidate);
                 await _context.SaveChangesAsync();
-
-                // Notify the candidate and relevant stakeholders
-                await NotifyCandidateAddition(newCandidate, successionPlan);
 
                 // Load complete data for response
                 var result = await _context.SuccessionCandidates
@@ -760,14 +751,6 @@ namespace career_module.server.Services
                     await CreateSuccessionPlanAsync(createDto, employee.UserId);
                 }
 
-                // Notify HR about retirement planning
-                await _notificationService.NotifyHRAsync(
-                    "Retirement Planning Alert",
-                    $"{employee.FirstName} {employee.LastName} has indicated retirement date of {expectedRetirementDate:yyyy-MM-dd}. Succession planning has been initiated.",
-                    "RetirementPlanning",
-                    employeeId
-                );
-
                 return ServiceResult<bool>.Success(true);
             }
             catch (Exception ex)
@@ -1043,78 +1026,6 @@ namespace career_module.server.Services
                 }
             }
         }
-
-        private async Task NotifyStakeholdersOfNewSuccessionPlan(SuccessionPlan successionPlan)
-        {
-            var position = await _context.Positions
-                .Include(p => p.Department)
-                .FirstOrDefaultAsync(p => p.Id == successionPlan.PositionId);
-
-            if (position != null)
-            {
-                // Notify HR
-                await _notificationService.NotifyHRAsync(
-                    "New Succession Plan Created",
-                    $"A succession plan has been created for {position.Title} in {position.Department.Name}",
-                    "SuccessionPlan",
-                    successionPlan.Id
-                );
-
-                // Notify department head if exists
-                if (position.Department.HeadOfDepartmentId.HasValue)
-                {
-                    var deptHead = await _context.Employees
-                        .Include(e => e.User)
-                        .FirstOrDefaultAsync(e => e.Id == position.Department.HeadOfDepartmentId.Value);
-
-                    if (deptHead != null)
-                    {
-                        await _notificationService.NotifyAsync(
-                            deptHead.User.Id,
-                            "Succession Plan Created",
-                            $"A succession plan has been created for the {position.Title} position in your department",
-                            "SuccessionPlan",
-                            successionPlan.Id
-                        );
-                    }
-                }
-            }
-        }
-
-        private async Task NotifyCandidateAddition(SuccessionCandidate candidate, SuccessionPlan successionPlan)
-        {
-            var employee = await _context.Employees
-                .Include(e => e.User)
-                .FirstOrDefaultAsync(e => e.Id == candidate.EmployeeId);
-
-            var position = await _context.Positions
-                .FirstOrDefaultAsync(p => p.Id == successionPlan.PositionId);
-
-            if (employee != null && position != null)
-            {
-                await _notificationService.NotifyAsync(
-                    employee.User.Id,
-                    "Added to Succession Plan",
-                    $"You have been identified as a potential candidate for the {position.Title} position. This is an exciting career development opportunity!",
-                    "SuccessionCandidate",
-                    candidate.Id
-                );
-
-                // Notify their manager
-                if (employee.ManagerId.HasValue)
-                {
-                    await _notificationService.NotifyManagerAsync(
-                        employee.Id,
-                        "Direct Report in Succession Plan",
-                        $"{employee.FirstName} {employee.LastName} has been added to a succession plan for {position.Title}",
-                        "SuccessionCandidate",
-                        candidate.Id,
-                        employee.Id
-                    );
-                }
-            }
-        }
-
         #endregion
     }
 

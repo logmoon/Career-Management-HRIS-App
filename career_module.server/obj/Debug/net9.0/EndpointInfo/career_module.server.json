@@ -1137,19 +1137,13 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRequestDto"
-              }
+              "schema": { }
             },
             "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRequestDto"
-              }
+              "schema": { }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRequestDto"
-              }
+              "schema": { }
             }
           }
         },
@@ -1291,11 +1285,61 @@
         }
       }
     },
-    "/api/EmployeeRequests/types": {
-      "get": {
+    "/api/EmployeeRequests/promotion": {
+      "post": {
         "tags": [
           "EmployeeRequests"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromotionRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromotionRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromotionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeRequests/department-change": {
+      "post": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentChangeRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentChangeRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentChangeRequestDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1564,27 +1608,19 @@
         }
       }
     },
-    "/api/Notifications/me": {
+    "/api/Employees/{employeeId}/experiences": {
       "get": {
         "tags": [
-          "Notifications"
+          "Employees"
         ],
         "parameters": [
           {
-            "name": "unreadOnly",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 50
+              "format": "int32"
             }
           }
         ],
@@ -1593,13 +1629,41 @@
             "description": "OK"
           }
         }
-      }
-    },
-    "/api/Notifications/unread-count": {
-      "get": {
+      },
+      "post": {
         "tags": [
-          "Notifications"
+          "Employees"
         ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExperienceDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExperienceDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExperienceDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1607,14 +1671,54 @@
         }
       }
     },
-    "/api/Notifications/{id}/mark-read": {
+    "/api/Employees/experiences/{experienceId}": {
       "put": {
         "tags": [
-          "Notifications"
+          "Employees"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "experienceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExperienceDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExperienceDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExperienceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "experienceId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1630,163 +1734,20 @@
         }
       }
     },
-    "/api/Notifications/mark-all-read": {
-      "put": {
-        "tags": [
-          "Notifications"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Notifications/send": {
-      "post": {
-        "tags": [
-          "Notifications"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendNotificationDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendNotificationDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendNotificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Notifications/send-to-hr": {
-      "post": {
-        "tags": [
-          "Notifications"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendBulkNotificationDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendBulkNotificationDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendBulkNotificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Notifications/send-to-role": {
-      "post": {
-        "tags": [
-          "Notifications"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendRoleNotificationDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendRoleNotificationDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendRoleNotificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Notifications/notify-manager": {
-      "post": {
-        "tags": [
-          "Notifications"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotifyManagerDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotifyManagerDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotifyManagerDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Notifications": {
+    "/api/Employees/{employeeId}/educations": {
       "get": {
         "tags": [
-          "Notifications"
+          "Employees"
         ],
         "parameters": [
           {
-            "name": "userId",
-            "in": "query",
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
             }
-          },
-          {
-            "name": "unreadOnly",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
           }
         ],
         "responses": {
@@ -1794,16 +1755,96 @@
             "description": "OK"
           }
         }
-      }
-    },
-    "/api/Notifications/{id}": {
-      "delete": {
+      },
+      "post": {
         "tags": [
-          "Notifications"
+          "Employees"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEducationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEducationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEducationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Employees/educations/{educationId}": {
+      "put": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "educationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEducationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEducationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEducationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "name": "educationId",
             "in": "path",
             "required": true,
             "schema": {
@@ -3288,6 +3329,33 @@
         },
         "additionalProperties": false
       },
+      "CreateDepartmentChangeRequestDto": {
+        "type": "object",
+        "properties": {
+          "requesterId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetEmployeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newDepartmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newManagerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateDepartmentDto": {
         "type": "object",
         "properties": {
@@ -3302,6 +3370,56 @@
           "headOfDepartmentId": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateEducationDto": {
+        "type": "object",
+        "properties": {
+          "degree": {
+            "type": "string",
+            "nullable": true
+          },
+          "institution": {
+            "type": "string",
+            "nullable": true
+          },
+          "graduationYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fieldOfStudy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateExperienceDto": {
+        "type": "object",
+        "properties": {
+          "jobTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -3389,7 +3507,7 @@
         },
         "additionalProperties": false
       },
-      "CreateRequestDto": {
+      "CreatePromotionRequestDto": {
         "type": "object",
         "properties": {
           "requesterId": {
@@ -3398,14 +3516,18 @@
           },
           "targetEmployeeId": {
             "type": "integer",
-            "format": "int32",
+            "format": "int32"
+          },
+          "newPositionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "proposedSalary": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
-          "requestType": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
+          "justification": {
             "type": "string",
             "nullable": true
           }
@@ -3462,33 +3584,6 @@
           "password": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "NotifyManagerDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "actionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedEntityId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -3556,83 +3651,6 @@
         },
         "additionalProperties": false
       },
-      "SendBulkNotificationDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "actionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedEntityId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "SendNotificationDto": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "actionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedEntityId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "SendRoleNotificationDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "actionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedEntityId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "role": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "UpdateCareerPathDto": {
         "type": "object",
         "properties": {
@@ -3688,6 +3706,29 @@
         },
         "additionalProperties": false
       },
+      "UpdateEducationDto": {
+        "type": "object",
+        "properties": {
+          "degree": {
+            "type": "string",
+            "nullable": true
+          },
+          "institution": {
+            "type": "string",
+            "nullable": true
+          },
+          "graduationYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fieldOfStudy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "UpdateEmployeeDto": {
         "type": "object",
         "properties": {
@@ -3730,6 +3771,37 @@
             "nullable": true
           },
           "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateExperienceDto": {
+        "type": "object",
+        "properties": {
+          "jobTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "clearEndDate": {
+            "type": "boolean"
+          },
+          "description": {
             "type": "string",
             "nullable": true
           }

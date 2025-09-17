@@ -32,14 +32,11 @@ namespace career_module.server.Services
     public class CareerPathService : ICareerPathService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
         public CareerPathService(
-            CareerManagementDbContext context,
-            INotificationService notificationService)
+            CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
 
         }
 
@@ -106,9 +103,6 @@ namespace career_module.server.Services
 
                 // Load complete data for response
                 var result = await GetCareerPathByIdAsync(careerPath.Id);
-
-                // Notify employees who might be interested in this new path
-                await NotifyRelevantEmployeesOfNewPath(careerPath);
 
                 return result;
             }
@@ -615,26 +609,6 @@ namespace career_module.server.Services
         #endregion
 
         #region Private Helper Methods
-
-        private async Task NotifyRelevantEmployeesOfNewPath(CareerPath careerPath)
-        {
-            // Notify employees in the "from" position about new career opportunity
-            var relevantEmployees = await _context.Employees
-                .Include(e => e.User)
-                .Where(e => e.CurrentPositionId == careerPath.FromPositionId)
-                .ToListAsync();
-
-            foreach (var employee in relevantEmployees)
-            {
-                await _notificationService.NotifyAsync(
-                    employee.User.Id,
-                    "New Career Path Available",
-                    $"A new career path has been created from your current position. Check your career development options!",
-                    "NewCareerPath",
-                    careerPath.Id
-                );
-            }
-        }
 
         private int CalculatePathPriority(CareerPathAnalysis analysis, Employee employee)
         {

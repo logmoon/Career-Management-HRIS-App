@@ -19,12 +19,10 @@ namespace career_module.server.Services
     public class DepartmentService : IDepartmentService
     {
         private readonly CareerManagementDbContext _context;
-        private readonly INotificationService _notificationService;
 
-        public DepartmentService(CareerManagementDbContext context, INotificationService notificationService)
+        public DepartmentService(CareerManagementDbContext context)
         {
             _context = context;
-            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<List<Department>>> GetAllDepartmentsAsync(bool activeOnly = true)
@@ -210,15 +208,6 @@ namespace career_module.server.Services
                 department.IsActive = false;
                 await _context.SaveChangesAsync();
 
-                // Notify HR about deactivation
-                await _notificationService.NotifyHRAsync(
-                    "Department Deactivated",
-                    $"The {department.Name} department has been deactivated by {deactivator.Username}",
-                    "DepartmentDeactivated",
-                    id,
-                    deactivatedByUserId
-                );
-
                 await transaction.CommitAsync();
 
                 return ServiceResult<bool>.Success(true);
@@ -338,32 +327,12 @@ namespace career_module.server.Services
 
             await _context.SaveChangesAsync();
 
-            // Send notifications
-            await _notificationService.NotifyAsync(
-                employee.User.Id,
-                "Head of Department Assignment",
-                $"You have been assigned as head of the {department.Name} department",
-                "HeadOfDepartmentAssigned",
-                departmentId
-            );
-
             // Notify previous head if there was one
             if (previousHeadId.HasValue && previousHeadId != employeeId)
             {
                 var previousHead = await _context.Employees
                     .Include(e => e.User)
                     .FirstOrDefaultAsync(e => e.Id == previousHeadId.Value);
-
-                if (previousHead != null)
-                {
-                    await _notificationService.NotifyAsync(
-                        previousHead.User.Id,
-                        "Head of Department Changed",
-                        $"You are no longer head of the {department.Name} department",
-                        "HeadOfDepartmentChanged",
-                        departmentId
-                    );
-                }
             }
 
             // Notify department employees
@@ -371,17 +340,6 @@ namespace career_module.server.Services
                 .Include(e => e.User)
                 .Where(e => e.DepartmentId == departmentId && e.Id != employeeId)
                 .ToListAsync();
-
-            foreach (var deptEmployee in departmentEmployees)
-            {
-                await _notificationService.NotifyAsync(
-                    deptEmployee.User.Id,
-                    "New Department Head",
-                    $"{employee.FirstName} {employee.LastName} is now head of your department",
-                    "DepartmentHeadChanged",
-                    departmentId
-                );
-            }
 
             // Reload with includes
             var updatedDepartment = await GetDepartmentByIdAsync(departmentId);

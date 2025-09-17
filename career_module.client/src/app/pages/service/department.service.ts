@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 import { Employee } from './employee.service';
 import { AuthService } from './auth.service';
+import { Position } from './position.service';
 
 // Interfaces
 export interface Department {
@@ -16,13 +17,6 @@ export interface Department {
   headOfDepartment?: Employee;
   employees?: Employee[];
   positions?: Position[];
-}
-
-export interface Position {
-  id: number;
-  title: string;
-  departmentId: number;
-  // Add other position properties as needed
 }
 
 export interface CreateDepartmentDto {
