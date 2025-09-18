@@ -162,6 +162,8 @@ namespace career_module.server.Models.Entities
         [Required]
         public string Degree { get; set; } = string.Empty;
         [Required]
+        public string Level { get; set; } = string.Empty;
+        [Required]
         public string Institution { get; set; } = string.Empty;
         public int? GraduationYear { get; set; }
         public string FieldOfStudy { get; set; } = string.Empty;

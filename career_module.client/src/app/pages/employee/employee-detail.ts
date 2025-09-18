@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -553,6 +553,7 @@ interface TimelineEvent {
                         <h5 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
                           {{ edu.degree }}
                         </h5>
+                        <p class="text-primary font-semibold m-0 mb-1">{{ edu.level }}</p>
                         <p class="text-primary font-medium m-0 mb-1">{{ edu.institution }}</p>
                         <div class="flex gap-4 text-sm text-surface-600 dark:text-surface-300">
                           <span *ngIf="edu.fieldOfStudy">{{ edu.fieldOfStudy }}</span>
@@ -1264,6 +1265,17 @@ interface TimelineEvent {
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Level *
+            </label>
+            <p-select
+              [(ngModel)]="newEducation.level"
+              [options]="educationLevelOptions()"
+              placeholder="Select education level"
+              class="w-full">
+            </p-select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Institution *
             </label>
             <input 
@@ -1327,6 +1339,17 @@ interface TimelineEvent {
               pInputText 
               [(ngModel)]="editingEducation.degree"
               class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Level *
+            </label>
+            <p-select
+              [(ngModel)]="editingEducation.level"
+              [options]="educationLevelOptions()"
+              placeholder="Select education level"
+              class="w-full">
+            </p-select>
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
@@ -1455,6 +1478,7 @@ export class EmployeeDetail implements OnInit {
   newEducation: CreateEducationDto = {
     degree: '',
     institution: '',
+    level: '',
     graduationYear: undefined,
     fieldOfStudy: ''
   };
@@ -1473,6 +1497,15 @@ export class EmployeeDetail implements OnInit {
   ) {
     this.initChartOptions();
   }
+
+  educationLevelOptions = computed(() => [
+    { label: 'Any Level', value: null },
+    { label: 'High School', value: 'High School' },
+    { label: 'Associate Degree', value: 'Associate' },
+    { label: 'Bachelor Degree', value: 'Bachelor' },
+    { label: 'Master Degree', value: 'Master' },
+    { label: 'Doctoral Degree', value: 'PhD' }
+  ]);
 
   ngOnInit() {
     // Get employee ID from route parameter
@@ -1969,6 +2002,7 @@ export class EmployeeDetail implements OnInit {
     this.isUpdatingEducation.set(true);
     const updateDto: UpdateEducationDto = {
       degree: this.editingEducation.degree,
+      level: this.editingEducation.level,
       institution: this.editingEducation.institution,
       graduationYear: this.editingEducation.graduationYear,
       fieldOfStudy: this.editingEducation.fieldOfStudy
@@ -2036,6 +2070,7 @@ export class EmployeeDetail implements OnInit {
     this.showAddEducationDialog = false;
     this.newEducation = {
       degree: '',
+      level: '',
       institution: '',
       graduationYear: undefined,
       fieldOfStudy: ''

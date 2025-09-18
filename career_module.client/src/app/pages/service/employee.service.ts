@@ -46,6 +46,7 @@ export interface EmployeeEducation {
   id: number;
   employeeId: number;
   degree: string;
+  level: string;
   institution: string;
   graduationYear?: number;
   fieldOfStudy: string;
@@ -88,12 +89,14 @@ export interface UpdateExperienceDto {
 export interface CreateEducationDto {
   degree: string;
   institution: string;
+  level: string;
   graduationYear?: number;
   fieldOfStudy?: string;
 }
 
 export interface UpdateEducationDto {
   degree?: string;
+  level?: string;
   institution?: string;
   graduationYear?: number;
   fieldOfStudy?: string;

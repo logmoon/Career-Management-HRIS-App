@@ -393,7 +393,7 @@ namespace career_module.server.Services
 
                 // Education analysis
                 analysis.MeetsEducationRequirement = string.IsNullOrEmpty(careerPath.RequiredEducationLevel) ||
-                    employee.EmployeeEducations.Any(ed => ed.Degree.Contains(careerPath.RequiredEducationLevel));
+                    employee.EmployeeEducations.Any(ed => ed.Level.Contains(careerPath.RequiredEducationLevel));
 
                 // Skills analysis
                 var skillGapsResult = await GetSkillGapsForPathAsync(employeeId, careerPathId);

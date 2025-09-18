@@ -870,7 +870,7 @@ namespace career_module.server.Services
 
         #endregion
 
-        #region Smart Dashboard & Analytics (replaces Reports controller)
+        #region Smart Dashboard & Analytics
 
         public async Task<ServiceResult<IntelligentDashboard>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null)
         {
@@ -1443,7 +1443,7 @@ namespace career_module.server.Services
 
         private async Task<List<OrganizationSkillGap>> IdentifyOrganizationSkillGapsAsync()
         {
-            // Simplified - identify skills mentioned in career paths but lacking in organization
+            // Identify skills mentioned in career paths but lacking in organization
             var requiredSkills = await _context.CareerPathSkills
                 .Include(cps => cps.Skill)
                 .GroupBy(cps => cps.Skill)

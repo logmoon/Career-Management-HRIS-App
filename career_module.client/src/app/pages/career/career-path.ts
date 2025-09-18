@@ -48,6 +48,7 @@ import { PositionService, Position } from '../service/position.service';
 import { EmployeeRequestService, CreatePromotionRequestDto } from '../service/employee-request.service';
 import { EmployeeService, Employee } from '../service/employee.service';
 import { AuthService } from '../service/auth.service';
+import { Skill, SkillsService } from '../service/skills.service';
 
 interface CareerPathWithAnalysis extends CareerPath {
   analysis?: CareerPathAnalysis;
@@ -187,7 +188,6 @@ interface RoadmapVisualization {
                 <div class="flex flex-wrap gap-4 items-center">
                   <div class="flex-1 min-w-0">
                     <span class="p-input-icon-left w-full">
-                      <i class="pi pi-search"></i>
                       <input 
                         pInputText 
                         type="text" 
@@ -583,11 +583,6 @@ interface RoadmapVisualization {
                   <p class="text-surface-500 dark:text-surface-400 mb-4">
                     Explore available career paths to begin planning your professional development
                   </p>
-                  <p-button 
-                    label="Explore Paths" 
-                    icon="pi pi-sitemap"
-                    (click)="switchToAvailablePaths()">
-                  </p-button>
                 </div>
               </div>
             </p-tabpanel>
@@ -737,13 +732,6 @@ interface RoadmapVisualization {
                   <p class="text-surface-500 dark:text-surface-400 mb-4">
                     No career opportunities match your current criteria. Try adjusting your filters or check back later.
                   </p>
-                  <p-button 
-                    label="Refresh Opportunities" 
-                    icon="pi pi-refresh"
-                    severity="secondary"
-                    [outlined]="true"
-                    (click)="loadOpportunities()">
-                  </p-button>
                 </div>
               </div>
             </p-tabpanel>
@@ -751,144 +739,282 @@ interface RoadmapVisualization {
         </p-fluid>
       </div>
 
-      <!-- Create Career Path Dialog -->
-      <p-dialog 
+        <!-- Create Career Path Dialog -->
+        <p-dialog 
         header="Create Career Path" 
         [(visible)]="showCreateCareerPathDialog" 
         [modal]="true"
-        styleClass="w-full max-w-2xl">
-        <div class="space-y-4">
-          <!-- From Position -->
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              From Position *
-            </label>
-            <p-select
-              [(ngModel)]="newCareerPath.fromPositionId"
-              [options]="positionOptions()"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select starting position"
-              class="w-full"
-              (onChange)="onFromPositionChange()">
-            </p-select>
-          </div>
-
-          <!-- To Position -->
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              To Position *
-            </label>
-            <p-select
-              [(ngModel)]="newCareerPath.toPositionId"
-              [options]="availableToPositions()"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select target position"
-              class="w-full">
-            </p-select>
-          </div>
-
-          <!-- Experience Requirements -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        styleClass="w-full max-w-4xl">
+        <div class="space-y-6">
+            <!-- Position Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- From Position -->
             <div>
-              <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                From Position *
+                </label>
+                <p-select
+                [(ngModel)]="newCareerPath.fromPositionId"
+                [options]="positionOptions()"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select starting position"
+                class="w-full"
+                (onChange)="onFromPositionChange()">
+                </p-select>
+            </div>
+
+            <!-- To Position -->
+            <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                To Position *
+                </label>
+                <p-select
+                [(ngModel)]="newCareerPath.toPositionId"
+                [options]="getAvailableToPositions()"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select target position"
+                class="w-full"
+                [disabled]="!newCareerPath.fromPositionId">
+                </p-select>
+            </div>
+            </div>
+
+            <!-- Experience Requirements -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 Minimum Years in Current Role
-              </label>
-              <p-inputNumber
+                </label>
+                <p-inputNumber
                 [(ngModel)]="newCareerPath.minYearsInCurrentRole"
                 [min]="0"
                 [max]="20"
                 class="w-full">
-              </p-inputNumber>
+                </p-inputNumber>
             </div>
             <div>
-              <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 Minimum Total Experience
-              </label>
-              <p-inputNumber
+                </label>
+                <p-inputNumber
                 [(ngModel)]="newCareerPath.minTotalExperience"
                 [min]="0"
                 [max]="40"
                 class="w-full">
-              </p-inputNumber>
+                </p-inputNumber>
             </div>
-          </div>
+            </div>
 
-          <!-- Performance and Education -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Performance and Education -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 Minimum Performance Rating
-              </label>
-              <p-select
+                </label>
+                <p-select
                 [(ngModel)]="newCareerPath.minPerformanceRating"
                 [options]="performanceRatingOptions()"
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Any rating"
                 class="w-full">
-              </p-select>
+                </p-select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 Required Education Level
-              </label>
-              <p-select
+                </label>
+                <p-select
                 [(ngModel)]="newCareerPath.requiredEducationLevel"
                 [options]="educationLevelOptions()"
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Any education level"
                 class="w-full">
-              </p-select>
+                </p-select>
             </div>
-          </div>
+            </div>
 
-          <!-- Certifications -->
-          <div>
+            <!-- Required Skills Section -->
+            <div>
+            <div class="flex items-center justify-between mb-3">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300">
+                Required Skills
+                </label>
+                <p-button 
+                label="Add Skill" 
+                icon="pi pi-plus" 
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                (click)="showAddSkillDialog = true">
+                </p-button>
+            </div>
+
+            <!-- Skills List -->
+            <div *ngIf="selectedSkillsForPath.length > 0" class="space-y-2 mb-4">
+                <div *ngFor="let skill of selectedSkillsForPath; let i = index" 
+                    class="flex items-center justify-between p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3">
+                    <span class="font-medium text-surface-900 dark:text-surface-0">
+                        {{ getSkillName(skill.skillId) }}
+                    </span>
+                    <p-tag 
+                        [value]="skill.isMandatory ? 'Required' : 'Preferred'"
+                        [severity]="skill.isMandatory ? 'danger' : 'info'"
+                        styleClass="text-xs">
+                    </p-tag>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                    <span class="text-sm text-surface-600 dark:text-surface-300">Min Level:</span>
+                    <p-rating 
+                        [ngModel]="skill.minProficiencyLevel"
+                        [readonly]="true"
+                        [stars]="5"
+                        styleClass="text-sm">
+                    </p-rating>
+                    </div>
+                </div>
+                <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    [text]="true"
+                    size="small"
+                    (click)="removeSkillRequirement(i)"
+                    pTooltip="Remove skill">
+                </p-button>
+                </div>
+            </div>
+
+            <!-- No Skills Message -->
+            <div *ngIf="selectedSkillsForPath.length === 0" 
+                class="text-center p-6 border-2 border-dashed border-surface-200 dark:border-surface-700 rounded-lg">
+                <i class="pi pi-plus-circle text-3xl text-surface-300 dark:text-surface-600 mb-2 block"></i>
+                <p class="text-surface-500 dark:text-surface-400 text-sm">
+                No skills added yet. Click "Add Skill" to include skill requirements.
+                </p>
+            </div>
+            </div>
+
+            <!-- Certifications -->
+            <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Required Certifications
+                Required Certifications
             </label>
             <textarea 
-              pTextarea 
-              [(ngModel)]="newCareerPath.requiredCertifications"
-              rows="2"
-              class="w-full"
-              placeholder="List any required certifications (optional)">
+                pTextarea 
+                [(ngModel)]="newCareerPath.requiredCertifications"
+                rows="2"
+                class="w-full"
+                placeholder="List any required certifications (optional)">
             </textarea>
-          </div>
+            </div>
 
-          <!-- Description -->
-          <div>
+            <!-- Description -->
+            <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Description
+                Description
             </label>
             <textarea 
-              pTextarea 
-              [(ngModel)]="newCareerPath.description"
-              rows="3"
-              class="w-full"
-              placeholder="Describe this career path...">
+                pTextarea 
+                [(ngModel)]="newCareerPath.description"
+                rows="3"
+                class="w-full"
+                placeholder="Describe this career path...">
             </textarea>
-          </div>
+            </div>
         </div>
         
         <ng-template pTemplate="footer">
-          <p-button 
+            <p-button 
             label="Cancel" 
             severity="secondary" 
             [outlined]="true"
             (click)="cancelCreateCareerPath()">
-          </p-button>
-          <p-button 
+            </p-button>
+            <p-button 
             label="Create Path" 
             (click)="createCareerPath()"
             [disabled]="!newCareerPath.fromPositionId || !newCareerPath.toPositionId"
             [loading]="isCreatingPath()">
-          </p-button>
+            </p-button>
         </ng-template>
-      </p-dialog>
+        </p-dialog>
+
+        <!-- Add Skill Dialog -->
+        <p-dialog 
+        header="Add Skill Requirement" 
+        [(visible)]="showAddSkillDialog" 
+        [modal]="true"
+        styleClass="w-full max-w-md">
+        <div class="space-y-4">
+            <!-- Skill Selection -->
+            <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                Skill *
+            </label>
+            <p-select
+                [(ngModel)]="newSkillRequirement.skillId"
+                [options]="skillOptions()"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select skill"
+                class="w-full"
+                [filter]="true"
+                filterPlaceholder="Search skills...">
+            </p-select>
+            </div>
+
+            <!-- Proficiency Level -->
+            <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                Minimum Proficiency Level *
+            </label>
+            <div class="flex items-center gap-3">
+                <p-rating 
+                [(ngModel)]="newSkillRequirement.minProficiencyLevel"
+                [stars]="5"
+                class="flex-1">
+                </p-rating>
+                <span class="text-sm text-surface-600 dark:text-surface-300 min-w-0">
+                {{ newSkillRequirement.minProficiencyLevel }}/5
+                </span>
+            </div>
+            <small class="text-surface-500 dark:text-surface-400 mt-1 block">
+                1 = Beginner, 3 = Intermediate, 5 = Expert
+            </small>
+            </div>
+
+            <!-- Is Mandatory -->
+            <div class="flex items-center gap-3">
+            <p-checkbox 
+                [(ngModel)]="newSkillRequirement.isMandatory"
+                [binary]="true"
+                inputId="mandatory-skill">
+            </p-checkbox>
+            <label for="mandatory-skill" class="text-sm font-medium text-surface-700 dark:text-surface-300">
+                This skill is mandatory (required for eligibility)
+            </label>
+            </div>
+        </div>
+        
+        <ng-template pTemplate="footer">
+            <p-button 
+            label="Cancel" 
+            severity="secondary" 
+            [outlined]="true"
+            (click)="showAddSkillDialog = false; resetNewSkillRequirement()">
+            </p-button>
+            <p-button 
+            label="Add Skill" 
+            (click)="addSkillRequirement()"
+            [disabled]="!newSkillRequirement.skillId">
+            </p-button>
+        </ng-template>
+        </p-dialog>
 
       <!-- Career Path Details Dialog -->
       <p-dialog 
@@ -1195,6 +1321,7 @@ export class CareerDevelopment implements OnInit {
   selectedMatchScore: number | null = null;
   showHighPriorityOnly = false;
 
+
   // Forms
   newCareerPath: any = {
     fromPositionId: null,
@@ -1214,6 +1341,14 @@ export class CareerDevelopment implements OnInit {
     proposedSalary: 0,
     justification: ''
   };
+    selectedSkillsForPath: { skillId: number; minProficiencyLevel: number; isMandatory: boolean }[] = [];
+    availableSkills = signal<Skill[]>([]);
+        showAddSkillDialog = false;
+        newSkillRequirement = {
+        skillId: null as number | null,
+        minProficiencyLevel: 1,
+        isMandatory: false
+    };
 
   // Computed properties
   positionOptions = computed(() => 
@@ -1222,6 +1357,13 @@ export class CareerDevelopment implements OnInit {
       value: pos.id 
     }))
   );
+
+  getAvailableToPositions() {
+  const fromPositionId = this.newCareerPath.fromPositionId;
+  if (!fromPositionId) return [];
+  
+  return this.positionOptions().filter(pos => pos.value !== fromPositionId);
+}
 
   employeeOptions = computed(() => {
     const current = this.currentEmployee();
@@ -1237,9 +1379,11 @@ export class CareerDevelopment implements OnInit {
   });
 
   availableToPositions = computed(() => {
-    if (!this.newCareerPath.fromPositionId) return [];
-    return this.positionOptions().filter(pos => pos.value !== this.newCareerPath.fromPositionId);
-  });
+  const fromPositionId = this.newCareerPath.fromPositionId;
+  if (!fromPositionId) return [];
+  
+  return this.positionOptions().filter(pos => pos.value !== fromPositionId);
+});
 
   availablePathsFromCurrent = computed(() => {
     const employee = this.currentEmployee();
@@ -1272,11 +1416,8 @@ export class CareerDevelopment implements OnInit {
 
   opportunityTypeOptions = computed(() => [
     { label: 'All Types', value: null },
-    { label: 'Promotion', value: 'Promotion' },
-    { label: 'Lateral Move', value: 'Lateral Move' },
-    { label: 'Cross-Department', value: 'Cross-Department' },
-    { label: 'Leadership', value: 'Leadership' },
-    { label: 'Specialist', value: 'Specialist' }
+    { label: 'Vacant Position', value: 'Vacant Position' },
+    { label: 'Succession Plan', value: 'Succession Plan' },
   ]);
 
   matchScoreOptions = computed(() => [
@@ -1309,6 +1450,7 @@ export class CareerDevelopment implements OnInit {
     private employeeRequestService: EmployeeRequestService,
     private employeeService: EmployeeService,
     private authService: AuthService,
+    private skillsService: SkillsService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private router: Router
@@ -1316,6 +1458,7 @@ export class CareerDevelopment implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.loadSkills();
   }
 
   async loadData() {
@@ -1343,6 +1486,64 @@ export class CareerDevelopment implements OnInit {
       this.isLoading.set(false);
     }
   }
+
+  async loadSkills() {
+    try {
+        const skills = await this.skillsService.getAllSkills().toPromise();
+        if (skills) {
+         this.availableSkills.set(skills);
+        }
+    } catch (error) {
+        console.error('Error loading skills:', error);
+    }
+    }
+    skillOptions = computed(() => 
+  this.availableSkills().map(skill => ({ 
+    label: skill.name, 
+    value: skill.id 
+  }))
+);
+
+addSkillRequirement() {
+  if (!this.newSkillRequirement.skillId) return;
+  
+  // Check if skill already added
+  const exists = this.selectedSkillsForPath.some(s => s.skillId === this.newSkillRequirement.skillId);
+  if (exists) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Skill Already Added',
+      detail: 'This skill is already in the requirements list'
+    });
+    return;
+  }
+  
+  this.selectedSkillsForPath.push({
+    skillId: this.newSkillRequirement.skillId,
+    minProficiencyLevel: this.newSkillRequirement.minProficiencyLevel,
+    isMandatory: this.newSkillRequirement.isMandatory
+  });
+  
+  this.resetNewSkillRequirement();
+  this.showAddSkillDialog = false;
+}
+
+removeSkillRequirement(index: number) {
+  this.selectedSkillsForPath.splice(index, 1);
+}
+
+resetNewSkillRequirement() {
+  this.newSkillRequirement = {
+    skillId: null,
+    minProficiencyLevel: 1,
+    isMandatory: false
+  };
+}
+
+getSkillName(skillId: number): string {
+  const skill = this.availableSkills().find(s => s.id === skillId);
+  return skill ? skill.name : 'Unknown Skill';
+}
 
   async loadPositions() {
     try {
@@ -1573,48 +1774,59 @@ export class CareerDevelopment implements OnInit {
 
   // Career Path Creation
   async createCareerPath() {
-    if (!this.newCareerPath.fromPositionId || !this.newCareerPath.toPositionId) {
-      return;
-    }
-
-    this.isCreatingPath.set(true);
-
-    try {
-      const path = await this.careerPathService.createCareerPath(this.newCareerPath).toPromise();
-      if (path) {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Path Created',
-          detail: 'New career path has been created successfully'
-        });
-        this.cancelCreateCareerPath();
-        await this.loadCareerPaths(); // Reload paths
-      }
-    } catch (error) {
-      console.error('Error creating career path:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Creation Failed',
-        detail: 'Unable to create career path'
-      });
-    } finally {
-      this.isCreatingPath.set(false);
-    }
+  if (!this.newCareerPath.fromPositionId || !this.newCareerPath.toPositionId) {
+    return;
   }
 
-  cancelCreateCareerPath() {
-    this.showCreateCareerPathDialog = false;
-    this.newCareerPath = {
-      fromPositionId: null,
-      toPositionId: null,
-      minYearsInCurrentRole: 0,
-      minTotalExperience: 0,
-      minPerformanceRating: null,
-      requiredEducationLevel: null,
-      requiredCertifications: '',
-      description: ''
+  this.isCreatingPath.set(true);
+
+  try {
+    // Prepare the DTO with required skills
+    const careerPathDto = {
+      ...this.newCareerPath,
+      requiredSkills: this.selectedSkillsForPath.map(skill => ({
+        skillId: skill.skillId,
+        minProficiencyLevel: skill.minProficiencyLevel,
+        isMandatory: skill.isMandatory
+      }))
     };
+
+    const path = await this.careerPathService.createCareerPath(careerPathDto).toPromise();
+    if (path) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Path Created',
+        detail: 'New career path has been created successfully'
+      });
+      this.cancelCreateCareerPath();
+      await this.loadCareerPaths(); // Reload paths
+    }
+  } catch (error) {
+    console.error('Error creating career path:', error);
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Creation Failed',
+      detail: 'Unable to create career path'
+    });
+  } finally {
+    this.isCreatingPath.set(false);
   }
+}
+cancelCreateCareerPath() {
+  this.showCreateCareerPathDialog = false;
+  this.selectedSkillsForPath = [];
+  this.resetNewSkillRequirement();
+  this.newCareerPath = {
+    fromPositionId: null,
+    toPositionId: null,
+    minYearsInCurrentRole: 0,
+    minTotalExperience: 0,
+    minPerformanceRating: null,
+    requiredEducationLevel: null,
+    requiredCertifications: '',
+    description: ''
+  };
+}
 
   onFromPositionChange() {
     // Clear to position when from position changes
@@ -1734,11 +1946,8 @@ export class CareerDevelopment implements OnInit {
 
   getOpportunityTypeClass(type: string): string {
     const typeClasses: { [key: string]: string } = {
-      'Promotion': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      'Lateral Move': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'Cross-Department': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'Leadership': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-      'Specialist': 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200'
+      'Vacant Position': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      'Succession Plan': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     };
     return typeClasses[type] || 'bg-surface-100 text-surface-800 dark:bg-surface-700 dark:text-surface-200';
   }

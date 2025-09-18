@@ -9,6 +9,7 @@ import { Departments } from '@/pages/organization/departments';
 import { Positions } from '@/pages/organization/positions';
 import { Skills } from '@/pages/organization/skills';
 import { CareerDevelopment } from '@/pages/career/career-path';
+import { MyRequests } from '@/pages/requests/my-requests';
 
 // Components
 /*
@@ -35,6 +36,7 @@ export const appRoutes: Routes = [
         { path: 'dashboard', component: Dashboard },
 
         { path: 'career-path', component: CareerDevelopment },
+        { path: 'my-requests', component: MyRequests },
         
         { path: 'employees', component: Employees, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },
         { path: 'employee-detail/:id', component: EmployeeDetail, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },

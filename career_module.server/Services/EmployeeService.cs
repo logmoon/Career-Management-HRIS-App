@@ -595,6 +595,7 @@ namespace career_module.server.Services
                 {
                     EmployeeId = employeeId,
                     Degree = dto.Degree,
+                    Level = dto.Level,
                     Institution = dto.Institution,
                     GraduationYear = dto.GraduationYear,
                     FieldOfStudy = dto.FieldOfStudy ?? string.Empty,
@@ -642,6 +643,9 @@ namespace career_module.server.Services
                 // Update fields
                 if (!string.IsNullOrEmpty(dto.Degree))
                     education.Degree = dto.Degree;
+
+                if (!string.IsNullOrEmpty(dto.Level))
+                    education.Level = dto.Level;
 
                 if (!string.IsNullOrEmpty(dto.Institution))
                     education.Institution = dto.Institution;
@@ -784,6 +788,7 @@ namespace career_module.server.Services
     public class CreateEducationDto
     {
         public string Degree { get; set; } = string.Empty;
+        public string Level { get; set; } = string.Empty;
         public string Institution { get; set; } = string.Empty;
         public int? GraduationYear { get; set; }
         public string? FieldOfStudy { get; set; }
@@ -792,6 +797,7 @@ namespace career_module.server.Services
     public class UpdateEducationDto
     {
         public string? Degree { get; set; }
+        public string? Level { get; set; }
         public string? Institution { get; set; }
         public int? GraduationYear { get; set; }
         public string? FieldOfStudy { get; set; }
