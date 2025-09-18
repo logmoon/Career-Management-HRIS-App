@@ -35,9 +35,9 @@ import { DatePickerModule } from 'primeng/datepicker';
 // Services
 import { EmployeeRequestService, EmployeeRequest, PromotionRequest, DepartmentChangeRequest, CreatePromotionRequestDto, CreateDepartmentChangeRequestDto } from '../service/employee-request.service';
 import { EmployeeService, Employee } from '../service/employee.service';
-import { PositionService, Position } from '../service/position.service';
 import { DepartmentService, Department } from '../service/department.service';
 import { AuthService } from '../service/auth.service';
+import { CareerPath, CareerPathService } from '../service/career-path.service';
 
 interface RequestWithType extends EmployeeRequest {
   requestTypeLabel: string;
@@ -334,7 +334,7 @@ interface TimelineEvent {
                             <ng-container *ngIf="getPromotionRequest(request) as promotion">
                               <div class="flex justify-between">
                                 <span class="text-surface-600 dark:text-surface-300">New Position:</span>
-                                <strong>{{ promotion.newPosition.title || 'Unknown Position' }}</strong>
+                                <strong>{{ this.getPromotionRequestTitle(promotion) }}</strong>
                               </div>
                               <div class="flex justify-between" *ngIf="promotion.proposedSalary">
                                 <span class="text-surface-600 dark:text-surface-300">Proposed Salary:</span>
@@ -480,14 +480,28 @@ interface TimelineEvent {
 
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  New Position *
+                  Career Path *
                 </label>
                 <p-select
-                  [(ngModel)]="newPromotionRequest.newPositionId"
-                  [options]="positionOptions()"
+                  [(ngModel)]="newPromotionRequest.careerPathId"
+                  [options]="pathOptions()"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select new position"
+                  placeholder="Select career path"
+                  class="w-full">
+                </p-select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  New Manager (Optional)
+                </label>
+                <p-select
+                  [(ngModel)]="newPromotionRequest.newManagerId"
+                  [options]="availableManagers()"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select new manager"
                   class="w-full">
                 </p-select>
               </div>
@@ -686,7 +700,7 @@ interface TimelineEvent {
                 <ng-container *ngIf="getPromotionRequest(selectedRequest) as promotion">
                   <div class="flex justify-between">
                     <span class="font-medium text-surface-600 dark:text-surface-300">New Position:</span>
-                    <strong>{{ promotion.newPosition.title || 'Unknown Position' }}</strong>
+                    <strong>{{ this.getPromotionRequestTitle(promotion) }}</strong>
                   </div>
                   <div class="flex justify-between" *ngIf="promotion.proposedSalary">
                     <span class="font-medium text-surface-600 dark:text-surface-300">Proposed Salary:</span>
@@ -774,7 +788,7 @@ export class MyRequests implements OnInit {
   // Signals for reactive state management
   requests = signal<RequestWithType[]>([]);
   filteredRequests = signal<RequestWithType[]>([]);
-  positions = signal<Position[]>([]);
+  paths = signal<CareerPath[]>([]);
   departments = signal<Department[]>([]);
   employees = signal<Employee[]>([]);
   currentUser = signal<Employee | null>(null);
@@ -799,7 +813,8 @@ export class MyRequests implements OnInit {
   // Form data
   newPromotionRequest: CreatePromotionRequestDto = {
     targetEmployeeId: 0,
-    newPositionId: 0,
+    careerPathId: 0,
+    newManagerId: undefined,
     proposedSalary: undefined,
     justification: ''
   };
@@ -827,10 +842,10 @@ export class MyRequests implements OnInit {
     { label: 'Auto Approved', value: 'AutoApproved' }
   ]);
 
-  positionOptions = computed(() => 
-    this.positions().map(pos => ({ 
-      label: `${pos.title} - ${pos.department?.name || 'Unknown Dept'}`, 
-      value: pos.id 
+  pathOptions = computed(() => 
+    this.paths().map(path => ({ 
+      label: `From ${path.fromPosition.title} to ${path.toPosition.title} - ${path.toPosition.department?.name || 'Unknown Dept'}`, 
+      value: path.id 
     }))
   );
 
@@ -867,7 +882,7 @@ export class MyRequests implements OnInit {
   constructor(
     private employeeRequestService: EmployeeRequestService,
     private employeeService: EmployeeService,
-    private positionService: PositionService,
+    private careerPathService: CareerPathService,
     private departmentService: DepartmentService,
     private authService: AuthService,
     private messageService: MessageService,
@@ -887,7 +902,7 @@ export class MyRequests implements OnInit {
       await Promise.all([
         this.loadCurrentUser(),
         this.loadRequests(),
-        this.loadPositions(),
+        this.loadPaths(),
         this.loadDepartments(),
         this.loadEmployees()
       ]);
@@ -932,11 +947,11 @@ export class MyRequests implements OnInit {
     }
   }
 
-  async loadPositions() {
+  async loadPaths() {
     try {
-      const positions = await this.positionService.getActivePositions().toPromise();
-      if (positions) {
-        this.positions.set(positions);
+      const paths = await this.careerPathService.getActiveCareerPaths().toPromise();
+      if (paths) {
+        this.paths.set(paths);
       }
     } catch (error) {
       console.error('Error loading positions:', error);
@@ -1026,6 +1041,11 @@ export class MyRequests implements OnInit {
 
   getDepartmentChangeRequest(request: EmployeeRequest): DepartmentChangeRequest | null {
     return request.requestType === 'DepartmentChange' ? request as DepartmentChangeRequest : null;
+  }
+
+  getPromotionRequestTitle(promotion: PromotionRequest): string {
+    const path = this.paths().find(p => p.id === promotion.careerPathId);
+    return path ? 'Promotion From ' + path.fromPosition.title + ' to ' + path.toPosition.title : 'Unknown Path';
   }
 
   getRequestJustification(request: EmployeeRequest): string | null {
@@ -1128,6 +1148,7 @@ export class MyRequests implements OnInit {
       case 'HRApproved': return 100;
       case 'AutoApproved': return 100;
       case 'Rejected': return 0;
+      case 'Canceled': return 0;
       default: return 0;
     }
   }
@@ -1139,6 +1160,7 @@ export class MyRequests implements OnInit {
       case 'HRApproved': return 'Approved and processed';
       case 'AutoApproved': return 'Auto-approved and processed';
       case 'Rejected': return 'Request rejected';
+      case 'Canceled': return 'Request canceled';
       default: return 'Unknown status';
     }
   }
@@ -1231,7 +1253,7 @@ export class MyRequests implements OnInit {
   // Form validation methods
   isPromotionRequestValid(): boolean {
     return !!(this.newPromotionRequest.targetEmployeeId && 
-              this.newPromotionRequest.newPositionId && 
+              this.newPromotionRequest.careerPathId && 
               this.newPromotionRequest.justification?.trim());
   }
 
@@ -1252,7 +1274,8 @@ export class MyRequests implements OnInit {
     
     this.newPromotionRequest = {
       targetEmployeeId: currentUserId,
-      newPositionId: 0,
+      careerPathId: 0,
+      newManagerId: undefined,
       proposedSalary: undefined,
       justification: ''
     };
@@ -1289,13 +1312,14 @@ export class MyRequests implements OnInit {
       acceptButtonStyleClass: 'p-button-danger',
       accept: async () => {
         try {
-          // Note: This would need a cancel endpoint in the service
-          // For now, we'll show a message that it needs to be handled manually
-          this.messageService.add({
-            severity: 'info',
-            summary: 'Request Cancellation',
-            detail: 'Please contact HR to cancel this request'
-          });
+          const message = await this.employeeRequestService.cancelRequest(request.id).toPromise();
+          if (message) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Request Canceled',
+              detail: message.message
+            });
+          }
         } catch (error) {
           console.error('Error canceling request:', error);
           this.messageService.add({

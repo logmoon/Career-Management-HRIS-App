@@ -253,10 +253,16 @@ namespace career_module.server.Infrastructure.Data
                 entity.Property(e => e.Justification).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.ProposedSalary).HasPrecision(18, 2);
 
-                entity.HasOne(p => p.NewPosition)
+                entity.HasOne(p => p.CareerPath)
                       .WithMany()
-                      .HasForeignKey(p => p.NewPositionId)
+                      .HasForeignKey(p => p.CareerPathId)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.NewManager)
+                      .WithMany()
+                      .HasForeignKey(d => d.NewManagerId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
             });
 
             modelBuilder.Entity<DepartmentChangeRequest>(entity =>
@@ -271,7 +277,8 @@ namespace career_module.server.Infrastructure.Data
                 entity.HasOne(d => d.NewManager)
                       .WithMany()
                       .HasForeignKey(d => d.NewManagerId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
             });
             #endregion
 

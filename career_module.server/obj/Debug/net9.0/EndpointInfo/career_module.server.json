@@ -1155,6 +1155,27 @@
       }
     },
     "/api/EmployeeRequests/{id}": {
+      "delete": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "get": {
         "tags": [
           "EmployeeRequests"
@@ -3522,9 +3543,14 @@
             "type": "integer",
             "format": "int32"
           },
-          "newPositionId": {
+          "careerPathId": {
             "type": "integer",
             "format": "int32"
+          },
+          "newManagerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "proposedSalary": {
             "type": "number",

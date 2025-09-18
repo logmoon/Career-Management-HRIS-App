@@ -509,6 +509,22 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "CancelRequestById",
+    "RelativePath": "api/EmployeeRequests/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
     "Method": "GetRequestById",
     "RelativePath": "api/EmployeeRequests/{id}",
     "HttpMethod": "GET",

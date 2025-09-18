@@ -83,6 +83,18 @@ namespace career_module.server.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelRequestById(int id)
+        {
+            var currentUserId = GetCurrentUserId();
+            var result = await _requestService.CancelRequestAsync(id);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(new { message = "Request cancelled successfully" });
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRequestById(int id)
         {
@@ -170,8 +182,9 @@ namespace career_module.server.Controllers
             var result = await _requestService.CreatePromotionRequestAsync(
                 dto.RequesterId > 0 ? dto.RequesterId : currentEmployeeId,
                 dto.TargetEmployeeId,
-                dto.NewPositionId,
+                dto.CareerPathId,
                 dto.ProposedSalary,
+                dto.NewManagerId,
                 dto.Justification);
 
             if (!result.IsSuccess)
@@ -214,7 +227,8 @@ namespace career_module.server.Controllers
     {
         public int RequesterId { get; set; }
         public int TargetEmployeeId { get; set; }
-        public int NewPositionId { get; set; }
+        public int CareerPathId { get; set; }
+        public int? NewManagerId { get; set; }
         public decimal? ProposedSalary { get; set; }
         public string? Justification { get; set; }
     }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 import { Employee } from './employee.service';
-import { Position } from './position.service';
+import { CareerPath } from './career-path.service';
 import { Department } from './department.service';
 
 // Interfaces for the service
@@ -27,11 +27,13 @@ export interface EmployeeRequest {
 }
 
 export interface PromotionRequest extends EmployeeRequest {
-  newPositionId: number;
+  careerPathId: number;
+  newManagerId?: number;
   proposedSalary?: number;
   justification?: string;
   effectiveDate?: string;
-  newPosition: Position;
+  careerPath: CareerPath;
+  newManager?: Employee;
 }
 
 export interface DepartmentChangeRequest extends EmployeeRequest {
@@ -60,7 +62,8 @@ export interface RejectionDto {
 export interface CreatePromotionRequestDto {
   requesterId?: number;
   targetEmployeeId: number;
-  newPositionId: number;
+  careerPathId: number;
+  newManagerId?: number;
   proposedSalary?: number;
   justification?: string;
 }
@@ -92,6 +95,13 @@ export class EmployeeRequestService extends BaseApiService {
    */
   createRequest(requestData: CreateRequestDto): Observable<EmployeeRequest> {
     return this.post<EmployeeRequest>(this.endpoint, requestData);
+  }
+
+  /**
+   * Cancel employee request
+   */
+  cancelRequest(id: number): Observable<{ message: string }> {
+    return this.delete<{ message: string }>(`${this.endpoint}/${id}`);
   }
 
   /**
@@ -158,7 +168,8 @@ export class EmployeeRequestService extends BaseApiService {
    * @param currentEmployeeId The current user's employee ID
    */
   canApproveAsManager(request: EmployeeRequest, currentEmployeeId: number): boolean {
-    return request.status === 'Pending' &&
+    if (request.status === 'Canceled') return false;
+    return request.requesterId !== request.targetEmployeeId && request.status === 'Pending' &&
            ((request.targetEmployee?.managerId === currentEmployeeId) ||
             (request.requester.managerId === currentEmployeeId));
   }
@@ -169,7 +180,8 @@ export class EmployeeRequestService extends BaseApiService {
    * @param currentUserRole The current user's role
    */
   canApproveAsHR(request: EmployeeRequest, currentUserRole: string): boolean {
-    return (request.status === 'ManagerApproved' || request.status === 'Pending') &&
+    if (request.status === 'Canceled') return false;
+    return request.requesterId !== request.targetEmployeeId && (request.status === 'ManagerApproved' || request.status === 'Pending') &&
            (currentUserRole === 'HR' || currentUserRole === 'Admin');
   }
 

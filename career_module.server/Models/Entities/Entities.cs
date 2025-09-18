@@ -1,4 +1,5 @@
 ﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace career_module.server.Models.Entities
@@ -177,14 +178,14 @@ namespace career_module.server.Models.Entities
     {
         public int Id { get; set; }
         public int RequesterId { get; set; }
-        public int? TargetEmployeeId { get; set; } // null for self-requests
+        public int? TargetEmployeeId { get; set; }
         private string _requestType = string.Empty;
         public virtual string RequestType
         {
             get => _requestType;
             protected set => _requestType = value;
         }
-        public string Status { get; set; } = "Pending"; // Pending, ManagerApproved, HRApproved, Rejected, AutoApproved
+        public string Status { get; set; } = "Pending"; // Pending, ManagerApproved, HRApproved, Rejected, AutoApproved, Canceled
         public int? ApprovedByManagerId { get; set; }
         public int? ApprovedByHRId { get; set; }
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
@@ -232,6 +233,8 @@ namespace career_module.server.Models.Entities
 
         public bool CanApproveAsManager(int managerId)
         {
+            if (Status == "Canceled") return false;
+
             return Status == "Pending" &&
                    (TargetEmployee?.ManagerId == managerId || Requester.ManagerId == managerId) &&
                    RequesterId != TargetEmployee?.Id;
@@ -239,11 +242,13 @@ namespace career_module.server.Models.Entities
 
         public bool CanApproveAsHR(string userRole)
         {
+            if (Status == "Canceled") return false;
+
             return (Status == "ManagerApproved" || Status == "Pending") &&
                    (userRole == "HR" || userRole == "Admin") && RequesterId != TargetEmployee?.Id;
         }
 
-        public abstract Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider);
+        public abstract Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId);
     }
 
     // Promotion Request
@@ -255,20 +260,37 @@ namespace career_module.server.Models.Entities
         }
 
         [Required]
-        public int NewPositionId { get; set; }
+        public int CareerPathId { get; set; }
+        public int? NewManagerId { get; set; }
         public decimal? ProposedSalary { get; set; }
         public string? Justification { get; set; }
         public DateTime? EffectiveDate { get; set; }
 
         // Navigation
-        public Position NewPosition { get; set; } = null!;
+        public CareerPath CareerPath { get; set; }
+        public Employee? NewManager { get; set; }
 
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider)
+        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId)
         {
             var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
+            var employeeService = serviceProvider.GetRequiredService<EmployeeService>();
+            var careerPathService = serviceProvider.GetRequiredService<CareerPathService>();
+            var employeeRequestService = serviceProvider.GetRequiredService<EmployeeRequestService>();
             var targetEmployee = TargetEmployee ?? Requester;
 
-            targetEmployee.CurrentPositionId = NewPositionId;
+            // Set employee's current position
+            targetEmployee.CurrentPositionId = CareerPath.ToPositionId;
+
+            // Change department
+            await employeeService.ChangeDepartmentAsync(targetEmployee.Id, CareerPath.ToPosition.DepartmentId, approverId);
+
+            // If a manager was provided, set it
+            if (NewManagerId.HasValue)
+            {
+                await employeeService.ChangeManagerAsync(targetEmployee.Id, NewManagerId, approverId);
+            }
+
+            // If a salary was provided, set it
             if (ProposedSalary.HasValue)
                 targetEmployee.Salary = ProposedSalary.Value;
 
@@ -296,91 +318,23 @@ namespace career_module.server.Models.Entities
         public Department NewDepartment { get; set; } = null!;
         public Employee? NewManager { get; set; }
 
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider)
+        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId)
         {
             var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
+            var employeeService = serviceProvider.GetRequiredService<EmployeeService>();
             var targetEmployee = TargetEmployee ?? Requester;
 
-            targetEmployee.DepartmentId = NewDepartmentId;
+            await employeeService.ChangeDepartmentAsync(targetEmployee.Id, NewDepartmentId, approverId);
             if (NewManagerId.HasValue)
-                targetEmployee.ManagerId = NewManagerId.Value;
+            {
+                await employeeService.ChangeManagerAsync(targetEmployee.Id, NewManagerId, approverId);
+            }
 
             ProcessedDate = DateTime.UtcNow;
             await context.SaveChangesAsync();
             return true;
         }
     }
-
-    /*
-    public class TrainingRequest : EmployeeRequest
-    {
-        public override string RequestType => "Training";
-
-        [Required]
-        public string TrainingName { get; set; } = string.Empty;
-        public string? TrainingProvider { get; set; }
-        public decimal? Cost { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public string? ExpectedOutcomes { get; set; }
-        public string? BusinessJustification { get; set; }
-
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider)
-        {
-            // TODO: Implement
-            ProcessedDate = DateTime.UtcNow;
-            return true;
-        }
-    }
-    public class SalaryReviewRequest : EmployeeRequest
-    {
-        public override string RequestType => "SalaryReview";
-
-        public decimal? CurrentSalary { get; set; }
-        public decimal? RequestedSalary { get; set; }
-        public string? MarketResearchData { get; set; }
-        public string? Achievements { get; set; }
-        public string? AdditionalResponsibilities { get; set; }
-        public DateTime? LastReviewDate { get; set; }
-
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider)
-        {
-            var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
-            var targetEmployee = TargetEmployee ?? Requester;
-
-            if (RequestedSalary.HasValue)
-                targetEmployee.Salary = RequestedSalary.Value;
-
-            ProcessedDate = DateTime.UtcNow;
-            await context.SaveChangesAsync();
-            return true;
-        }
-    }
-    public class TerminationRequest : EmployeeRequest
-    {
-        public override string RequestType => "Termination";
-
-        [Required]
-        public string TerminationType { get; set; } = string.Empty; // Voluntary, Involuntary, Retirement
-        [Required]
-        public DateTime EffectiveDate { get; set; }
-        public string? Reason { get; set; }
-        public bool ExitInterviewRequired { get; set; } = true;
-        public string? TransitionPlan { get; set; }
-
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider)
-        {
-            var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
-            var targetEmployee = TargetEmployee ?? Requester;
-
-            targetEmployee.User.IsActive = false;
-            ProcessedDate = DateTime.UtcNow;
-            await context.SaveChangesAsync();
-            return true;
-        }
-    }
-    */
-
 
     // Performance Management
     public class PerformanceReview

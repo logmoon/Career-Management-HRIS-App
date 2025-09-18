@@ -41,6 +41,7 @@ namespace career_module.server.Services
     public interface IEmployeeRequestService
     {
         Task<ServiceResult<EmployeeRequest>> CreateRequestAsync<T>(T requestData) where T : EmployeeRequest;
+        Task<ServiceResult<bool>> CancelRequestAsync(int requestId);
         Task<ServiceResult<EmployeeRequest>> ApproveRequestAsync(int requestId, int approverId, string? notes = null);
         Task<ServiceResult<EmployeeRequest>> RejectRequestAsync(int requestId, int rejectorId, string reason);
         Task<ServiceResult<List<EmployeeRequest>>> GetPendingRequestsForUserAsync(int userId, string userRole);
@@ -48,7 +49,7 @@ namespace career_module.server.Services
         Task<ServiceResult<EmployeeRequest>> GetRequestByIdAsync(int requestId);
 
         // Service-specific methods for creating requests from other services
-        Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int newPositionId, decimal? proposedSalary = null, string? justification = null);
+        Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int careerPathId, decimal? proposedSalary = null, int? managerId = null, string? justification = null);
         Task<ServiceResult<DepartmentChangeRequest>> CreateDepartmentChangeRequestAsync(int requesterId, int targetEmployeeId, int newDepartmentId, int? newManagerId = null, string? reason = null);
     }
 
@@ -115,6 +116,28 @@ namespace career_module.server.Services
             }
         }
 
+        public async Task<ServiceResult<bool>> CancelRequestAsync(int requestId)
+        {
+            try
+            {
+                var request = await _context.EmployeeRequests
+                    .FirstOrDefaultAsync(er => er.Id == requestId);
+
+                if (request == null)
+                    return ServiceResult<bool>.Failure("Request not found");
+
+                request.Status = "Canceled";
+
+                await _context.SaveChangesAsync();
+
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<bool>.Failure($"Failed to cancel request: {ex.Message}");
+            }
+        }
+
         public async Task<ServiceResult<EmployeeRequest>> ApproveRequestAsync(int requestId, int approverId, string? notes = null)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -139,21 +162,17 @@ namespace career_module.server.Services
 
                 // Determine approval type and validate permissions
                 string approverRole = approver.User.Role;
-                bool isManagerApproval = false;
-                bool isHRApproval = false;
 
                 if (request.Status == "Pending")
                 {
                     if (request.CanApproveAsManager(approverId))
                     {
-                        isManagerApproval = true;
                         request.Status = "ManagerApproved";
                         request.ApprovedByManagerId = approverId;
                         request.ManagerApprovalDate = DateTime.UtcNow;
                     }
                     else if (request.CanApproveAsHR(approverRole))
                     {
-                        isHRApproval = true;
                         request.Status = "HRApproved";
                         request.ApprovedByHRId = approverId;
                         request.HRApprovalDate = DateTime.UtcNow;
@@ -167,7 +186,6 @@ namespace career_module.server.Services
                 {
                     if (request.CanApproveAsHR(approverRole))
                     {
-                        isHRApproval = true;
                         request.Status = "HRApproved";
                         request.ApprovedByHRId = approverId;
                         request.HRApprovalDate = DateTime.UtcNow;
@@ -193,7 +211,7 @@ namespace career_module.server.Services
                 // Execute the request if fully approved
                 if (request.Status == "HRApproved")
                 {
-                    var executed = await request.ExecuteRequestAsync(_serviceProvider);
+                    var executed = await request.ExecuteRequestAsync(_serviceProvider, approverId);
                     if (!executed)
                     {
                         return ServiceResult<EmployeeRequest>.Failure("Request approved but execution failed");
@@ -366,13 +384,14 @@ namespace career_module.server.Services
         }
 
         // Service-specific methods for creating requests from other services
-        public async Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int newPositionId, decimal? proposedSalary = null, string? justification = null)
+        public async Task<ServiceResult<PromotionRequest>> CreatePromotionRequestAsync(int requesterId, int targetEmployeeId, int careerPathId, decimal? proposedSalary = null, int? managerId = null, string? justification = null)
         {
             var request = new PromotionRequest
             {
                 RequesterId = requesterId,
                 TargetEmployeeId = targetEmployeeId,
-                NewPositionId = newPositionId,
+                CareerPathId = careerPathId,
+                NewManagerId = managerId,
                 ProposedSalary = proposedSalary,
                 Justification = justification,
                 EffectiveDate = DateTime.UtcNow.AddDays(30) // Default to 30 days from now

@@ -364,7 +364,7 @@ interface RoadmapVisualization {
                           label="Request Promotion"
                           icon="pi pi-send"
                           size="small"
-                          (click)="requestPromotion(path.toPosition)"
+                          (click)="requestPromotion(path.id)"
                           class="ml-auto">
                         </p-button>
                       </div>
@@ -1197,7 +1197,7 @@ interface RoadmapVisualization {
             *ngIf="canRequestPromotion() && selectedCareerPath"
             label="Request Promotion" 
             icon="pi pi-send"
-            (click)="requestPromotion(selectedCareerPath.toPosition)">
+            (click)="requestPromotion(selectedCareerPath.id)">
           </p-button>
         </ng-template>
       </p-dialog>
@@ -1208,7 +1208,7 @@ interface RoadmapVisualization {
         [(visible)]="showPromotionRequestDialog" 
         [modal]="true"
         styleClass="w-full max-w-lg">
-        <div *ngIf="selectedPositionForPromotion" class="space-y-4">
+        <div *ngIf="selectedPathForPromotion" class="space-y-4">
           <div class="text-center p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <h5 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-2">
               Promotion Request
@@ -1219,7 +1219,7 @@ interface RoadmapVisualization {
               </span>
               <i class="pi pi-arrow-right text-surface-400"></i>
               <span class="font-semibold text-primary">
-                {{ selectedPositionForPromotion.title }}
+                {{ selectedPathForPromotion.toPosition.title }}
               </span>
             </div>
           </div>
@@ -1334,11 +1334,12 @@ export class CareerDevelopment implements OnInit {
     description: ''
   };
 
-  selectedPositionForPromotion: Position | null = null;
+  selectedPathForPromotion: CareerPath | null = null;
   promotionRequest: CreatePromotionRequestDto = {
     targetEmployeeId: 0,
-    newPositionId: 0,
-    proposedSalary: 0,
+    careerPathId: 0,
+    newManagerId: undefined,
+    proposedSalary: undefined,
     justification: ''
   };
     selectedSkillsForPath: { skillId: number; minProficiencyLevel: number; isMandatory: boolean }[] = [];
@@ -1726,19 +1727,22 @@ getSkillName(skillId: number): string {
     this.selectedCareerPathAnalysis = null;
   }
 
-  requestPromotion(position: Position) {
-    this.selectedPositionForPromotion = position;
-    this.promotionRequest.newPositionId = position.id;
+  requestPromotion(pathId: number) {
+    const path = this.careerPaths().find(p => p.id === pathId);
+    if (!path) return;
+    this.selectedPathForPromotion = path;
+    this.promotionRequest.careerPathId = path.id;
     this.showPromotionRequestDialog = true;
   }
 
   cancelPromotionRequest() {
     this.showPromotionRequestDialog = false;
-    this.selectedPositionForPromotion = null;
+    this.selectedPathForPromotion = null;
     this.promotionRequest = {
       targetEmployeeId: this.currentEmployee()?.id || 0,
-      newPositionId: 0,
-      proposedSalary: 0,
+      careerPathId: 0,
+      newManagerId: undefined,
+      proposedSalary: undefined,
       justification: ''
     };
   }
@@ -1883,7 +1887,7 @@ cancelCreateCareerPath() {
     if (opportunity.type === 'Promotion' && opportunity.relatedId) {
       const position = this.positions().find(p => p.id === opportunity.relatedId);
       if (position) {
-        this.requestPromotion(position);
+        this.requestPromotion(opportunity.relatedId);
       }
     }
   }

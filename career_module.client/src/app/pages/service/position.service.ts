@@ -6,6 +6,7 @@ import { Employee } from './employee.service';
 import { Department } from './department.service';
 import { SuccessionPlan } from './succession-planning.service';
 import { AuthService } from './auth.service';
+import { CareerPath } from './career-path.service';
 
 // Interfaces
 export interface Position {
@@ -25,13 +26,6 @@ export interface Position {
   successionPlans?: SuccessionPlan[];
   fromCareerPaths?: CareerPath[];
   toCareerPaths?: CareerPath[];
-}
-
-export interface CareerPath {
-  id: number;
-  fromPositionId: number;
-  toPositionId: number;
-  // Add other career path properties as needed
 }
 
 export interface CreatePositionDto {
