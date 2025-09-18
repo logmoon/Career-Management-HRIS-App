@@ -203,14 +203,20 @@ namespace career_module.server.Models.Entities
         public void SetInitialStatus()
         {
             var requesterRole = Requester.User.Role;
-
-            Status = requesterRole switch
+            if (RequesterId == TargetEmployee?.Id)
             {
-                "Admin" => "AutoApproved",
-                "HR" => "AutoApproved",
-                "Manager" => "ManagerApproved", // Still needs HR approval
-                _ => "Pending"
-            };
+                Status = "Pending";
+            }
+            else
+            {
+                Status = requesterRole switch
+                {
+                    "Admin" => "AutoApproved",
+                    "HR" => "AutoApproved",
+                    "Manager" => "ManagerApproved",
+                    _ => "Pending"
+                };
+            }
 
             if (Status == "AutoApproved")
             {
@@ -227,13 +233,14 @@ namespace career_module.server.Models.Entities
         public bool CanApproveAsManager(int managerId)
         {
             return Status == "Pending" &&
-                   (TargetEmployee?.ManagerId == managerId || Requester.ManagerId == managerId);
+                   (TargetEmployee?.ManagerId == managerId || Requester.ManagerId == managerId) &&
+                   RequesterId != TargetEmployee?.Id;
         }
 
         public bool CanApproveAsHR(string userRole)
         {
             return (Status == "ManagerApproved" || Status == "Pending") &&
-                   (userRole == "HR" || userRole == "Admin");
+                   (userRole == "HR" || userRole == "Admin") && RequesterId != TargetEmployee?.Id;
         }
 
         public abstract Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider);
