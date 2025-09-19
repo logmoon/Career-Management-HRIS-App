@@ -95,13 +95,19 @@ export class MenuService {
             icon: 'pi pi-fw pi-sitemap', 
             routerLink: ['/career-path']
             // Available to all users
+          },
+          { 
+            label: 'Succession Planning', 
+            icon: 'pi pi-fw pi-star', 
+            routerLink: ['/succession-planning'],
+            allowedRoles: ['Admin', 'HR', 'Manager']
           }
         ]
       },
       {
         label: 'Requests',
         items: [
-          { 
+          {
             label: 'My Requests', 
             icon: 'pi pi-fw pi-inbox', 
             routerLink: ['/my-requests']

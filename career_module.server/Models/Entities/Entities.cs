@@ -399,7 +399,7 @@ namespace career_module.server.Models.Entities
     public class CareerPath
     {
         public int Id { get; set; }
-        public int FromPositionId { get; set; }
+        public int? FromPositionId { get; set; }
         public int ToPositionId { get; set; }
         [Range(0, 50)]
         public int MinYearsInCurrentRole { get; set; } = 1;
@@ -416,7 +416,7 @@ namespace career_module.server.Models.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation Properties
-        public Position FromPosition { get; set; } = null!;
+        public Position? FromPosition { get; set; } = null!;
         public Position ToPosition { get; set; } = null!;
         public User CreatedBy { get; set; } = null!;
         public ICollection<CareerPathSkill> RequiredSkills { get; set; } = new List<CareerPathSkill>();

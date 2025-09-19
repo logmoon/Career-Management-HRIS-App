@@ -9,7 +9,7 @@ import { Skill } from './skills.service';
 
 export interface CareerPath {
   id: number;
-  fromPositionId: number;
+  fromPositionId?: number;
   toPositionId: number;
   minYearsInCurrentRole: number;
   minTotalExperience: number;
@@ -45,7 +45,7 @@ export interface CreateCareerPathSkillDto {
 }
 
 export interface CreateCareerPathDto {
-  fromPositionId: number;
+  fromPositionId?: number;
   toPositionId: number;
   minYearsInCurrentRole?: number;
   minTotalExperience?: number;

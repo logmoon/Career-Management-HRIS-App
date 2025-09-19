@@ -342,7 +342,8 @@ namespace career_module.server.Infrastructure.Data
                 entity.HasOne(cp => cp.FromPosition)
                       .WithMany(p => p.FromCareerPaths)
                       .HasForeignKey(cp => cp.FromPositionId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
 
                 entity.HasOne(cp => cp.ToPosition)
                       .WithMany(p => p.ToCareerPaths)

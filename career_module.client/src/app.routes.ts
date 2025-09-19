@@ -10,6 +10,7 @@ import { Positions } from '@/pages/organization/positions';
 import { Skills } from '@/pages/organization/skills';
 import { CareerDevelopment } from '@/pages/career/career-path';
 import { MyRequests } from '@/pages/requests/my-requests';
+import { SuccessionPlanning } from '@/pages/career/succession-planning';
 
 // Components
 /*
@@ -59,7 +60,12 @@ export const appRoutes: Routes = [
             canActivate: [AuthGuard],
             data: { roles: ['Admin', 'HR', 'Manager'] }
         },
-
+        { 
+            path: 'succession-planning', 
+            component: SuccessionPlanning,
+            canActivate: [AuthGuard],
+            data: { roles: ['Admin', 'HR', 'Manager'] }
+        },
         /*
         // Department Management
         { 

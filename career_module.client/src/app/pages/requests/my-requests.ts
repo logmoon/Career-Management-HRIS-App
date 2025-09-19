@@ -42,7 +42,6 @@ import { CareerPath, CareerPathService } from '../service/career-path.service';
 interface RequestWithType extends EmployeeRequest {
   requestTypeLabel: string;
   canCancel?: boolean;
-  isExpanded?: boolean;
 }
 
 interface TimelineEvent {
@@ -222,7 +221,6 @@ interface TimelineEvent {
               
               <ng-template pTemplate="header">
                 <tr>
-                  <th style="width: 3rem"></th>
                   <th pSortableColumn="requestType">
                     Type <p-sortIcon field="requestType"></p-sortIcon>
                   </th>
@@ -240,15 +238,6 @@ interface TimelineEvent {
 
               <ng-template pTemplate="body" let-request let-expanded="expanded" let-ri="rowIndex">
                 <tr>
-                  <td>
-                    <p-button 
-                      [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                      [text]="true"
-                      [rounded]="true"
-                      size="small"
-                      (click)="toggleRequestDetails(request)">
-                    </p-button>
-                  </td>
                   <td>
                     <div class="flex items-center gap-2">
                       <i [class]="getRequestTypeIcon(request.requestType)" class="text-lg"></i>
@@ -1023,11 +1012,6 @@ export class MyRequests implements OnInit {
 
   getRejectedRequests(): number {
     return this.requests().filter(r => r.status === 'Rejected').length;
-  }
-
-  // Request details methods
-  toggleRequestDetails(request: RequestWithType) {
-    request.isExpanded = !request.isExpanded;
   }
 
   viewRequestDetails(request: RequestWithType) {

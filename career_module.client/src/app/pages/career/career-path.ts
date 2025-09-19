@@ -30,7 +30,6 @@ import { FluidModule } from 'primeng/fluid';
 import { ChartModule } from 'primeng/chart';
 import { AccordionModule } from 'primeng/accordion';
 import { TreeModule } from 'primeng/tree';
-import { TreeNode } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { DataViewModule } from 'primeng/dataview';
 import { ToggleButtonModule } from 'primeng/togglebutton';
@@ -360,11 +359,19 @@ interface RoadmapVisualization {
                           (click)="viewCareerPathDetails(path)">
                         </p-button>
                         <p-button 
-                          *ngIf="canRequestPromotion()"
+                          *ngIf="canRequestPromotion(path)"
                           label="Request Promotion"
                           icon="pi pi-send"
                           size="small"
                           (click)="requestPromotion(path.id)"
+                          class="ml-auto">
+                        </p-button>
+                        <p-button 
+                          *ngIf="!canRequestPromotion(path)"
+                          label="You're not eligible to apply"
+                          icon="pi pi-times"
+                          size="small"
+                          [disabled]="true"
                           class="ml-auto">
                         </p-button>
                       </div>
@@ -701,21 +708,20 @@ interface RoadmapVisualization {
                       </div>
 
                       <ng-template pTemplate="footer">
-                        <div class="flex gap-2 pt-3">
-                          <p-button 
-                            label="View Details"
-                            icon="pi pi-eye"
-                            severity="secondary"
-                            [outlined]="true"
-                            size="small"
-                            (click)="viewOpportunityDetails(opportunity)">
-                          </p-button>
+                        <div class="flex gap-1 pt-3">
                           <p-button 
                             *ngIf="canApplyForOpportunity(opportunity)"
                             label="Apply"
                             icon="pi pi-send"
                             size="small"
                             (click)="applyForOpportunity(opportunity)">
+                          </p-button>
+                          <p-button 
+                            *ngIf="!canApplyForOpportunity(opportunity)"
+                            label="You're not eligible to apply"
+                            icon="pi pi-times"
+                            size="small"
+                            [disabled]="true">
                           </p-button>
                         </div>
                       </ng-template>
@@ -751,11 +757,11 @@ interface RoadmapVisualization {
             <!-- From Position -->
             <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                From Position *
+                From Position
                 </label>
                 <p-select
                 [(ngModel)]="newCareerPath.fromPositionId"
-                [options]="positionOptions()"
+                [options]="getAvailableFromPositions()"
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Select starting position"
@@ -775,8 +781,7 @@ interface RoadmapVisualization {
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Select target position"
-                class="w-full"
-                [disabled]="!newCareerPath.fromPositionId">
+                class="w-full">
                 </p-select>
             </div>
             </div>
@@ -1194,10 +1199,16 @@ interface RoadmapVisualization {
             (click)="closeCareerPathDetails()">
           </p-button>
           <p-button 
-            *ngIf="canRequestPromotion() && selectedCareerPath"
+            *ngIf="canRequestPromotion(selectedCareerPath) && selectedCareerPath"
             label="Request Promotion" 
             icon="pi pi-send"
             (click)="requestPromotion(selectedCareerPath.id)">
+          </p-button>
+          <p-button 
+            *ngIf="!canRequestPromotion(selectedCareerPath) || !selectedCareerPath"
+            label="You're not eligible to apply"
+            icon="pi pi-times"
+            [disabled]="true">
           </p-button>
         </ng-template>
       </p-dialog>
@@ -1235,11 +1246,8 @@ interface RoadmapVisualization {
               optionValue="value"
               placeholder="Select employee"
               class="w-full"
-              [disabled]="!canSelectEmployeeForPromotion()">
+              [disabled]="true">
             </p-select>
-            <small class="text-surface-500 dark:text-surface-400" *ngIf="!canSelectEmployeeForPromotion()">
-              You can only request promotions for yourself
-            </small>
           </div>
 
           <div>
@@ -1359,23 +1367,19 @@ export class CareerDevelopment implements OnInit {
     }))
   );
 
+  getAvailableFromPositions() {
+    return [{label: 'None', value: null}, ...this.positionOptions()];
+  }
+
   getAvailableToPositions() {
   const fromPositionId = this.newCareerPath.fromPositionId;
-  if (!fromPositionId) return [];
-  
+  if (!fromPositionId) return this.positionOptions();
   return this.positionOptions().filter(pos => pos.value !== fromPositionId);
 }
 
   employeeOptions = computed(() => {
     const current = this.currentEmployee();
     if (!current) return [];
-    
-    // If user is HR/Admin/Manager, they can select other employees
-    if (this.canSelectEmployeeForPromotion()) {
-      // For now, just return current employee - would need employee list
-      return [{ label: current.fullName, value: current.id }];
-    }
-    
     return [{ label: current.fullName, value: current.id }];
   });
 
@@ -1875,21 +1879,8 @@ cancelCreateCareerPath() {
     this.viewCareerPathDetails(recommendation.careerPath);
   }
 
-  // Opportunity management
-  viewOpportunityDetails(opportunity: CareerOpportunity) {
-    // Implementation depends on what details you want to show
-    console.log('View opportunity details:', opportunity);
-  }
-
   applyForOpportunity(opportunity: CareerOpportunity) {
-    // This would depend on the opportunity type
-    // For promotion opportunities, redirect to promotion request
-    if (opportunity.type === 'Promotion' && opportunity.relatedId) {
-      const position = this.positions().find(p => p.id === opportunity.relatedId);
-      if (position) {
-        this.requestPromotion(opportunity.relatedId);
-      }
-    }
+    this.requestPromotion(opportunity.relatedId);
   }
 
   // Utility methods
@@ -1956,32 +1947,25 @@ cancelCreateCareerPath() {
     return typeClasses[type] || 'bg-surface-100 text-surface-800 dark:bg-surface-700 dark:text-surface-200';
   }
 
-  switchToAvailablePaths() {
-    // Implementation would depend on your tab switching mechanism
-    // This is a placeholder
-    console.log('Switch to available paths tab');
-  }
-
   // Permission checks
   canCreateCareerPath(): boolean {
     const user = this.authService.getCurrentUser();
     return user?.role === 'HR' || user?.role === 'Admin' || user?.role === 'Manager';
   }
 
-  canRequestPromotion(): boolean {
-    // Employees can request promotions for themselves
-    // HR/Admin/Managers can request for others
-    return true;
-  }
-
-  canSelectEmployeeForPromotion(): boolean {
-    const user = this.authService.getCurrentUser();
-    return user?.role === 'HR' || user?.role === 'Admin' || user?.role === 'Manager';
+  canRequestPromotion(path: CareerPath | null): boolean {
+    if (path) {
+      const currentEmployee = this.currentEmployee();
+      if (currentEmployee?.currentPositionId) {
+        return path.fromPositionId === currentEmployee.currentPositionId
+      }
+    }
+    return false;
   }
 
   canApplyForOpportunity(opportunity: CareerOpportunity): boolean {
-    // Basic check - could be enhanced with more business logic
-    return opportunity.matchScore >= 40;
+    const path = this.careerPaths().find(p => p.id === opportunity.relatedId);
+    return this.canRequestPromotion(path || null) && opportunity.matchScore >= 40;
   }
 
   // TrackBy functions for performance

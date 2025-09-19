@@ -56,8 +56,8 @@ namespace career_module.server.Services
                     .Include(p => p.Department)
                     .FirstOrDefaultAsync(p => p.Id == dto.ToPositionId && p.IsActive);
 
-                if (fromPosition == null || toPosition == null)
-                    return ServiceResult<CareerPath>.Failure("One or both positions not found or inactive");
+                if (toPosition == null)
+                    return ServiceResult<CareerPath>.Failure("To Position is not found or inactive");
 
                 // Check if path already exists
                 var existingPath = await _context.CareerPaths
@@ -734,7 +734,7 @@ namespace career_module.server.Services
 
     public class CreateCareerPathDto
     {
-        public int FromPositionId { get; set; }
+        public int? FromPositionId { get; set; }
         public int ToPositionId { get; set; }
         public int MinYearsInCurrentRole { get; set; } = 1;
         public int MinTotalExperience { get; set; } = 0;
@@ -816,7 +816,7 @@ namespace career_module.server.Services
     public class RoadmapStep
     {
         public int Order { get; set; }
-        public int FromPositionId { get; set; }
+        public int? FromPositionId { get; set; }
         public int ToPositionId { get; set; }
         public int CareerPathId { get; set; }
         public double EstimatedTimeMonths { get; set; }
