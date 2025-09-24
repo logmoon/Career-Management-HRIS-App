@@ -219,8 +219,17 @@ namespace career_module.server.Services
                     employee.ManagerId = null;
                 }
 
+                // Change Role if possible
+                if (newDepartment.Name == "Human Resources")
+                {
+                    employee.User.Role = "HR";
+                }
+                else if (newDepartment.Name == "Administration")
+                {
+                    employee.User.Role = "Admin";
+                }
+                    
                 await _context.SaveChangesAsync();
-
                 await transaction.CommitAsync();
 
                 // Reload with includes

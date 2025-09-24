@@ -408,7 +408,6 @@ namespace career_module.server.Services
                 return ServiceResult<SuccessionCandidate>.Failure($"Failed to add candidate: {ex.Message}");
             }
         }
-
         #endregion
 
         #region Candidate Management

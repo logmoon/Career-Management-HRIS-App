@@ -131,9 +131,6 @@ namespace career_module.server.Services
                 if (dto.ReviewPeriodStart >= dto.ReviewPeriodEnd)
                     return ServiceResult<PerformanceReview>.Failure("Review period start must be before end date");
 
-                if (dto.ReviewPeriodEnd > DateTime.UtcNow)
-                    return ServiceResult<PerformanceReview>.Failure("Review period end cannot be in the future");
-
                 // Check for overlapping reviews for the same employee
                 var overlappingReview = await _context.PerformanceReviews
                     .AnyAsync(pr => pr.EmployeeId == dto.EmployeeId &&

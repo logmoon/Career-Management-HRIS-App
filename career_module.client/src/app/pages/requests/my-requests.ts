@@ -33,11 +33,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 
 // Services
-import { EmployeeRequestService, EmployeeRequest, PromotionRequest, DepartmentChangeRequest, CreatePromotionRequestDto, CreateDepartmentChangeRequestDto } from '../service/employee-request.service';
+import { EmployeeRequestService, EmployeeRequest, CreateEmployeeRequestDto, RequestType } from '../service/employee-request.service';
 import { EmployeeService, Employee } from '../service/employee.service';
 import { DepartmentService, Department } from '../service/department.service';
 import { AuthService } from '../service/auth.service';
 import { CareerPath, CareerPathService } from '../service/career-path.service';
+import { Position, PositionService } from '../service/position.service';
 
 interface RequestWithType extends EmployeeRequest {
   requestTypeLabel: string;
@@ -246,7 +247,7 @@ interface TimelineEvent {
                   </td>
                   <td>
                     <p-tag 
-                      [value]="getStatusDisplayText(request.status)" 
+                      [value]="employeeRequestService.getStatusDisplayText(request.status)" 
                       [severity]="getStatusSeverity(request.status)">
                     </p-tag>
                   </td>
@@ -256,15 +257,15 @@ interface TimelineEvent {
                     </span>
                   </td>
                   <td>
-                    <div class="flex items-center gap-2" *ngIf="request.targetEmployee">
+                    <div class="flex items-center gap-2" *ngIf="request.targetEmployeeName">
                       <p-avatar 
-                        [label]="getInitials(request.targetEmployee.fullName)"
+                        [label]="getInitials(request.targetEmployeeName)"
                         shape="circle"
                         size="normal">
                       </p-avatar>
-                      <span>{{ request.targetEmployee.fullName }}</span>
+                      <span>{{ request.targetEmployeeName }}</span>
                     </div>
-                    <span *ngIf="!request.targetEmployee" class="text-surface-500 dark:text-surface-400">
+                    <span *ngIf="!request.targetEmployeeName" class="text-surface-500 dark:text-surface-400">
                       Self Request
                     </span>
                   </td>
@@ -304,112 +305,6 @@ interface TimelineEvent {
                         (click)="cancelRequest(request)"
                         pTooltip="Cancel Request">
                       </p-button>
-                    </div>
-                  </td>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="rowexpansion" let-request>
-                <tr>
-                  <td colspan="7">
-                    <div class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Request Details -->
-                        <div>
-                          <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-3">Request Details</h6>
-                          
-                          <!-- Promotion Request Details -->
-                          <div *ngIf="request.requestType === 'Promotion'" class="space-y-3">
-                            <ng-container *ngIf="getPromotionRequest(request) as promotion">
-                              <div class="flex justify-between">
-                                <span class="text-surface-600 dark:text-surface-300">New Position:</span>
-                                <strong>{{ this.getPromotionRequestTitle(promotion) }}</strong>
-                              </div>
-                              <div class="flex justify-between" *ngIf="promotion.proposedSalary">
-                                <span class="text-surface-600 dark:text-surface-300">Proposed Salary:</span>
-                                <strong>{{ promotion.proposedSalary | currency:'TND':'symbol':'1.0-0' }}</strong>
-                              </div>
-                              <div *ngIf="promotion.justification">
-                                <span class="text-surface-600 dark:text-surface-300 block mb-1">Justification:</span>
-                                <p class="text-sm bg-surface-100 dark:bg-surface-700 p-3 rounded">
-                                  {{ promotion.justification }}
-                                </p>
-                              </div>
-                            </ng-container>
-                          </div>
-
-                          <!-- Department Change Request Details -->
-                          <div *ngIf="request.requestType === 'DepartmentChange'" class="space-y-3">
-                            <ng-container *ngIf="getDepartmentChangeRequest(request) as deptChange">
-                              <div class="flex justify-between">
-                                <span class="text-surface-600 dark:text-surface-300">New Department:</span>
-                                <strong>{{ deptChange.newDepartment.name || 'Unknown Department' }}</strong>
-                              </div>
-                              <div class="flex justify-between" *ngIf="deptChange.newManager">
-                                <span class="text-surface-600 dark:text-surface-300">New Manager:</span>
-                                <strong>{{ deptChange.newManager.fullName }}</strong>
-                              </div>
-                              <div *ngIf="deptChange.reason">
-                                <span class="text-surface-600 dark:text-surface-300 block mb-1">Reason:</span>
-                                <p class="text-sm bg-surface-100 dark:bg-surface-700 p-3 rounded">
-                                  {{ deptChange.reason }}
-                                </p>
-                              </div>
-                            </ng-container>
-                          </div>
-
-                          <!-- General Request Info -->
-                          <div class="space-y-3 mt-4">
-                            <div class="flex justify-between" *ngIf="request.notes">
-                              <span class="text-surface-600 dark:text-surface-300">Notes:</span>
-                            </div>
-                            <div *ngIf="request.notes">
-                              <p class="text-sm bg-surface-100 dark:bg-surface-700 p-3 rounded">
-                                {{ request.notes }}
-                              </p>
-                            </div>
-                            <div class="flex justify-between" *ngIf="request.rejectionReason">
-                              <span class="text-surface-600 dark:text-surface-300">Rejection Reason:</span>
-                            </div>
-                            <div *ngIf="request.rejectionReason">
-                              <p class="text-sm bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 p-3 rounded">
-                                {{ request.rejectionReason }}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Timeline -->
-                        <div>
-                          <h6 class="font-semibold text-surface-900 dark:text-surface-0 mb-3">Request Timeline</h6>
-                          <p-timeline 
-                            [value]="getRequestTimeline(request)" 
-                            layout="vertical"
-                            styleClass="customized-timeline">
-                            <ng-template pTemplate="marker" let-event>
-                              <div 
-                                class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs"
-                                [style.background-color]="event.color">
-                                <i [class]="event.icon" class="text-xs"></i>
-                              </div>
-                            </ng-template>
-
-                            <ng-template pTemplate="content" let-event>
-                              <div class="ml-3">
-                                <div class="font-medium text-surface-900 dark:text-surface-0">
-                                  {{ event.status }}
-                                </div>
-                                <div class="text-sm text-surface-600 dark:text-surface-300 mb-1">
-                                  {{ event.date | date:'medium' }}
-                                </div>
-                                <p class="text-sm text-surface-700 dark:text-surface-200 m-0">
-                                  {{ event.description }}
-                                </p>
-                              </div>
-                            </ng-template>
-                          </p-timeline>
-                        </div>
-                      </div>
                     </div>
                   </td>
                 </tr>
@@ -457,7 +352,7 @@ interface TimelineEvent {
                   Target Employee *
                 </label>
                 <p-select
-                  [(ngModel)]="newPromotionRequest.targetEmployeeId"
+                  [(ngModel)]="newPositionChangeRequest.targetEmployeeId"
                   [options]="employeeOptions()"
                   optionLabel="label"
                   optionValue="value"
@@ -469,11 +364,11 @@ interface TimelineEvent {
 
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Career Path *
+                  Position *
                 </label>
                 <p-select
-                  [(ngModel)]="newPromotionRequest.careerPathId"
-                  [options]="pathOptions()"
+                  [(ngModel)]="newPositionChangeRequest.newPositionId"
+                  [options]="positionOptions()"
                   optionLabel="label"
                   optionValue="value"
                   placeholder="Select career path"
@@ -486,7 +381,7 @@ interface TimelineEvent {
                   New Manager (Optional)
                 </label>
                 <p-select
-                  [(ngModel)]="newPromotionRequest.newManagerId"
+                  [(ngModel)]="newPositionChangeRequest.newManagerId"
                   [options]="availableManagers()"
                   optionLabel="label"
                   optionValue="value"
@@ -500,7 +395,7 @@ interface TimelineEvent {
                   Proposed Salary (Optional)
                 </label>
                 <p-inputNumber
-                  [(ngModel)]="newPromotionRequest.proposedSalary"
+                  [(ngModel)]="newPositionChangeRequest.proposedSalary"
                   mode="currency"
                   currency="TND"
                   locale="en-US"
@@ -514,7 +409,7 @@ interface TimelineEvent {
                 </label>
                 <textarea 
                   pTextarea 
-                  [(ngModel)]="newPromotionRequest.justification"
+                  [(ngModel)]="newPositionChangeRequest.justification"
                   rows="4"
                   class="w-full"
                   placeholder="Explain why this promotion is warranted...">
@@ -522,7 +417,7 @@ interface TimelineEvent {
               </div>
             </div>
             
-            <ng-template pTemplate="footer">
+            <div>
               <p-button 
                 label="Cancel" 
                 severity="secondary" 
@@ -531,11 +426,11 @@ interface TimelineEvent {
               </p-button>
               <p-button 
                 label="Submit Request" 
-                (click)="submitPromotionRequest()"
+                (click)="submitPositionChangeRequest()"
                 [disabled]="!isPromotionRequestValid()"
                 [loading]="isSubmittingRequest()">
               </p-button>
-            </ng-template>
+            </div>
           </p-tabpanel>
 
           <!-- Department Change Request Tab -->
@@ -600,7 +495,7 @@ interface TimelineEvent {
               </div>
             </div>
             
-            <ng-template pTemplate="footer">
+            <div>
               <p-button 
                 label="Cancel" 
                 severity="secondary" 
@@ -613,7 +508,7 @@ interface TimelineEvent {
                 [disabled]="!isDepartmentChangeRequestValid()"
                 [loading]="isSubmittingRequest()">
               </p-button>
-            </ng-template>
+            </div>
           </p-tabpanel>
         </p-tabs>
       </p-dialog>
@@ -644,7 +539,7 @@ interface TimelineEvent {
           <p-card header="Current Status">
             <div class="flex items-center justify-between mb-4">
               <p-tag 
-                [value]="getStatusDisplayText(selectedRequest.status)" 
+                [value]="employeeRequestService.getStatusDisplayText(selectedRequest.status)" 
                 [severity]="getStatusSeverity(selectedRequest.status)"
                 styleClass="text-lg px-3 py-2">
               </p-tag>
@@ -675,40 +570,36 @@ interface TimelineEvent {
                 <span class="font-medium text-surface-600 dark:text-surface-300">Target Employee:</span>
                 <div class="flex items-center gap-2">
                   <p-avatar 
-                    *ngIf="selectedRequest.targetEmployee"
-                    [label]="getInitials(selectedRequest.targetEmployee.fullName)"
+                    *ngIf="selectedRequest.targetEmployeeName"
+                    [label]="getInitials(selectedRequest.targetEmployeeName)"
                     shape="circle"
                     size="normal">
                   </p-avatar>
-                  <span>{{ selectedRequest.targetEmployee?.fullName || 'Self Request' }}</span>
+                  <span>{{ selectedRequest.targetEmployeeName || 'Self Request' }}</span>
                 </div>
               </div>
 
               <!-- Type-specific details -->
               <ng-container *ngIf="selectedRequest.requestType === 'Promotion'">
-                <ng-container *ngIf="getPromotionRequest(selectedRequest) as promotion">
-                  <div class="flex justify-between">
-                    <span class="font-medium text-surface-600 dark:text-surface-300">New Position:</span>
-                    <strong>{{ this.getPromotionRequestTitle(promotion) }}</strong>
-                  </div>
-                  <div class="flex justify-between" *ngIf="promotion.proposedSalary">
-                    <span class="font-medium text-surface-600 dark:text-surface-300">Proposed Salary:</span>
-                    <strong>{{ promotion.proposedSalary | currency:'TND':'symbol':'1.0-0' }}</strong>
-                  </div>
-                </ng-container>
+                <div class="flex justify-between" *ngIf="getPosChangeData(selectedRequest).newPositionId">
+                  <span class="font-medium text-surface-600 dark:text-surface-300">New Position:</span>
+                  <strong>{{ getPositionTitle(selectedRequest) }}</strong>
+                </div>
+                <div class="flex justify-between" *ngIf="getPosChangeData(selectedRequest).proposedSalary">
+                  <span class="font-medium text-surface-600 dark:text-surface-300">Proposed Salary:</span>
+                  <strong>{{ getPosChangeData(selectedRequest).proposedSalary | currency:'TND':'symbol':'1.0-0' }}</strong>
+                </div>
               </ng-container>
 
               <ng-container *ngIf="selectedRequest.requestType === 'DepartmentChange'">
-                <ng-container *ngIf="getDepartmentChangeRequest(selectedRequest) as deptChange">
-                  <div class="flex justify-between">
-                    <span class="font-medium text-surface-600 dark:text-surface-300">New Department:</span>
-                    <strong>{{ deptChange.newDepartment.name || 'Unknown Department' }}</strong>
-                  </div>
-                  <div class="flex justify-between" *ngIf="deptChange.newManager">
-                    <span class="font-medium text-surface-600 dark:text-surface-300">New Manager:</span>
-                    <strong>{{ deptChange.newManager.fullName }}</strong>
-                  </div>
-                </ng-container>
+                <div class="flex justify-between" *ngIf="getDepartmentChangeData(selectedRequest).newDepartmentId">
+                  <span class="font-medium text-surface-600 dark:text-surface-300">New Department:</span>
+                  <strong>{{ getDepartmentName(getDepartmentChangeData(selectedRequest).newDepartmentId!) }}</strong>
+                </div>
+                <div class="flex justify-between" *ngIf="getDepartmentChangeData(selectedRequest).newManagerId">
+                  <span class="font-medium text-surface-600 dark:text-surface-300">New Manager:</span>
+                  <strong>{{ getEmployeeName(getDepartmentChangeData(selectedRequest).newManagerId!) }}</strong>
+                </div>
               </ng-container>
             </div>
           </p-card>
@@ -777,10 +668,11 @@ export class MyRequests implements OnInit {
   // Signals for reactive state management
   requests = signal<RequestWithType[]>([]);
   filteredRequests = signal<RequestWithType[]>([]);
-  paths = signal<CareerPath[]>([]);
+  positions = signal<Position[]>([]);
   departments = signal<Department[]>([]);
   employees = signal<Employee[]>([]);
   currentUser = signal<Employee | null>(null);
+  requestTypes = signal<RequestType[]>([]);
 
   // Loading states
   isLoading = signal<boolean>(false);
@@ -799,18 +691,20 @@ export class MyRequests implements OnInit {
   // Selected request for details
   selectedRequest: RequestWithType | null = null;
 
-  // Form data
-  newPromotionRequest: CreatePromotionRequestDto = {
-    targetEmployeeId: 0,
-    careerPathId: 0,
+  // Form data - using the new unified DTO structure
+  newPositionChangeRequest: CreateEmployeeRequestDto = {
+    requestType: 'PositionChange',
+    targetEmployeeId: undefined,
+    newPositionId: undefined,
     newManagerId: undefined,
     proposedSalary: undefined,
     justification: ''
   };
 
-  newDepartmentChangeRequest: CreateDepartmentChangeRequestDto = {
-    targetEmployeeId: 0,
-    newDepartmentId: 0,
+  newDepartmentChangeRequest: CreateEmployeeRequestDto = {
+    requestType: 'DepartmentChange',
+    targetEmployeeId: undefined,
+    newDepartmentId: undefined,
     newManagerId: undefined,
     reason: ''
   };
@@ -818,8 +712,7 @@ export class MyRequests implements OnInit {
   // Computed properties
   requestTypeOptions = computed(() => [
     { label: 'All Types', value: null },
-    { label: 'Promotion', value: 'Promotion' },
-    { label: 'Department Change', value: 'DepartmentChange' },
+    ...this.requestTypes().map(type => ({ label: type.label, value: type.value }))
   ]);
 
   statusOptions = computed(() => [
@@ -831,10 +724,10 @@ export class MyRequests implements OnInit {
     { label: 'Auto Approved', value: 'AutoApproved' }
   ]);
 
-  pathOptions = computed(() => 
-    this.paths().map(path => ({ 
-      label: `From ${path.fromPosition.title} to ${path.toPosition.title} - ${path.toPosition.department?.name || 'Unknown Dept'}`, 
-      value: path.id 
+  positionOptions = computed(() => 
+    this.positions().map(p => ({ 
+      label: `To ${p.title} (${p.department?.name || 'Unknown Dept'})`, 
+      value: p.id 
     }))
   );
 
@@ -849,7 +742,7 @@ export class MyRequests implements OnInit {
     const current = this.currentUser();
     if (!current) return [];
     
-    // If user is HR/Admin/Manager, they can select other employees
+    // HR/Admin/Manager, they can select other employees
     if (this.canSelectEmployee()) {
       return this.employees().map(emp => ({ label: emp.fullName, value: emp.id }));
     }
@@ -869,9 +762,9 @@ export class MyRequests implements OnInit {
   });
 
   constructor(
-    private employeeRequestService: EmployeeRequestService,
+    public employeeRequestService: EmployeeRequestService,
     private employeeService: EmployeeService,
-    private careerPathService: CareerPathService,
+    private positionService: PositionService,
     private departmentService: DepartmentService,
     private authService: AuthService,
     private messageService: MessageService,
@@ -891,7 +784,8 @@ export class MyRequests implements OnInit {
       await Promise.all([
         this.loadCurrentUser(),
         this.loadRequests(),
-        this.loadPaths(),
+        this.loadRequestTypes(),
+        this.loadPositions(),
         this.loadDepartments(),
         this.loadEmployees()
       ]);
@@ -909,7 +803,7 @@ export class MyRequests implements OnInit {
       if (user) {
         this.currentUser.set(user);
         // Initialize form with current user
-        this.newPromotionRequest.targetEmployeeId = user.id;
+        this.newPositionChangeRequest.targetEmployeeId = user.id;
         this.newDepartmentChangeRequest.targetEmployeeId = user.id;
       }
     } catch (error) {
@@ -936,11 +830,22 @@ export class MyRequests implements OnInit {
     }
   }
 
-  async loadPaths() {
+  async loadRequestTypes() {
     try {
-      const paths = await this.careerPathService.getActiveCareerPaths().toPromise();
-      if (paths) {
-        this.paths.set(paths);
+      const types = await this.employeeRequestService.getRequestTypes().toPromise();
+      if (types) {
+        this.requestTypes.set(types);
+      }
+    } catch (error) {
+      console.error('Error loading request types:', error);
+    }
+  }
+
+  async loadPositions() {
+    try {
+      const positions = await this.positionService.getActivePositions().toPromise();
+      if (positions) {
+        this.positions.set(positions);
       }
     } catch (error) {
       console.error('Error loading positions:', error);
@@ -979,7 +884,7 @@ export class MyRequests implements OnInit {
       filtered = filtered.filter(request => 
         request.requestType.toLowerCase().includes(term) ||
         request.status.toLowerCase().includes(term) ||
-        request.targetEmployee?.fullName.toLowerCase().includes(term) ||
+        request.targetEmployeeName?.toLowerCase().includes(term) ||
         request.notes?.toLowerCase().includes(term)
       );
     }
@@ -1019,27 +924,41 @@ export class MyRequests implements OnInit {
     this.showRequestDetailsDrawer = true;
   }
 
-  getPromotionRequest(request: EmployeeRequest): PromotionRequest | null {
-    return request.requestType === 'Promotion' ? request as PromotionRequest : null;
+  // Updated methods to work with requestData structure
+  getPosChangeData(request: EmployeeRequest) {
+    return this.employeeRequestService.getPositionChangeData(request);
   }
 
-  getDepartmentChangeRequest(request: EmployeeRequest): DepartmentChangeRequest | null {
-    return request.requestType === 'DepartmentChange' ? request as DepartmentChangeRequest : null;
+  getDepartmentChangeData(request: EmployeeRequest) {
+    return this.employeeRequestService.getDepartmentChangeData(request);
   }
 
-  getPromotionRequestTitle(promotion: PromotionRequest): string {
-    const path = this.paths().find(p => p.id === promotion.careerPathId);
-    return path ? 'Promotion From ' + path.fromPosition.title + ' to ' + path.toPosition.title : 'Unknown Path';
+  getPositionTitle(request: EmployeeRequest): string {
+    const promotionData = this.getPosChangeData(request);
+    if (!promotionData.newPositionId) return 'Unknown Position';
+    
+    const position = this.positions().find(p => p.id === promotionData.newPositionId);
+    return position ? `${position.title}` : 'Unknown Position';
+  }
+
+  getDepartmentName(departmentId: number): string {
+    const department = this.departments().find(d => d.id === departmentId);
+    return department?.name || 'Unknown Department';
+  }
+
+  getEmployeeName(employeeId: number): string {
+    const employee = this.employees().find(e => e.id === employeeId);
+    return employee?.fullName || 'Unknown Employee';
   }
 
   getRequestJustification(request: EmployeeRequest): string | null {
-    if (request.requestType === 'Promotion') {
-      const promotion = request as PromotionRequest;
-      return promotion.justification || null;
+    if (request.requestType === 'PositionChange') {
+      const posChangeData = this.getPosChangeData(request);
+      return posChangeData.justification || null;
     }
     if (request.requestType === 'DepartmentChange') {
-      const deptChange = request as DepartmentChangeRequest;
-      return deptChange.reason || null;
+      const deptChangeData = this.getDepartmentChangeData(request);
+      return deptChangeData.reason || null;
     }
     return request.notes || null;
   }
@@ -1064,7 +983,7 @@ export class MyRequests implements OnInit {
         date: request.managerApprovalDate,
         icon: 'pi pi-check',
         color: '#10b981',
-        description: `Approved by ${request.approvedByManager?.fullName || 'Manager'}`
+        description: `Approved by ${request.approvedByManagerName || 'Manager'}`
       });
     }
 
@@ -1075,7 +994,7 @@ export class MyRequests implements OnInit {
         date: request.hrApprovalDate,
         icon: 'pi pi-verified',
         color: '#059669',
-        description: `Final approval by ${request.approvedByHR?.fullName || 'HR'}`
+        description: `Final approval by ${request.approvedByHRName || 'HR'}`
       });
     }
 
@@ -1105,10 +1024,6 @@ export class MyRequests implements OnInit {
   }
 
   // Status and progress methods
-  getStatusDisplayText(status: string): string {
-    return this.employeeRequestService.getStatusDisplayText(status);
-  }
-
   getStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | undefined {
     switch (status) {
       case 'HRApproved':
@@ -1162,29 +1077,29 @@ export class MyRequests implements OnInit {
 
   // Request type methods
   getRequestTypeLabel(type: string): string {
-    switch (type) {
-      case 'Promotion': return 'Promotion Request';
-      case 'DepartmentChange': return 'Department Change';
-      default: return type;
-    }
+    const requestType = this.requestTypes().find(rt => rt.value === type);
+    return requestType?.label || type;
   }
 
   getRequestTypeIcon(type: string): string {
     switch (type) {
       case 'Promotion': return 'pi pi-arrow-up';
       case 'DepartmentChange': return 'pi pi-building';
+      case 'Transfer': return 'pi pi-arrows-h';
       default: return 'pi pi-file';
     }
   }
 
   // Form submission methods
-  async submitPromotionRequest() {
+  async submitPositionChangeRequest() {
     if (!this.isPromotionRequestValid()) return;
 
     this.isSubmittingRequest.set(true);
 
+    console.log(this.newPositionChangeRequest);
+
     try {
-      const request = await this.employeeRequestService.createPromotionRequest(this.newPromotionRequest).toPromise();
+      const request = await this.employeeRequestService.createRequest(this.newPositionChangeRequest).toPromise();
       if (request) {
         this.messageService.add({
           severity: 'success',
@@ -1212,7 +1127,7 @@ export class MyRequests implements OnInit {
     this.isSubmittingRequest.set(true);
 
     try {
-      const request = await this.employeeRequestService.createDepartmentChangeRequest(this.newDepartmentChangeRequest).toPromise();
+      const request = await this.employeeRequestService.createRequest(this.newDepartmentChangeRequest).toPromise();
       if (request) {
         this.messageService.add({
           severity: 'success',
@@ -1236,9 +1151,9 @@ export class MyRequests implements OnInit {
 
   // Form validation methods
   isPromotionRequestValid(): boolean {
-    return !!(this.newPromotionRequest.targetEmployeeId && 
-              this.newPromotionRequest.careerPathId && 
-              this.newPromotionRequest.justification?.trim());
+    return !!(this.newPositionChangeRequest.targetEmployeeId && 
+              this.newPositionChangeRequest.newPositionId && 
+              this.newPositionChangeRequest.justification?.trim());
   }
 
   isDepartmentChangeRequestValid(): boolean {
@@ -1256,17 +1171,19 @@ export class MyRequests implements OnInit {
   resetForms() {
     const currentUserId = this.currentUser()?.id || 0;
     
-    this.newPromotionRequest = {
+    this.newPositionChangeRequest = {
+      requestType: 'PositionChange',
       targetEmployeeId: currentUserId,
-      careerPathId: 0,
+      newPositionId: undefined,
       newManagerId: undefined,
       proposedSalary: undefined,
       justification: ''
     };
 
     this.newDepartmentChangeRequest = {
+      requestType: 'DepartmentChange',
       targetEmployeeId: currentUserId,
-      newDepartmentId: 0,
+      newDepartmentId: undefined,
       newManagerId: undefined,
       reason: ''
     };
@@ -1277,14 +1194,17 @@ export class MyRequests implements OnInit {
     this.newDepartmentChangeRequest.newManagerId = undefined;
   }
 
-  // Permission methods
+  // Permission methods - Updated to use new service methods
   canSelectEmployee(): boolean {
     const user = this.authService.getCurrentUser();
     return user?.role === 'HR' || user?.role === 'Admin' || user?.role === 'Manager';
   }
 
   canCancelRequest(request: EmployeeRequest): boolean {
-    return this.employeeRequestService.isRequestPending(request.status);
+    const currentUser = this.currentUser();
+    if (!currentUser) return false;
+    
+    return this.employeeRequestService.canCancelRequest(request, currentUser.id);
   }
 
   // Request cancellation
@@ -1296,13 +1216,19 @@ export class MyRequests implements OnInit {
       acceptButtonStyleClass: 'p-button-danger',
       accept: async () => {
         try {
-          const message = await this.employeeRequestService.cancelRequest(request.id).toPromise();
-          if (message) {
+          const result = await this.employeeRequestService.cancelRequest(request.id).toPromise();
+          if (result) {
             this.messageService.add({
               severity: 'success',
               summary: 'Request Canceled',
-              detail: message.message
+              detail: result.message
             });
+            await this.loadRequests();
+            
+            // Close drawer if this was the selected request
+            if (this.selectedRequest?.id === request.id) {
+              this.showRequestDetailsDrawer = false;
+            }
           }
         } catch (error) {
           console.error('Error canceling request:', error);

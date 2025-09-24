@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil, timeout, catchError, of, finalize } from 'rxjs';
 import { CareerStatsWidget } from './components/career-stats-widget';
 import { CareerOpportunitiesWidget } from './components/career-opportunities-widget';
 import { SkillDevelopmentWidget } from './components/skill-development-widget';
@@ -24,15 +25,15 @@ import { ButtonModule } from 'primeng/button';
     SkillDevelopmentWidget,
     TalentRisksWidget,
     SmartRecommendationsWidget,
-],
+  ],
   template: `
     <div class="min-h-screen">
       <!-- Header -->
       <div class="bg-surface-0 dark:bg-surface-900 shadow-sm border-b border-surface-200 dark:border-surface-700 px-6 py-4 mb-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ getPageTitle() }}</h1>
-            <p class="text-lg text-surface-600 dark:text-surface-300 mt-2 mb-0">{{ getWelcomeMessage() }}</p>
+            <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ pageTitle }}</h1>
+            <p class="text-lg text-surface-600 dark:text-surface-300 mt-2 mb-0">{{ welcomeMessage }}</p>
           </div>
           <div class="flex gap-2">
             <p-button 
@@ -41,6 +42,7 @@ import { ButtonModule } from 'primeng/button';
               [outlined]="true"
               (click)="refreshDashboard()"
               [loading]="isLoading"
+              [disabled]="isLoading"
               pTooltip="Refresh Dashboard">
             </p-button>
           </div>
@@ -67,6 +69,7 @@ import { ButtonModule } from 'primeng/button';
                 size="small" 
                 severity="danger" 
                 [outlined]="true"
+                [disabled]="isLoading"
                 (click)="loadDashboard()"
                 class="ml-auto">
               </p-button>
@@ -77,7 +80,7 @@ import { ButtonModule } from 'primeng/button';
 
       <!-- Dashboard Content -->
       <div *ngIf="dashboard && !isLoading" class="px-6">
-        <!-- Stats Overview - Always at the top -->
+        <!-- Stats Overview -->
         <div class="grid grid-cols-12 gap-6 mb-6">
           <app-career-stats-widget 
             class="col-span-12" 
@@ -88,51 +91,51 @@ import { ButtonModule } from 'primeng/button';
         
         <!-- Main Content Grid -->
         <div class="grid grid-cols-12 gap-6">
-          <!-- Left Column - Primary Content -->
+          <!-- Left Column -->
           <div class="col-span-12 xl:col-span-8">
             <div class="flex flex-col gap-6">
               <!-- Career Opportunities for Employees -->
               <app-career-opportunities-widget 
-                *ngIf="userRole === 'Employee' && hasCareerOpportunities()"
+                *ngIf="userRole === 'Employee' && hasCareerOpportunities"
                 [opportunities]="dashboard.careerOpportunities">
               </app-career-opportunities-widget>
 
               <!-- Talent Risks for HR/Admin -->
               <app-talent-risks-widget 
-                *ngIf="isAdminOrHR() && hasTalentRisks()"
+                *ngIf="isAdminOrHR && hasTalentRisks"
                 [talentRisks]="dashboard.talentRisks"
                 [attritionRisks]="dashboard.attritionRisks">
               </app-talent-risks-widget>
 
               <!-- Skills Development -->
               <app-skill-development-widget 
-                *ngIf="hasSkillRecommendations()"
+                *ngIf="hasSkillRecommendations"
                 [skillRecommendations]="dashboard.skillRecommendations"
                 [userRole]="userRole">
               </app-skill-development-widget>
 
-              <!-- Empty State for Main Content -->
-              <div *ngIf="!hasMainContent()" class="card">
+              <!-- Empty State -->
+              <div *ngIf="!hasMainContent" class="card">
                 <div class="text-center py-12">
                   <i class="pi pi-chart-line text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
                   <h3 class="text-xl font-medium text-surface-600 dark:text-surface-300 mb-2">
-                    {{ getEmptyStateTitle() }}
+                    {{ emptyStateTitle }}
                   </h3>
                   <p class="text-surface-500 dark:text-surface-400">
-                    {{ getEmptyStateMessage() }}
+                    {{ emptyStateMessage }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Right Column - Sidebar Content -->
+          <!-- Right Column -->
           <div class="col-span-12 xl:col-span-4">
             <div class="flex flex-col gap-6">
               <app-smart-recommendations-widget 
                 [recommendations]="dashboard.smartRecommendations || []"
                 [insights]="dashboard.personalInsights?.smartInsights || []"
-                [strategicRecommendations]="dashboard.organizationInsights?.strategicRecommendations || []"
+                [strategicRecommendations]="this.getStrategicRecommendations(dashboard) || []"
                 [userRole]="userRole">
               </app-smart-recommendations-widget>
             </div>
@@ -168,11 +171,25 @@ import { ButtonModule } from 'primeng/button';
     </div>
   `
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
   dashboard: IntelligentDashboard | null = null;
   isLoading = false;
   errorMessage = '';
   userRole = '';
+  
+  // Cache computed properties
+  pageTitle = '';
+  welcomeMessage = '';
+  isAdminOrHR = false;
+  hasCareerOpportunities = false;
+  hasTalentRisks = false;
+  hasSkillRecommendations = false;
+  hasMainContent = false;
+  emptyStateTitle = '';
+  emptyStateMessage = '';
+
+  private destroy$ = new Subject<void>();
+  private isRefreshing = false;
 
   constructor(
     private intelligenceService: IntelligenceService,
@@ -182,33 +199,94 @@ export class Dashboard implements OnInit {
   ngOnInit() {
     const user = this.authService.getCurrentUser();
     this.userRole = user?.role || 'Employee';
+    this.updateCachedProperties();
     this.loadDashboard();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadDashboard() {
+    // Prevent multiple simultaneous requests
+    if (this.isLoading) {
+      console.warn('Dashboard load already in progress, skipping...');
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.intelligenceService.getDashboard().subscribe({
-      next: (data) => {
-        this.dashboard = data;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Dashboard loading error:', error);
-        this.isLoading = false;
-        this.errorMessage = 'Failed to load dashboard data. Please try again.';
-      }
-    });
+    this.intelligenceService.getDashboard()
+      .pipe(
+        // Add timeout to prevent hanging requests
+        timeout(30000), // 30 seconds timeout
+        // Ensure loading state is reset regardless of outcome
+        finalize(() => {
+          this.isLoading = false;
+          this.isRefreshing = false;
+        }),
+        // Handle errors gracefully
+        catchError(error => {
+          console.error('Dashboard loading error:', error);
+          this.errorMessage = this.getErrorMessage(error);
+          return of(null); // Return null instead of throwing
+        }),
+        // Automatically unsubscribe on component destroy
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.dashboard = data;
+            this.updateCachedProperties();
+            this.errorMessage = '';
+          }
+        }
+      });
   }
 
   refreshDashboard() {
-    if (!this.isLoading) {
-      this.loadDashboard();
+    // Debounce refresh requests
+    if (this.isLoading || this.isRefreshing) {
+      console.warn('Refresh already in progress, skipping...');
+      return;
+    }
+
+    this.isRefreshing = true;
+    this.loadDashboard();
+  }
+
+  getStrategicRecommendations(dashboard: IntelligentDashboard) {
+    return this.intelligenceService.getStrategicRecommendations(dashboard);
+  }
+
+  private updateCachedProperties() {
+    // Cache all computed properties to avoid recalculation on every change detection
+    this.pageTitle = this.getPageTitle();
+    this.welcomeMessage = this.getWelcomeMessage();
+    this.isAdminOrHR = this.userRole === 'Admin' || this.userRole === 'HR';
+    this.hasCareerOpportunities = (this.dashboard?.careerOpportunities?.length ?? 0) > 0;
+    this.hasTalentRisks = ((this.dashboard?.talentRisks?.length ?? 0) > 0) || 
+                         ((this.dashboard?.attritionRisks?.length ?? 0) > 0);
+    this.hasSkillRecommendations = (this.dashboard?.skillRecommendations?.length ?? 0) > 0;
+    this.hasMainContent = this.calculateHasMainContent();
+    this.emptyStateTitle = this.getEmptyStateTitle();
+    this.emptyStateMessage = this.getEmptyStateMessage();
+  }
+
+  private calculateHasMainContent(): boolean {
+    if (this.userRole === 'Employee') {
+      return this.hasCareerOpportunities || this.hasSkillRecommendations;
+    } else if (this.isAdminOrHR) {
+      return this.hasTalentRisks || this.hasSkillRecommendations;
+    } else {
+      return this.hasSkillRecommendations;
     }
   }
 
-  getWelcomeMessage(): string {
+  private getWelcomeMessage(): string {
     const hour = new Date().getHours();
     const user = this.authService.getCurrentUser();
     const name = user?.firstName || this.userRole;
@@ -218,7 +296,7 @@ export class Dashboard implements OnInit {
     return `Good evening, ${name}!`;
   }
 
-  getPageTitle(): string {
+  private getPageTitle(): string {
     switch (this.userRole) {
       case 'Admin': return 'Organization Dashboard';
       case 'HR': return 'HR Intelligence Dashboard'; 
@@ -227,34 +305,7 @@ export class Dashboard implements OnInit {
     }
   }
 
-  isAdminOrHR(): boolean {
-    return this.userRole === 'Admin' || this.userRole === 'HR';
-  }
-
-  hasCareerOpportunities(): boolean {
-    return (this.dashboard?.careerOpportunities && this.dashboard.careerOpportunities.length > 0) ?? false;
-  }
-
-  hasTalentRisks(): boolean {
-    return ((this.dashboard?.talentRisks && this.dashboard.talentRisks.length > 0) ?? false) ||
-           ((this.dashboard?.attritionRisks && this.dashboard.attritionRisks.length > 0) ?? false);
-  }
-
-  hasSkillRecommendations(): boolean {
-    return (this.dashboard?.skillRecommendations && this.dashboard.skillRecommendations.length > 0) ?? false;
-  }
-
-  hasMainContent(): boolean {
-    if (this.userRole === 'Employee') {
-      return this.hasCareerOpportunities() || this.hasSkillRecommendations();
-    } else if (this.isAdminOrHR()) {
-      return this.hasTalentRisks() || this.hasSkillRecommendations();
-    } else {
-      return this.hasSkillRecommendations();
-    }
-  }
-
-  getEmptyStateTitle(): string {
+  private getEmptyStateTitle(): string {
     switch (this.userRole) {
       case 'Admin':
       case 'HR':
@@ -266,7 +317,7 @@ export class Dashboard implements OnInit {
     }
   }
 
-  getEmptyStateMessage(): string {
+  private getEmptyStateMessage(): string {
     switch (this.userRole) {
       case 'Admin':
       case 'HR':
@@ -276,5 +327,21 @@ export class Dashboard implements OnInit {
       default:
         return 'Complete your profile and skills assessment to unlock personalized career opportunities and development recommendations.';
     }
+  }
+
+  private getErrorMessage(error: any): string {
+    if (error.name === 'TimeoutError') {
+      return 'Request timed out. Please check your connection and try again.';
+    }
+    
+    if (error.status === 0) {
+      return 'Unable to connect to the server. Please check your internet connection.';
+    }
+    
+    if (error.status >= 500) {
+      return 'Server error occurred. Please try again later.';
+    }
+    
+    return error.error?.message || 'Failed to load dashboard data. Please try again.';
   }
 }

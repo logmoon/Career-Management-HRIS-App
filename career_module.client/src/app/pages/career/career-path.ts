@@ -44,7 +44,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CareerPathService, CareerPath, CareerPathRecommendation, CareerRoadmap, CareerPathAnalysis, SkillGapAnalysis } from '../service/career-path.service';
 import { IntelligenceService, CareerOpportunity } from '../service/intelligence.service';
 import { PositionService, Position } from '../service/position.service';
-import { EmployeeRequestService, CreatePromotionRequestDto } from '../service/employee-request.service';
+import { EmployeeRequestService, CreatePositionChangeRequestDto } from '../service/employee-request.service';
 import { EmployeeService, Employee } from '../service/employee.service';
 import { AuthService } from '../service/auth.service';
 import { Skill, SkillsService } from '../service/skills.service';
@@ -1343,9 +1343,9 @@ export class CareerDevelopment implements OnInit {
   };
 
   selectedPathForPromotion: CareerPath | null = null;
-  promotionRequest: CreatePromotionRequestDto = {
+  promotionRequest: CreatePositionChangeRequestDto = {
     targetEmployeeId: 0,
-    careerPathId: 0,
+    newPositionId: 0,
     newManagerId: undefined,
     proposedSalary: undefined,
     justification: ''
@@ -1735,7 +1735,7 @@ getSkillName(skillId: number): string {
     const path = this.careerPaths().find(p => p.id === pathId);
     if (!path) return;
     this.selectedPathForPromotion = path;
-    this.promotionRequest.careerPathId = path.id;
+    this.promotionRequest.newPositionId = path.toPositionId;
     this.showPromotionRequestDialog = true;
   }
 
@@ -1744,7 +1744,7 @@ getSkillName(skillId: number): string {
     this.selectedPathForPromotion = null;
     this.promotionRequest = {
       targetEmployeeId: this.currentEmployee()?.id || 0,
-      careerPathId: 0,
+      newPositionId: 0,
       newManagerId: undefined,
       proposedSalary: undefined,
       justification: ''
@@ -1759,7 +1759,7 @@ getSkillName(skillId: number): string {
     this.isSubmittingPromotion.set(true);
 
     try {
-      const request = await this.employeeRequestService.createPromotionRequest(this.promotionRequest).toPromise();
+      const request = await this.employeeRequestService.createPositionChangeRequest(this.promotionRequest).toPromise();
       if (request) {
         this.messageService.add({
           severity: 'success',
@@ -1957,7 +1957,9 @@ cancelCreateCareerPath() {
     if (path) {
       const currentEmployee = this.currentEmployee();
       if (currentEmployee?.currentPositionId) {
-        return path.fromPositionId === currentEmployee.currentPositionId
+        return this.selectedCareerPathAnalysis?.meetsExperienceRequirement === true &&
+               this.selectedCareerPathAnalysis?.meetsFromPositionRequirement === true &&
+               this.selectedCareerPathAnalysis?.skillGaps.filter(sg => sg.isMandatory).length > 0;
       }
     }
     return false;

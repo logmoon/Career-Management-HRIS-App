@@ -11,6 +11,8 @@ import { Skills } from '@/pages/organization/skills';
 import { CareerDevelopment } from '@/pages/career/career-path';
 import { MyRequests } from '@/pages/requests/my-requests';
 import { SuccessionPlanning } from '@/pages/career/succession-planning';
+import { Approvals } from '@/pages/requests/approvals';
+import { PerformanceReviews } from '@/pages/performance/performance-reviews';
 
 // Components
 /*
@@ -38,7 +40,7 @@ export const appRoutes: Routes = [
 
         { path: 'career-path', component: CareerDevelopment },
         { path: 'my-requests', component: MyRequests },
-        
+
         { path: 'employees', component: Employees, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },
         { path: 'employee-detail/:id', component: EmployeeDetail, canActivate: [AuthGuard], data: { roles: ['Admin', 'HR', 'Manager'] } },
         { path: 'profile', component: EmployeeDetail },
@@ -61,8 +63,20 @@ export const appRoutes: Routes = [
             data: { roles: ['Admin', 'HR', 'Manager'] }
         },
         { 
+            path: 'performance-reviews', 
+            component: PerformanceReviews,
+            canActivate: [AuthGuard],
+            data: { roles: ['Admin', 'HR', 'Manager'] }
+        },
+        { 
             path: 'succession-planning', 
             component: SuccessionPlanning,
+            canActivate: [AuthGuard],
+            data: { roles: ['Admin', 'HR', 'Manager'] }
+        },
+        { 
+            path: 'approvals', 
+            component: Approvals,
             canActivate: [AuthGuard],
             data: { roles: ['Admin', 'HR', 'Manager'] }
         },

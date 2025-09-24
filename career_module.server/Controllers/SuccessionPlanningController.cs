@@ -167,7 +167,6 @@ namespace career_module.server.Controllers
 
             return Ok(result.Data);
         }
-
         #endregion
 
         #region Candidate Management
@@ -333,6 +332,11 @@ namespace career_module.server.Controllers
         public int EmployeeId { get; set; }
         public int Priority { get; set; } = 1;
     }
+    public class RemoveSuccessionCandidateDto
+    {
+        public int EmployeeId { get; set; }
+    }
+
 
     public class RetirementPlanningDto
     {

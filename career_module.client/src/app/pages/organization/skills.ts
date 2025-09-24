@@ -722,10 +722,10 @@ interface SkillMatrix {
                          class="flex items-center justify-between p-3 border border-surface-200 dark:border-surface-700 rounded-lg">
                       <div>
                         <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0">
-                          {{ gap.skillName }}
+                          {{ gap.skill.name }}
                         </h6>
                         <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
-                          {{ gap.category || 'Uncategorized' }}
+                          {{ gap.skill.category || 'Uncategorized' }}
                         </p>
                       </div>
                       <div class="text-right">
@@ -747,9 +747,6 @@ interface SkillMatrix {
                           {{ emergingSkill.skill.name }}
                         </h6>
                       </div>
-                      <p class="text-sm text-surface-600 dark:text-surface-300 mb-2">
-                        {{ emergingSkill.skill.description || emergingSkill.skill.category }}
-                      </p>
                       <p-tag 
                         value="Trending"
                         severity="info"

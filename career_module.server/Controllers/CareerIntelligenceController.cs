@@ -1,4 +1,5 @@
 ﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Models.DTOs;
 using career_module.server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,21 +30,86 @@ namespace career_module.server.Controllers
         /// <summary>
         /// Get the intelligent dashboard - personalized for each user role
         /// </summary>
+        // In your IntelligenceController.cs (or wherever your dashboard endpoint is), 
+        // replace the getDashboard method with this:
+
         [HttpGet("dashboard")]
-        public async Task<IActionResult> GetIntelligentDashboard()
+        public async Task<ActionResult<IntelligentDashboardDto>> GetDashboard()
+        {
+            try
+            {
+                // Get current user info
+                var currentUserId = GetCurrentUserId(); // Your method to get current user ID
+                var currentUserRole = GetCurrentUserRole(); // Your method to get current user role
+
+                // Get employee ID if user has one
+                int? employeeId = null;
+                if (currentUserId > 0)
+                {
+                    var employee = await _context.Employees
+                        .FirstOrDefaultAsync(e => e.UserId == currentUserId);
+                    employeeId = employee?.Id;
+                }
+
+                var result = await _intelligenceService.GetIntelligentDashboardAsync(employeeId, currentUserRole);
+
+                if (result.IsSuccess)
+                {
+                    return Ok(result.Data);
+                }
+
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to generate dashboard", error = ex.Message });
+            }
+        }
+
+        // If you have specific role-based endpoints, update them too:
+
+        [HttpGet("dashboard/hr")]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<ActionResult<IntelligentDashboardDto>> GetHRDashboard()
         {
             var currentUserId = GetCurrentUserId();
-            var currentUserRole = GetCurrentUserRole();
-            var currentEmployeeId = GetCurrentEmployeeId();
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.UserId == currentUserId);
 
-            var result = await _intelligenceService.GetIntelligentDashboardAsync(
-                currentEmployeeId > 0 ? currentEmployeeId : null,
-                currentUserRole);
+            var result = await _intelligenceService.GetIntelligentDashboardAsync(employee?.Id, "HR");
 
-            if (!result.IsSuccess)
-                return BadRequest(new { message = result.ErrorMessage });
+            if (result.IsSuccess)
+                return Ok(result.Data);
 
-            return Ok(result.Data);
+            return BadRequest(new { message = result.ErrorMessage });
+        }
+
+        [HttpGet("dashboard/manager")]
+        [Authorize(Roles = "Manager,Admin")]
+        public async Task<ActionResult<IntelligentDashboardDto>> GetManagerDashboard()
+        {
+            var currentUserId = GetCurrentUserId();
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.UserId == currentUserId);
+
+            var result = await _intelligenceService.GetIntelligentDashboardAsync(employee?.Id, "Manager");
+
+            if (result.IsSuccess)
+                return Ok(result.Data);
+
+            return BadRequest(new { message = result.ErrorMessage });
+        }
+
+        [HttpGet("dashboard/employee")]
+        public async Task<ActionResult<IntelligentDashboardDto>> GetEmployeeDashboard()
+        {
+            var currentUserId = GetCurrentUserId();
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.UserId == currentUserId);
+
+            var result = await _intelligenceService.GetIntelligentDashboardAsync(employee?.Id, "Employee");
+
+            if (result.IsSuccess)
+                return Ok(result.Data);
+
+            return BadRequest(new { message = result.ErrorMessage });
         }
 
         /// <summary>

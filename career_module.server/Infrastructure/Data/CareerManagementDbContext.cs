@@ -26,8 +26,6 @@ namespace career_module.server.Infrastructure.Data
 
         // Employee Request DbSets - using Table Per Hierarchy (TPH)
         public DbSet<EmployeeRequest> EmployeeRequests { get; set; }
-        public DbSet<PromotionRequest> PromotionRequests { get; set; }
-        public DbSet<DepartmentChangeRequest> DepartmentChangeRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -102,6 +100,27 @@ namespace career_module.server.Infrastructure.Data
                 entity.HasOne(e => e.Department)
                       .WithMany(d => d.Employees)
                       .HasForeignKey(e => e.DepartmentId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Relationships with requests
+                entity.HasMany(e => e.RequestsMade)
+                      .WithOne(r => r.Requester)
+                      .HasForeignKey(r => r.RequesterId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(e => e.RequestsForMe)
+                      .WithOne(r => r.TargetEmployee)
+                      .HasForeignKey(r => r.TargetEmployeeId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(e => e.RequestsIApprovedAsManager)
+                      .WithOne(r => r.ApprovedByManager)
+                      .HasForeignKey(r => r.ApprovedByManagerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(e => e.RequestsIApprovedAsHR)
+                      .WithOne(r => r.ApprovedByHR)
+                      .HasForeignKey(r => r.ApprovedByHRId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -202,21 +221,38 @@ namespace career_module.server.Infrastructure.Data
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            #region Employee Requests
-            // Configure inheritance for EmployeeRequest using Table Per Hierarchy (TPH)
-            modelBuilder.Entity<EmployeeRequest>()
-                .HasDiscriminator<string>("RequestType")
-                .HasValue<PromotionRequest>("Promotion")
-                .HasValue<DepartmentChangeRequest>("DepartmentChange");
-
-            // Configure base EmployeeRequest
             modelBuilder.Entity<EmployeeRequest>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Status).HasMaxLength(50);
-                entity.Property(e => e.RequestDate).HasDefaultValueSql("GETUTCDATE()");
-                entity.Property(e => e.RejectionReason).HasColumnType("nvarchar(max)");
-                entity.Property(e => e.Notes).HasColumnType("nvarchar(max)");
+
+                // Basic properties
+                entity.Property(e => e.RequestType)
+                      .HasMaxLength(50)
+                      .IsRequired();
+
+                entity.Property(e => e.Status)
+                      .HasMaxLength(50)
+                      .HasDefaultValue("Pending");
+
+                entity.Property(e => e.RequestDate)
+                      .HasDefaultValueSql("GETUTCDATE()");
+
+                // Text fields
+                entity.Property(e => e.RejectionReason)
+                      .HasColumnType("nvarchar(max)");
+
+                entity.Property(e => e.Notes)
+                      .HasColumnType("nvarchar(max)");
+
+                entity.Property(e => e.Justification)
+                      .HasColumnType("nvarchar(max)");
+
+                entity.Property(e => e.Reason)
+                      .HasColumnType("nvarchar(max)");
+
+                // Decimal precision for salary
+                entity.Property(e => e.ProposedSalary)
+                      .HasPrecision(18, 2);
 
                 // Relationships
                 entity.HasOne(r => r.Requester)
@@ -227,60 +263,56 @@ namespace career_module.server.Infrastructure.Data
                 entity.HasOne(r => r.TargetEmployee)
                       .WithMany(e => e.RequestsForMe)
                       .HasForeignKey(r => r.TargetEmployeeId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
 
                 entity.HasOne(r => r.ApprovedByManager)
                       .WithMany(e => e.RequestsIApprovedAsManager)
                       .HasForeignKey(r => r.ApprovedByManagerId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
 
                 entity.HasOne(r => r.ApprovedByHR)
                       .WithMany(e => e.RequestsIApprovedAsHR)
                       .HasForeignKey(r => r.ApprovedByHRId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
 
-                // Indexes
+                // Conditional relationships (nullable foreign keys)
+                entity.HasOne(r => r.NewPosition)
+                      .WithMany()
+                      .HasForeignKey(r => r.NewPositionId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
+
+                entity.HasOne(r => r.NewDepartment)
+                      .WithMany()
+                      .HasForeignKey(r => r.NewDepartmentId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
+
+                entity.HasOne(r => r.NewManager)
+                      .WithMany()
+                      .HasForeignKey(r => r.NewManagerId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
+
+                // Indexes for performance
                 entity.HasIndex(e => e.Status)
                       .HasDatabaseName("IX_EmployeeRequest_Status");
 
+                entity.HasIndex(e => e.RequestType)
+                      .HasDatabaseName("IX_EmployeeRequest_RequestType");
+
                 entity.HasIndex(e => new { e.RequesterId, e.Status })
                       .HasDatabaseName("IX_EmployeeRequest_Requester_Status");
+
+                entity.HasIndex(e => new { e.TargetEmployeeId, e.Status })
+                      .HasDatabaseName("IX_EmployeeRequest_Target_Status");
+
+                entity.HasIndex(e => e.RequestDate)
+                      .HasDatabaseName("IX_EmployeeRequest_RequestDate");
             });
-
-            // Configure specific request types
-            modelBuilder.Entity<PromotionRequest>(entity =>
-            {
-                entity.Property(e => e.Justification).HasColumnType("nvarchar(max)");
-                entity.Property(e => e.ProposedSalary).HasPrecision(18, 2);
-
-                entity.HasOne(p => p.CareerPath)
-                      .WithMany()
-                      .HasForeignKey(p => p.CareerPathId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.NewManager)
-                      .WithMany()
-                      .HasForeignKey(d => d.NewManagerId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .IsRequired(false);
-            });
-
-            modelBuilder.Entity<DepartmentChangeRequest>(entity =>
-            {
-                entity.Property(e => e.Reason).HasColumnType("nvarchar(max)");
-
-                entity.HasOne(d => d.NewDepartment)
-                      .WithMany()
-                      .HasForeignKey(d => d.NewDepartmentId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.NewManager)
-                      .WithMany()
-                      .HasForeignKey(d => d.NewManagerId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .IsRequired(false);
-            });
-            #endregion
 
             // SuccessionPlan Configuration
             modelBuilder.Entity<SuccessionPlan>(entity =>

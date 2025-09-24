@@ -174,32 +174,48 @@ namespace career_module.server.Models.Entities
         public Employee Employee { get; set; } = null!;
     }
 
-    public abstract class EmployeeRequest
+    public class EmployeeRequest
     {
         public int Id { get; set; }
         public int RequesterId { get; set; }
         public int? TargetEmployeeId { get; set; }
-        private string _requestType = string.Empty;
-        public virtual string RequestType
-        {
-            get => _requestType;
-            protected set => _requestType = value;
-        }
+
+        [Required]
+        public string RequestType { get; set; } = string.Empty; // "Promotion", "DepartmentChange", "Transfer", etc.
+
         public string Status { get; set; } = "Pending"; // Pending, ManagerApproved, HRApproved, Rejected, AutoApproved, Canceled
+
         public int? ApprovedByManagerId { get; set; }
         public int? ApprovedByHRId { get; set; }
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
         public DateTime? ManagerApprovalDate { get; set; }
         public DateTime? HRApprovalDate { get; set; }
         public DateTime? ProcessedDate { get; set; }
+        public DateTime? EffectiveDate { get; set; }
+
         public string? RejectionReason { get; set; }
         public string? Notes { get; set; }
 
-        // Navigation
+        // Promotion-related fields (nullable, only used when RequestType == "Promotion")
+        public int? NewPositionId { get; set; }
+        public decimal? ProposedSalary { get; set; }
+        public string? Justification { get; set; }
+
+        // Department/Transfer-related fields (nullable, only used when RequestType involves dept changes)
+        public int? NewDepartmentId { get; set; }
+        public int? NewManagerId { get; set; }
+        public string? Reason { get; set; }
+
+        // Navigation properties
         public Employee Requester { get; set; } = null!;
         public Employee? TargetEmployee { get; set; }
         public Employee? ApprovedByManager { get; set; }
         public Employee? ApprovedByHR { get; set; }
+
+        // Conditional navigation properties
+        public Position? NewPosition { get; set; }
+        public Department? NewDepartment { get; set; }
+        public Employee? NewManager { get; set; }
 
         public void SetInitialStatus()
         {
@@ -237,102 +253,27 @@ namespace career_module.server.Models.Entities
 
             return Status == "Pending" &&
                    (TargetEmployee?.ManagerId == managerId || Requester.ManagerId == managerId) &&
-                   RequesterId != TargetEmployee?.Id;
+                   managerId != TargetEmployeeId;
         }
 
-        public bool CanApproveAsHR(string userRole)
+        public bool CanApproveAsHR(int hrId, string userRole)
         {
             if (Status == "Canceled") return false;
 
             return (Status == "ManagerApproved" || Status == "Pending") &&
-                   (userRole == "HR" || userRole == "Admin") && RequesterId != TargetEmployee?.Id;
+                   (userRole == "HR" || userRole == "Admin") &&
+                   hrId != TargetEmployeeId;
         }
 
-        public abstract Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId);
-    }
-
-    // Promotion Request
-    public class PromotionRequest : EmployeeRequest
-    {
-        public PromotionRequest()
+        public bool IsValidForRequestType()
         {
-            RequestType = "Promotion";
-        }
-
-        [Required]
-        public int CareerPathId { get; set; }
-        public int? NewManagerId { get; set; }
-        public decimal? ProposedSalary { get; set; }
-        public string? Justification { get; set; }
-        public DateTime? EffectiveDate { get; set; }
-
-        // Navigation
-        public CareerPath CareerPath { get; set; }
-        public Employee? NewManager { get; set; }
-
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId)
-        {
-            var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
-            var employeeService = serviceProvider.GetRequiredService<EmployeeService>();
-            var careerPathService = serviceProvider.GetRequiredService<CareerPathService>();
-            var employeeRequestService = serviceProvider.GetRequiredService<EmployeeRequestService>();
-            var targetEmployee = TargetEmployee ?? Requester;
-
-            // Set employee's current position
-            targetEmployee.CurrentPositionId = CareerPath.ToPositionId;
-
-            // Change department
-            await employeeService.ChangeDepartmentAsync(targetEmployee.Id, CareerPath.ToPosition.DepartmentId, approverId);
-
-            // If a manager was provided, set it
-            if (NewManagerId.HasValue)
+            return RequestType switch
             {
-                await employeeService.ChangeManagerAsync(targetEmployee.Id, NewManagerId, approverId);
-            }
-
-            // If a salary was provided, set it
-            if (ProposedSalary.HasValue)
-                targetEmployee.Salary = ProposedSalary.Value;
-
-            ProcessedDate = DateTime.UtcNow;
-            await context.SaveChangesAsync();
-            return true;
-        }
-    }
-
-    // Department Change Request
-    public class DepartmentChangeRequest : EmployeeRequest
-    {
-        public DepartmentChangeRequest()
-        {
-            RequestType = "DepartmentChange";
-        }
-
-        [Required]
-        public int NewDepartmentId { get; set; }
-        public int? NewManagerId { get; set; }
-        public string? Reason { get; set; }
-        public DateTime? EffectiveDate { get; set; }
-
-        // Navigation
-        public Department NewDepartment { get; set; } = null!;
-        public Employee? NewManager { get; set; }
-
-        public override async Task<bool> ExecuteRequestAsync(IServiceProvider serviceProvider, int approverId)
-        {
-            var context = serviceProvider.GetRequiredService<CareerManagementDbContext>();
-            var employeeService = serviceProvider.GetRequiredService<EmployeeService>();
-            var targetEmployee = TargetEmployee ?? Requester;
-
-            await employeeService.ChangeDepartmentAsync(targetEmployee.Id, NewDepartmentId, approverId);
-            if (NewManagerId.HasValue)
-            {
-                await employeeService.ChangeManagerAsync(targetEmployee.Id, NewManagerId, approverId);
-            }
-
-            ProcessedDate = DateTime.UtcNow;
-            await context.SaveChangesAsync();
-            return true;
+                "PositionChange" => NewPositionId.HasValue,
+                "DepartmentChange" => NewDepartmentId.HasValue,
+                "Transfer" => NewDepartmentId.HasValue, // Could be same as DepartmentChange or separate logic
+                _ => false
+            };
         }
     }
 

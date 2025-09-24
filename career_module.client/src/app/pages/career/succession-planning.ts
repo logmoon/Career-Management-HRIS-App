@@ -54,7 +54,7 @@ import {
 } from '../service/succession-planning.service';
 import { PositionService, Position } from '../service/position.service';
 import { EmployeeService, Employee } from '../service/employee.service';
-import { EmployeeRequestService } from '../service/employee-request.service';
+import { CreateEmployeeRequestDto, EmployeeRequestService } from '../service/employee-request.service';
 import { AuthService } from '../service/auth.service';
 
 interface SuccessionPlanWithAnalysis extends SuccessionPlan {
@@ -216,7 +216,7 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                     </div>
                     <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">Key Position Coverage</h6>
                     <p class="text-2xl font-bold text-purple-500 m-0">
-                      {{ dashboardData()?.metrics?.keyPositionsCoverage || 0 }}%
+                      {{ dashboardData()?.metrics?.keyPositionsCoverage?.toPrecision(3) }}%
                     </p>
                     <small class="text-surface-500 dark:text-surface-400">
                       {{ dashboardData()?.metrics?.keyPositionsWithPlans || 0 }} covered
@@ -230,7 +230,7 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                     </div>
                     <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">Avg Match Score</h6>
                     <p class="text-2xl font-bold text-orange-500 m-0">
-                      {{ dashboardData()?.metrics?.averageCandidateMatchScore || 0 }}%
+                      {{ dashboardData()?.metrics?.averageCandidateMatchScore?.toPrecision(3)|| 0 }}%
                     </p>
                     <small class="text-surface-500 dark:text-surface-400">candidate fit</small>
                   </p-card>
@@ -473,7 +473,8 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                                   shape="circle">
                                 </p-avatar>
                                 <div>
-                                  <h6 class="font-medium text-surface-900 dark:text-surface-0 m-0">
+                                  <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 cursor-pointer hover:text-primary transition-colors"
+                                      (click)="navigateToEmployeeDetail(candidate.employee.id)">
                                     {{ candidate.employee.fullName }}
                                   </h6>
                                   <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
@@ -499,6 +500,15 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                               </p-tag>
                             </div>
                             <div *ngIf="canAssignToPosition()" class="mt-2 flex justify-end">
+                              <p-button 
+                                *ngIf="canCreatePlans()"
+                                icon="pi pi-times"
+                                severity="danger"
+                                [text]="true"
+                                size="small"
+                                (click)="removeCandidate(candidate)"
+                                pTooltip="Remove Candidate">
+                              </p-button>
                               <p-button 
                                 label="Assign to Position"
                                 icon="pi pi-send"
@@ -528,7 +538,8 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                                   shape="circle">
                                 </p-avatar>
                                 <div>
-                                  <h6 class="font-medium text-surface-900 dark:text-surface-0 m-0">
+                                  <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 cursor-pointer hover:text-primary transition-colors"
+                                      (click)="navigateToEmployeeDetail(candidate.employee.id)">
                                     {{ candidate.employee.fullName }}
                                   </h6>
                                   <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
@@ -549,6 +560,16 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                                 <span class="text-sm font-medium">{{ candidate.matchScore }}%</span>
                               </div>
                               <p-button 
+                                *ngIf="canCreatePlans()"
+                                icon="pi pi-times"
+                                severity="danger"
+                                [text]="true"
+                                size="small"
+                                (click)="removeCandidate(candidate)"
+                                pTooltip="Remove Candidate">
+                              </p-button>
+                              <p-button 
+                                *ngIf="canCreatePlans()"
                                 label="Add"
                                 icon="pi pi-plus"
                                 size="small"
@@ -602,6 +623,15 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                                       <span class="text-surface-700 dark:text-surface-200">{{ weakness }}</span>
                                     </div>
                                   </div>
+                                  <p-button 
+                                    *ngIf="canCreatePlans()"
+                                    label="Add to plan"
+                                    icon="pi pi-plus"
+                                    size="small"
+                                    severity="success"
+                                    [outlined]="true"
+                                    (click)="addCandidateToSuccessionPlan(plan, analysis.employee)">
+                                  </p-button>
                                 </div>
                               </div>
                             </div>
@@ -639,13 +669,9 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <p-card styleClass="text-center">
                     <div class="mb-4">
-                      <p-knob 
-                        [(ngModel)]="readinessReport()!.overallReadinessPercentage" 
-                        [readonly]="true"
-                        [size]="100"
-                        [strokeWidth]="10"
-                        valueTemplate="{value}%">
-                      </p-knob>
+                    <div class="text-3xl font-bold text-purple-500 mb-2">
+                      {{ readinessReport()!.overallReadinessPercentage.toPrecision(3) }}%
+                    </div>
                     </div>
                     <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">Overall Readiness</h6>
                     <p class="text-surface-600 dark:text-surface-300 text-sm m-0">
@@ -757,7 +783,6 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                           <div class="text-xs text-surface-600 dark:text-surface-300">Readiness</div>
                         </div>
                       </div>
-
                       <div class="flex gap-2">
                         <p-button 
                           *ngIf="!positionReadiness.hasSuccessionPlan && canCreatePlans()"
@@ -766,23 +791,6 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                           size="small"
                           severity="primary"
                           (click)="createPlanForPosition(positionReadiness.position)">
-                        </p-button>
-                        <p-button 
-                          *ngIf="positionReadiness.hasSuccessionPlan"
-                          label="View Plan"
-                          icon="pi pi-eye"
-                          size="small"
-                          severity="secondary"
-                          [outlined]="true"
-                          (click)="viewPositionPlan(positionReadiness.position)">
-                        </p-button>
-                        <p-button 
-                          label="Analyze Candidates"
-                          icon="pi pi-chart-line"
-                          size="small"
-                          severity="secondary"
-                          [outlined]="true"
-                          (click)="analyzePositionCandidates(positionReadiness.position)">
                         </p-button>
                       </div>
                     </div>
@@ -917,7 +925,8 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                     size="large">
                   </p-avatar>
                   <div>
-                    <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
+                    <h6 class="font-semibold text-surface-900 dark:text-surface-0 m-0 cursor-pointer hover:text-primary transition-colors"
+                        (click)="navigateToEmployeeDetail(candidate.employee.id)">
                       {{ candidate.employee.fullName }}
                     </h6>
                     <p class="text-sm text-surface-600 dark:text-surface-300 m-0 mb-2">
@@ -948,6 +957,15 @@ interface SuccessionPlanWithAnalysis extends SuccessionPlan {
                     [value]="candidate.status" 
                     [severity]="getCandidateStatusSeverity(candidate.status)">
                   </p-tag>
+                  <p-button 
+                    *ngIf="canCreatePlans()"
+                    icon="pi pi-times"
+                    severity="danger"
+                    [text]="true"
+                    size="small"
+                    (click)="removeCandidate(candidate)"
+                    pTooltip="Remove Candidate">
+                  </p-button>
                   <p-button 
                     *ngIf="canAssignToPosition()"
                     label="Assign"
@@ -1156,12 +1174,29 @@ export class SuccessionPlanning implements OnInit {
     }))
   );
 
-  availableEmployees = computed(() => 
-    this.employees().map(emp => ({ 
-      label: `${emp.fullName} - ${emp.currentPosition?.title || 'No Position'}`, 
-      value: emp.id 
-    }))
-  );
+  availableEmployees = computed(() => {
+    // Get the current position holder if we're adding to a specific plan
+    const currentPositionId = this.selectedPlan?.positionId;
+    const currentPositionHolder = currentPositionId ? 
+      this.employees().find(emp => emp.currentPosition?.id === currentPositionId) : null;
+
+    return this.employees()
+      .filter(emp => {
+        // Filter out current position holder
+        if (currentPositionHolder && emp.id === currentPositionHolder.id) {
+          return false;
+        }
+        // Filter out employees already in this succession plan
+        if (this.selectedPlan?.candidates?.some(c => c.employeeId === emp.id)) {
+          return false;
+        }
+        return true;
+      })
+      .map(emp => ({ 
+        label: `${emp.fullName} - ${emp.currentPosition?.title || 'No Position'}`, 
+        value: emp.id 
+      }));
+  });
 
   planStatusOptions = computed(() => [
     { label: 'All Statuses', value: null },
@@ -1448,6 +1483,46 @@ export class SuccessionPlanning implements OnInit {
     this.showCandidatesDialog = true;
   }
 
+  async removeCandidate(candidate: SuccessionCandidate) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to remove ${candidate.employee.fullName} from this succession plan?`,
+      header: 'Confirm Removal',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: async () => {
+        try {
+          await this.successionPlanningService.removeCandidate(candidate.id).toPromise();
+          
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Candidate Removed',
+            detail: `${candidate.employee.fullName} has been removed from the succession plan`
+          });
+          
+          // Update local data
+          if (this.selectedPlan?.candidates) {
+            this.selectedPlan.candidates = this.selectedPlan.candidates.filter(c => c.id !== candidate.id);
+          }
+          
+          // Update in filtered plans list
+          const planInList = this.filteredPlans().find(p => p.id === this.selectedPlan!.id);
+          if (planInList?.candidates) {
+            planInList.candidates = planInList.candidates.filter(c => c.id !== candidate.id);
+            this.updatePlanInFilteredList(planInList);
+          }
+          
+        } catch (error) {
+          console.error('Error removing candidate:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Removal Failed',
+            detail: 'Unable to remove candidate from succession plan'
+          });
+        }
+      }
+    });
+  }
+
   async addCandidate() {
     if (!this.selectedPlan || !this.newCandidate.employeeId || !this.newCandidate.priority) {
       return;
@@ -1550,8 +1625,8 @@ export class SuccessionPlanning implements OnInit {
 
     try {
       // Using the employee request service to create an assignment request
-      const requestData = {
-        requestType: 'PositionAssignment',
+      const requestData: CreateEmployeeRequestDto = {
+        requestType: 'PositionChange',
         targetEmployeeId: this.assignmentData.employee.id,
         newPositionId: this.assignmentData.position.id,
         justification: `Succession planning candidate assignment to ${this.assignmentData.position.title}`
@@ -1608,6 +1683,10 @@ export class SuccessionPlanning implements OnInit {
         detail: 'Unable to analyze candidates for this position'
       });
     }
+  }
+
+  navigateToEmployeeDetail(employeeId: number) {
+    this.router.navigate(['/employee-detail', employeeId]);
   }
 
   // Utility methods

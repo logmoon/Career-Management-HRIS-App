@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
-import { Employee } from './employee.service';
-import { Skill, SkillGap } from './skills.service';
-import { CareerPathRecommendation } from './career-path.service';
 
 // Core Interfaces
+// Replace the interfaces in your intelligence.service.ts with these lightweight versions
+// They maintain the same property names so your existing components won't break
+
+// Core Interfaces - keeping the same names for compatibility
 export interface QuickInsight {
   type: string;
   title: string;
@@ -32,6 +33,23 @@ export interface CareerOpportunity {
   recommendedAction: string;
   priority: string;
   relatedId: number;
+}
+
+// Lightweight employee interface
+export interface Employee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName: string; // computed property
+  departmentId: number;
+  currentPositionId?: number;
+}
+
+// Lightweight skill interface
+export interface Skill {
+  id: number;
+  name: string;
+  category: string;
 }
 
 export interface SkillDevelopmentRecommendation {
@@ -64,7 +82,7 @@ export interface AttritionRisk {
 export interface PromotionReadinessScore {
   employeeId: number;
   readinessScore: number; // 0-100
-  readinessLevel: string; // "Ready", "Near Ready", "Developing", "Not Ready"
+  readinessLevel: string; // "High", "Medium", "Low"
   strengths: string[];
   areasForDevelopment: string[];
   timeToReadiness: string;
@@ -90,7 +108,6 @@ export interface TeamDevelopmentOpportunity {
     benefits: string;
 }
 
-
 export interface TeamDynamicsInsight {
   managerId: number;
   teamSize: number;
@@ -99,7 +116,7 @@ export interface TeamDynamicsInsight {
   performanceVariation: number;
   highPerformerCount: number;
   lowPerformerCount: number;
-  developmentOpportunities: TeamDevelopmentOpportunity[];
+  developmentOpportunities: string[]; // Simplified from full objects to just descriptions
   insights: string[];
 }
 
@@ -111,6 +128,20 @@ export interface QuickStats {
   myDirectReports: number;
   myPendingRequests: number;
   careerOpportunities: number;
+}
+
+// Lightweight career path interface
+export interface CareerPath {
+  id: number;
+  toPositionTitle: string;
+  toPositionDepartment: string;
+}
+
+export interface CareerPathRecommendation {
+  careerPath: CareerPath;
+  readinessScore: number;
+  readinessLevel: string;
+  missingSkills: string[];
 }
 
 export interface CareerIntelligenceReport {
@@ -154,6 +185,15 @@ export interface SkillsIntelligence {
   recommendations: SkillDevelopmentRecommendation[];
 }
 
+export interface SkillGap {
+  skill: Skill;
+  requiredLevel: number;
+  currentLevel: number;
+  gap: number;
+  affectedPathsCount: number;
+}
+
+// Simplified organization intelligence - just key insights as strings
 export interface OrganizationIntelligenceReport {
   generatedDate: Date;
   talentRisks: TalentRisk[];
@@ -171,7 +211,7 @@ export interface IntelligentDashboard {
   personalInsights: CareerIntelligenceReport | null;
   careerOpportunities: CareerOpportunity[];
   skillRecommendations: SkillDevelopmentRecommendation[];
-  organizationInsights: OrganizationIntelligenceReport | null;
+  organizationInsights: string[] | null; // Simplified to just string array
   talentRisks: TalentRisk[];
   attritionRisks: AttritionRisk[];
   teamInsights: TeamDynamicsInsight | null;
@@ -195,7 +235,35 @@ export class IntelligenceService extends BaseApiService {
 
   // Smart Dashboard - The New Central Hub
   getDashboard(): Observable<IntelligentDashboard> {
-    return this.get<IntelligentDashboard>(`${this.endpoint}/dashboard`);
+    return this.get<IntelligentDashboard>(`${this.endpoint}/dashboard`).pipe(
+      map(dashboard => {
+        // Handle the case where organizationInsights might come as string[] instead of full object
+        if (dashboard.organizationInsights && Array.isArray(dashboard.organizationInsights)) {
+          // It's already the simplified version, keep as is
+          return dashboard;
+        } else if (dashboard.organizationInsights && typeof dashboard.organizationInsights === 'object') {
+          // Convert full object to string array for backwards compatibility
+          const orgInsights = dashboard.organizationInsights as any;
+          dashboard.organizationInsights = orgInsights.strategicRecommendations || [];
+          return dashboard;
+        } else {
+          // No org insights
+          dashboard.organizationInsights = [];
+          return dashboard;
+        }
+      })
+    );
+  }
+  getOrganizationInsights(dashboard: IntelligentDashboard): string[] {
+    if (Array.isArray(dashboard.organizationInsights)) {
+      return dashboard.organizationInsights;
+    }
+    return [];
+  }
+
+  // For components that expect the old structure, provide a wrapper
+  getStrategicRecommendations(dashboard: IntelligentDashboard): string[] {
+    return this.getOrganizationInsights(dashboard);
   }
 
   getSmartRecommendations(): Observable<SmartRecommendation[]> {
@@ -301,19 +369,6 @@ export class IntelligenceService extends BaseApiService {
   getMySkillRecommendations(): Observable<SkillDevelopmentRecommendation[]> {
     // This would need to get current employee ID first, simplified for now  
     return this.get<SkillDevelopmentRecommendation[]>(`${this.endpoint}/my-career-intelligence`);
-  }
-
-  // Dashboard specific methods for different user roles
-  getHRDashboard(): Observable<IntelligentDashboard> {
-    return this.getDashboard();
-  }
-
-  getManagerDashboard(): Observable<IntelligentDashboard> {
-    return this.getDashboard();
-  }
-
-  getEmployeeDashboard(): Observable<IntelligentDashboard> {
-    return this.getDashboard();
   }
 
   // Notification/Alert related methods

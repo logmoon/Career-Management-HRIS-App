@@ -93,6 +93,7 @@ export interface CareerPathAnalysis {
   meetsTotalExperienceRequirement: boolean;
   meetsPerformanceRequirement: boolean;
   meetsEducationRequirement: boolean;
+  meetsFromPositionRequirement: boolean;
   skillGaps: SkillGapAnalysis[];
   skillCompletionPercentage: number;
   readinessPercentage: number;

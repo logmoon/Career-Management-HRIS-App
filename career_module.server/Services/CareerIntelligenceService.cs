@@ -1,4 +1,5 @@
 ﻿using career_module.server.Infrastructure.Data;
+using career_module.server.Models.DTOs;
 using career_module.server.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +32,7 @@ namespace career_module.server.Services
         Task<ServiceResult<TeamDynamicsInsight>> AnalyzeTeamDynamicsAsync(int managerId);
 
         // Smart Dashboard & Analytics (replaces Reports controller)
-        Task<ServiceResult<IntelligentDashboard>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null);
+        Task<ServiceResult<IntelligentDashboardDto>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null);
         Task<ServiceResult<DepartmentIntelligence>> GetDepartmentIntelligenceAsync(int departmentId);
         Task<ServiceResult<SkillsIntelligence>> GetSkillsIntelligenceAsync(int? departmentId = null);
     }
@@ -77,7 +78,7 @@ namespace career_module.server.Services
                 var report = new CareerIntelligenceReport
                 {
                     EmployeeId = employeeId,
-                    Employee = employee,
+                    Employee = EmployeeDto.FromEmployee(employee),
                     GeneratedDate = DateTime.UtcNow
                 };
 
@@ -403,7 +404,7 @@ namespace career_module.server.Services
                         {
                             risks.Add(new TalentRisk
                             {
-                                Employee = employee,
+                                Employee = EmployeeDto.FromEmployee(employee),
                                 RiskType = "No Career Progression",
                                 RiskLevel = "High",
                                 Description = $"High-performing employee {employee.FirstName} {employee.LastName} has no defined career paths",
@@ -433,7 +434,7 @@ namespace career_module.server.Services
                     {
                         risks.Add(new TalentRisk
                         {
-                            Employee = employee,
+                            Employee = EmployeeDto.FromEmployee(employee),
                             RiskType = "Career Stagnation",
                             RiskLevel = "Medium",
                             Description = $"Employee {employee.FirstName} {employee.LastName} has been in role for {(DateTime.UtcNow - employee.HireDate).TotalDays / 365:F1} years without promotion",
@@ -453,7 +454,7 @@ namespace career_module.server.Services
                         {
                             risks.Add(new TalentRisk
                             {
-                                Employee = successionRisk.Employee,
+                                Employee = EmployeeDto.FromEmployee(successionRisk.Employee),
                                 RiskType = "Key Person Risk",
                                 RiskLevel = successionRisk.RiskLevel,
                                 Description = successionRisk.Description,
@@ -785,7 +786,7 @@ namespace career_module.server.Services
                     {
                         risks.Add(new AttritionRisk
                         {
-                            Employee = employee,
+                            Employee = EmployeeDto.FromEmployee(employee),
                             RiskScore = riskScore,
                             RiskLevel = riskScore >= 80 ? "Critical" :
                                        riskScore >= 65 ? "High" : "Medium",
@@ -872,7 +873,7 @@ namespace career_module.server.Services
 
         #region Smart Dashboard & Analytics
 
-        public async Task<ServiceResult<IntelligentDashboard>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null)
+        public async Task<ServiceResult<IntelligentDashboardDto>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null)
         {
             try
             {
@@ -884,7 +885,7 @@ namespace career_module.server.Services
 
                 if (employeeId.HasValue)
                 {
-                    // Employee-specific dashboard
+                    // Employee-specific dashboard - but limit the data we fetch
                     var intelligenceReport = await GenerateEmployeeCareerIntelligenceAsync(employeeId.Value);
                     if (intelligenceReport.IsSuccess)
                     {
@@ -894,36 +895,38 @@ namespace career_module.server.Services
                     var opportunities = await IdentifyCareerOpportunitiesAsync(employeeId.Value);
                     if (opportunities.IsSuccess)
                     {
-                        dashboard.CareerOpportunities = opportunities.Data!.Take(5).ToList();
+                        dashboard.CareerOpportunities = opportunities.Data!.Take(3).ToList();
                     }
 
                     var skillRecommendations = await RecommendSkillDevelopmentAsync(employeeId.Value);
                     if (skillRecommendations.IsSuccess)
                     {
-                        dashboard.SkillRecommendations = skillRecommendations.Data!.Take(5).ToList();
+                        dashboard.SkillRecommendations = skillRecommendations.Data!.Take(3).ToList();
                     }
                 }
 
-                // Role-based organizational insights
+                // Role-based organizational insights - heavily limited
                 if (userRole == "HR" || userRole == "Admin")
                 {
-                    var orgIntelligence = await GenerateOrganizationIntelligenceAsync();
-                    if (orgIntelligence.IsSuccess)
-                    {
-                        dashboard.OrganizationInsights = orgIntelligence.Data;
-                    }
-
+                    // Instead of full org intelligence, just get key metrics
                     var talentRisks = await IdentifyTalentRisksAsync();
                     if (talentRisks.IsSuccess)
                     {
-                        dashboard.TalentRisks = talentRisks.Data!.Take(5).ToList();
+                        dashboard.TalentRisks = talentRisks.Data!.Take(3).ToList();
                     }
 
                     var attritionRisks = await PredictAttritionRisksAsync();
                     if (attritionRisks.IsSuccess)
                     {
-                        dashboard.AttritionRisks = attritionRisks.Data!.Take(5).ToList();
+                        dashboard.AttritionRisks = attritionRisks.Data!.Take(3).ToList();
                     }
+
+                    // Create a minimal organization insights object with just strategic recommendations
+                    dashboard.OrganizationInsights = new OrganizationIntelligenceReport
+                    {
+                        GeneratedDate = DateTime.UtcNow,
+                        StrategicRecommendations = await GenerateStrategicRecommendationsAsync()
+                    };
                 }
                 else if (userRole == "Manager" && employeeId.HasValue)
                 {
@@ -934,21 +937,24 @@ namespace career_module.server.Services
                     }
                 }
 
-                // Smart recommendations for all users
+                // Smart recommendations for all users - limited
                 var recommendations = await GetSmartRecommendationsAsync(employeeId);
                 if (recommendations.IsSuccess)
                 {
-                    dashboard.SmartRecommendations = recommendations.Data!.Take(8).ToList();
+                    dashboard.SmartRecommendations = recommendations.Data!.Take(3).ToList();
                 }
 
                 // Quick stats
                 dashboard.QuickStats = await GenerateQuickStatsAsync(userRole, employeeId);
 
-                return ServiceResult<IntelligentDashboard>.Success(dashboard);
+                // Convert to lightweight version
+                var lightDashboard = IntelligentDashboardDto.FromIntelligentDashboard(dashboard);
+
+                return ServiceResult<IntelligentDashboardDto>.Success(lightDashboard);
             }
             catch (Exception ex)
             {
-                return ServiceResult<IntelligentDashboard>.Failure($"Failed to generate intelligent dashboard: {ex.Message}");
+                return ServiceResult<IntelligentDashboardDto>.Failure($"Failed to generate intelligent dashboard: {ex.Message}");
             }
         }
 
@@ -1759,7 +1765,7 @@ namespace career_module.server.Services
     public class CareerIntelligenceReport
     {
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; } = null!;
+        public EmployeeDto Employee { get; set; } = null!;
         public DateTime GeneratedDate { get; set; }
 
         public List<CareerPathRecommendation> CareerPathRecommendations { get; set; } = new List<CareerPathRecommendation>();
@@ -1816,7 +1822,7 @@ namespace career_module.server.Services
 
     public class TalentRisk
     {
-        public Employee Employee { get; set; } = null!;
+        public EmployeeDto Employee { get; set; } = null!;
         public string RiskType { get; set; } = string.Empty;
         public string RiskLevel { get; set; } = string.Empty; // High, Medium, Low
         public string Description { get; set; } = string.Empty;
@@ -1846,7 +1852,7 @@ namespace career_module.server.Services
 
     public class AttritionRisk
     {
-        public Employee Employee { get; set; } = null!;
+        public EmployeeDto Employee { get; set; } = null!;
         public int RiskScore { get; set; } // 0-100
         public string RiskLevel { get; set; } = string.Empty; // Critical, High, Medium
         public List<string> RiskFactors { get; set; } = new List<string>();

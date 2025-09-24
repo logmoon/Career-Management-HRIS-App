@@ -85,6 +85,12 @@ export class MenuService {
             routerLink: ['/skills'],
             allowedRoles: ['Admin', 'HR', 'Manager']
           },
+          { 
+            label: 'Performance Reviews', 
+            icon: 'pi pi-fw pi-book', 
+            routerLink: ['/performance-reviews'],
+            allowedRoles: ['Admin', 'HR', 'Manager']
+          },
         ]
       },
       {
@@ -112,6 +118,12 @@ export class MenuService {
             icon: 'pi pi-fw pi-inbox', 
             routerLink: ['/my-requests']
             // Available to all users
+          },
+          { 
+            label: 'Approvals', 
+            icon: 'pi pi-fw pi-check-square', 
+            routerLink: ['/approvals'],
+            allowedRoles: ['Admin', 'HR', 'Manager']
           }
         ]
       },

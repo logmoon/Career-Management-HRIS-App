@@ -95,7 +95,111 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/intelligence/dashboard/hr": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/intelligence/dashboard/manager": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/intelligence/dashboard/employee": {
+      "get": {
+        "tags": [
+          "CareerIntelligence"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligentDashboardDto"
+                }
+              }
+            }
           }
         }
       }
@@ -1129,6 +1233,18 @@
         }
       }
     },
+    "/api/EmployeeRequests/types": {
+      "get": {
+        "tags": [
+          "EmployeeRequests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/EmployeeRequests": {
       "post": {
         "tags": [
@@ -1137,13 +1253,19 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { }
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeRequestDto"
+              }
             },
             "text/json": {
-              "schema": { }
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeRequestDto"
+              }
             },
             "application/*+json": {
-              "schema": { }
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeRequestDto"
+              }
             }
           }
         },
@@ -1155,7 +1277,7 @@
       }
     },
     "/api/EmployeeRequests/{id}": {
-      "delete": {
+      "get": {
         "tags": [
           "EmployeeRequests"
         ],
@@ -1176,7 +1298,7 @@
           }
         }
       },
-      "get": {
+      "delete": {
         "tags": [
           "EmployeeRequests"
         ],
@@ -1306,7 +1428,7 @@
         }
       }
     },
-    "/api/EmployeeRequests/promotion": {
+    "/api/EmployeeRequests/position-change": {
       "post": {
         "tags": [
           "EmployeeRequests"
@@ -3266,6 +3388,219 @@
         },
         "additionalProperties": false
       },
+      "AttritionRiskDto": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "$ref": "#/components/schemas/EmployeeDto"
+          },
+          "riskScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "riskLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "riskFactors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "recommendedActions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CareerIntelligenceReportDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/EmployeeDto"
+          },
+          "generatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "careerPathRecommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CareerPathRecommendationDto"
+            },
+            "nullable": true
+          },
+          "skillDevelopmentRecommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillDevelopmentRecommendationDto"
+            },
+            "nullable": true
+          },
+          "performanceInsight": {
+            "$ref": "#/components/schemas/CareerPerformanceInsightDto"
+          },
+          "promotionReadiness": {
+            "$ref": "#/components/schemas/PromotionReadinessScoreDto"
+          },
+          "careerOpportunities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CareerOpportunityDto"
+            },
+            "nullable": true
+          },
+          "smartInsights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CareerOpportunityDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "matchScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "recommendedAction": {
+            "type": "string",
+            "nullable": true
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CareerPathDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "toPositionTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "toPositionDepartment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CareerPathRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "careerPath": {
+            "$ref": "#/components/schemas/CareerPathDto"
+          },
+          "readinessScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "readinessLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "missingSkills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CareerPerformanceInsightDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "analysisDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "performanceTrend": {
+            "type": "string",
+            "nullable": true
+          },
+          "averageRating": {
+            "type": "number",
+            "format": "double"
+          },
+          "ratingTrend": {
+            "type": "number",
+            "format": "double"
+          },
+          "keyStrengths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "developmentAreas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "careerTrajectory": {
+            "type": "string",
+            "nullable": true
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ChangeDepartmentDto": {
         "type": "object",
         "properties": {
@@ -3374,6 +3709,11 @@
           "reason": {
             "type": "string",
             "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -3424,6 +3764,65 @@
         },
         "additionalProperties": false
       },
+      "CreateEmployeeRequestDto": {
+        "required": [
+          "requestType"
+        ],
+        "type": "object",
+        "properties": {
+          "requestType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "requesterId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetEmployeeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPositionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "proposedSalary": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "justification": {
+            "type": "string",
+            "nullable": true
+          },
+          "newDepartmentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "newManagerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateExperienceDto": {
         "type": "object",
         "properties": {
@@ -3454,7 +3853,6 @@
       "CreatePerformanceReviewDto": {
         "required": [
           "employeeId",
-          "overallRating",
           "reviewerId",
           "reviewPeriodEnd",
           "reviewPeriodStart"
@@ -3476,12 +3874,6 @@
           "reviewPeriodEnd": {
             "type": "string",
             "format": "date-time"
-          },
-          "overallRating": {
-            "maximum": 5,
-            "minimum": 1,
-            "type": "number",
-            "format": "double"
           },
           "strengths": {
             "type": "string",
@@ -3544,7 +3936,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "careerPathId": {
+          "newPositionId": {
             "type": "integer",
             "format": "int32"
           },
@@ -3560,6 +3952,11 @@
           },
           "justification": {
             "type": "string",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },
@@ -3605,6 +4002,137 @@
         },
         "additionalProperties": false
       },
+      "EmployeeDto": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "lastName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "hireDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "managerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "currentPositionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "salary": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IntelligentDashboardDto": {
+        "type": "object",
+        "properties": {
+          "generatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "personalInsights": {
+            "$ref": "#/components/schemas/CareerIntelligenceReportDto"
+          },
+          "careerOpportunities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CareerOpportunityDto"
+            },
+            "nullable": true
+          },
+          "skillRecommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillDevelopmentRecommendationDto"
+            },
+            "nullable": true
+          },
+          "organizationInsights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "talentRisks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TalentRiskDto"
+            },
+            "nullable": true
+          },
+          "attritionRisks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttritionRiskDto"
+            },
+            "nullable": true
+          },
+          "teamInsights": {
+            "$ref": "#/components/schemas/TeamDynamicsInsightDto"
+          },
+          "smartRecommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SmartRecommendationDto"
+            },
+            "nullable": true
+          },
+          "quickStats": {
+            "$ref": "#/components/schemas/QuickStatsDto"
+          }
+        },
+        "additionalProperties": false
+      },
       "LoginRequestDto": {
         "type": "object",
         "properties": {
@@ -3615,6 +4143,87 @@
           "password": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PromotionReadinessScoreDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "readinessScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "readinessLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "strengths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "areasForDevelopment": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "timeToReadiness": {
+            "type": "string",
+            "nullable": true
+          },
+          "recommendedActions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "assessmentDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuickStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalEmployees": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activeCareerPaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pendingRequests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "successionPlansActive": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "myDirectReports": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "myPendingRequests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "careerOpportunities": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -3659,11 +4268,14 @@
         "additionalProperties": false
       },
       "RejectionDto": {
+        "required": [
+          "reason"
+        ],
         "type": "object",
         "properties": {
           "reason": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3678,6 +4290,163 @@
           "expectedRetirementDate": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillDevelopmentRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "skill": {
+            "$ref": "#/components/schemas/SkillDto"
+          },
+          "currentLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "recommendedLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gap": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "suggestedActions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SmartRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actionUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TalentRiskDto": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "$ref": "#/components/schemas/EmployeeDto"
+          },
+          "riskType": {
+            "type": "string",
+            "nullable": true
+          },
+          "riskLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "impact": {
+            "type": "string",
+            "nullable": true
+          },
+          "recommendedAction": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TeamDynamicsInsightDto": {
+        "type": "object",
+        "properties": {
+          "managerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "teamSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "analysisDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "averageTeamPerformance": {
+            "type": "number",
+            "format": "double"
+          },
+          "performanceVariation": {
+            "type": "number",
+            "format": "double"
+          },
+          "highPerformerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lowPerformerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "developmentOpportunities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false

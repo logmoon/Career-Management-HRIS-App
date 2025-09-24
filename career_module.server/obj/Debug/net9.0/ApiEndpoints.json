@@ -500,8 +500,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "requestData",
-        "Type": "System.Text.Json.JsonElement",
+        "Name": "requestDto",
+        "Type": "career_module.server.Models.DTOs.CreateEmployeeRequestDto",
         "IsRequired": true
       }
     ],
@@ -509,9 +509,9 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
-    "Method": "CancelRequestById",
+    "Method": "GetRequestById",
     "RelativePath": "api/EmployeeRequests/{id}",
-    "HttpMethod": "DELETE",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -525,9 +525,9 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
-    "Method": "GetRequestById",
+    "Method": "CancelRequest",
     "RelativePath": "api/EmployeeRequests/{id}",
-    "HttpMethod": "GET",
+    "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -554,7 +554,7 @@
       },
       {
         "Name": "dto",
-        "Type": "career_module.server.Controllers.ApprovalDto",
+        "Type": "career_module.server.Models.DTOs.ApprovalDto",
         "IsRequired": true
       }
     ],
@@ -575,7 +575,7 @@
       },
       {
         "Name": "dto",
-        "Type": "career_module.server.Controllers.RejectionDto",
+        "Type": "career_module.server.Models.DTOs.RejectionDto",
         "IsRequired": true
       }
     ],
@@ -619,8 +619,8 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
-    "Method": "CreatePromotionRequest",
-    "RelativePath": "api/EmployeeRequests/promotion",
+    "Method": "CreatePositionChangeRequest",
+    "RelativePath": "api/EmployeeRequests/position-change",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -631,6 +631,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.EmployeeRequestsController",
+    "Method": "GetRequestTypes",
+    "RelativePath": "api/EmployeeRequests/types",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -955,13 +965,83 @@
   },
   {
     "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
-    "Method": "GetIntelligentDashboard",
+    "Method": "GetDashboard",
     "RelativePath": "api/intelligence/dashboard",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "career_module.server.Models.DTOs.IntelligentDashboardDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetEmployeeDashboard",
+    "RelativePath": "api/intelligence/dashboard/employee",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "career_module.server.Models.DTOs.IntelligentDashboardDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetHRDashboard",
+    "RelativePath": "api/intelligence/dashboard/hr",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "career_module.server.Models.DTOs.IntelligentDashboardDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",
+    "Method": "GetManagerDashboard",
+    "RelativePath": "api/intelligence/dashboard/manager",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "career_module.server.Models.DTOs.IntelligentDashboardDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "career_module.server.Controllers.CareerIntelligenceController",

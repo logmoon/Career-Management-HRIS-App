@@ -390,6 +390,7 @@ namespace career_module.server.Services
                 analysis.MeetsTotalExperienceRequirement = analysis.TotalExperience >= careerPath.MinTotalExperience;
                 analysis.MeetsPerformanceRequirement = !careerPath.MinPerformanceRating.HasValue ||
                     analysis.CurrentPerformanceRating >= careerPath.MinPerformanceRating;
+                analysis.MeetsFromPositionRequirement = careerPath.FromPosition == null || careerPath.FromPositionId == employee.CurrentPositionId;
 
                 // Education analysis
                 analysis.MeetsEducationRequirement = string.IsNullOrEmpty(careerPath.RequiredEducationLevel) ||
@@ -664,6 +665,11 @@ namespace career_module.server.Services
                 recommendations.Add($"Obtain {careerPath.RequiredEducationLevel} degree or certification");
             }
 
+            if (!analysis.MeetsFromPositionRequirement)
+            {
+                recommendations.Add($"Follow a career path that leads to {careerPath.FromPosition?.Title}");
+            }
+
             // Add skill-specific recommendations
             var criticalSkillGaps = analysis.SkillGaps?.Where(sg => sg.IsMandatory && sg.Gap > 0).ToList();
             if (criticalSkillGaps?.Any() == true)
@@ -785,6 +791,7 @@ namespace career_module.server.Services
         public bool MeetsTotalExperienceRequirement { get; set; }
         public bool MeetsPerformanceRequirement { get; set; }
         public bool MeetsEducationRequirement { get; set; }
+        public bool MeetsFromPositionRequirement { get; set; }
 
         public List<SkillGapAnalysis> SkillGaps { get; set; } = new List<SkillGapAnalysis>();
         public double SkillCompletionPercentage { get; set; }

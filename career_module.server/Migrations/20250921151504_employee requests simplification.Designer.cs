@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using career_module.server.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using career_module.server.Infrastructure.Data;
 namespace career_module.server.Migrations
 {
     [DbContext(typeof(CareerManagementDbContext))]
-    partial class CareerManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921151504_employee requests simplification")]
+    partial class employeerequestssimplification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -415,6 +418,9 @@ namespace career_module.server.Migrations
                     b.Property<int?>("ApprovedByManagerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CareerPathId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EffectiveDate")
                         .HasColumnType("datetime2");
 
@@ -431,9 +437,6 @@ namespace career_module.server.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("NewManagerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NewPositionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
@@ -481,11 +484,11 @@ namespace career_module.server.Migrations
 
                     b.HasIndex("ApprovedByManagerId");
 
+                    b.HasIndex("CareerPathId");
+
                     b.HasIndex("NewDepartmentId");
 
                     b.HasIndex("NewManagerId");
-
-                    b.HasIndex("NewPositionId");
 
                     b.HasIndex("RequestDate")
                         .HasDatabaseName("IX_EmployeeRequest_RequestDate");
@@ -1120,6 +1123,11 @@ namespace career_module.server.Migrations
                         .HasForeignKey("ApprovedByManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("career_module.server.Models.Entities.CareerPath", "CareerPath")
+                        .WithMany()
+                        .HasForeignKey("CareerPathId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("career_module.server.Models.Entities.Department", "NewDepartment")
                         .WithMany()
                         .HasForeignKey("NewDepartmentId")
@@ -1128,11 +1136,6 @@ namespace career_module.server.Migrations
                     b.HasOne("career_module.server.Models.Entities.Employee", "NewManager")
                         .WithMany()
                         .HasForeignKey("NewManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("career_module.server.Models.Entities.Position", "NewPosition")
-                        .WithMany()
-                        .HasForeignKey("NewPositionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("career_module.server.Models.Entities.Employee", "Requester")
@@ -1150,11 +1153,11 @@ namespace career_module.server.Migrations
 
                     b.Navigation("ApprovedByManager");
 
+                    b.Navigation("CareerPath");
+
                     b.Navigation("NewDepartment");
 
                     b.Navigation("NewManager");
-
-                    b.Navigation("NewPosition");
 
                     b.Navigation("Requester");
 

@@ -192,7 +192,7 @@ export class CareerStatsWidget {
           description: 'leadership transitions',
           icon: 'pi pi-arrow-up-right',
           bgClass: 'bg-cyan-100 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400',
-          actionUrl: '/succession',
+          actionUrl: '/succession-planning',
           actionLabel: 'Review Plans'
         },
         {
