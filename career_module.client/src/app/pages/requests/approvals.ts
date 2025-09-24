@@ -1020,7 +1020,7 @@ interface ApprovalAction {
             icon="pi pi-times"
             severity="danger"
             (click)="confirmRejection()"
-            [disabled]="!rejectionReason?.trim()"
+            [disabled]="!rejectionReason.trim()"
             [loading]="isProcessingAction()">
           </p-button>
         </ng-template>

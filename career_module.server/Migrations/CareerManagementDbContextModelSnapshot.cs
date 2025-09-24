@@ -84,6 +84,36 @@ namespace career_module.server.Migrations
                         .HasFilter("[FromPositionId] IS NOT NULL");
 
                     b.ToTable("CareerPaths");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedByUserId = 1,
+                            Description = "Path from Developer to Manager",
+                            FromPositionId = 3,
+                            IsActive = true,
+                            MinPerformanceRating = 4m,
+                            MinTotalExperience = 0,
+                            MinYearsInCurrentRole = 2,
+                            ToPositionId = 4,
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedByUserId = 1,
+                            Description = "Path from HR Rep to Administrator",
+                            FromPositionId = 2,
+                            IsActive = true,
+                            MinPerformanceRating = 3m,
+                            MinTotalExperience = 0,
+                            MinYearsInCurrentRole = 3,
+                            ToPositionId = 1,
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.CareerPathSkill", b =>
@@ -115,6 +145,32 @@ namespace career_module.server.Migrations
                         .HasDatabaseName("IX_CareerPathSkill_Path_Skill");
 
                     b.ToTable("CareerPathSkills");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CareerPathId = 1,
+                            IsMandatory = true,
+                            MinProficiencyLevel = 3,
+                            SkillId = 3
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CareerPathId = 1,
+                            IsMandatory = true,
+                            MinProficiencyLevel = 3,
+                            SkillId = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CareerPathId = 2,
+                            IsMandatory = true,
+                            MinProficiencyLevel = 4,
+                            SkillId = 7
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.Department", b =>
@@ -356,6 +412,30 @@ namespace career_module.server.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("EmployeeEducations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Degree = "BSc Computer Science",
+                            EmployeeId = 3,
+                            FieldOfStudy = "Software Engineering",
+                            GraduationYear = 2020,
+                            Institution = "Tech University",
+                            Level = "Bachelor"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Degree = "MSc Human Resources",
+                            EmployeeId = 2,
+                            FieldOfStudy = "HR Management",
+                            GraduationYear = 2018,
+                            Institution = "Business School",
+                            Level = "Master"
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.EmployeeExperience", b =>
@@ -399,6 +479,30 @@ namespace career_module.server.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("EmployeeExperiences");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Company = "Startup Inc.",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Worked on internal tools",
+                            EmployeeId = 3,
+                            EndDate = new DateTime(2019, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            JobTitle = "Intern Developer",
+                            StartDate = new DateTime(2019, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Company = "BigCorp",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Led development team",
+                            EmployeeId = 4,
+                            EndDate = new DateTime(2019, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            JobTitle = "Senior Developer",
+                            StartDate = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.EmployeeRequest", b =>
@@ -503,6 +607,32 @@ namespace career_module.server.Migrations
                         .HasDatabaseName("IX_EmployeeRequest_Target_Status");
 
                     b.ToTable("EmployeeRequests");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Justification = "Consistently exceeding expectations",
+                            NewPositionId = 4,
+                            ProposedSalary = 60000m,
+                            RequestDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RequestType = "PositionChange",
+                            RequesterId = 3,
+                            Status = "Pending"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApprovedByManagerId = 4,
+                            ManagerApprovalDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            NewDepartmentId = 2,
+                            Reason = "Employee requested HR rotation",
+                            RequestDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RequestType = "DepartmentChange",
+                            RequesterId = 2,
+                            Status = "ManagerApproved",
+                            TargetEmployeeId = 3
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.EmployeeSkill", b =>
@@ -530,6 +660,44 @@ namespace career_module.server.Migrations
                     b.HasIndex("SkillId");
 
                     b.ToTable("EmployeeSkills");
+
+                    b.HasData(
+                        new
+                        {
+                            EmployeeId = 3,
+                            SkillId = 1,
+                            AcquiredDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastAssessedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "Strong backend skills",
+                            ProficiencyLevel = 4
+                        },
+                        new
+                        {
+                            EmployeeId = 3,
+                            SkillId = 2,
+                            AcquiredDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastAssessedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "Frontend experience",
+                            ProficiencyLevel = 3
+                        },
+                        new
+                        {
+                            EmployeeId = 4,
+                            SkillId = 3,
+                            AcquiredDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastAssessedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "Excellent leader",
+                            ProficiencyLevel = 5
+                        },
+                        new
+                        {
+                            EmployeeId = 2,
+                            SkillId = 7,
+                            AcquiredDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastAssessedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "Strong HR communication",
+                            ProficiencyLevel = 4
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.PerformanceReview", b =>
@@ -587,6 +755,38 @@ namespace career_module.server.Migrations
                     b.HasIndex("ReviewerId");
 
                     b.ToTable("PerformanceReviews");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AreasForImprovement = "Improve communication",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EmployeeId = 3,
+                            Goals = "Lead a project in 2024",
+                            OverallRating = 4.2m,
+                            ReviewPeriodEnd = new DateTime(2023, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReviewPeriodStart = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReviewerId = 4,
+                            Status = "Completed",
+                            Strengths = "Great coding ability",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AreasForImprovement = "Delegate more",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EmployeeId = 4,
+                            Goals = "Mentor junior staff",
+                            OverallRating = 4.5m,
+                            ReviewPeriodEnd = new DateTime(2023, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReviewPeriodStart = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReviewerId = 2,
+                            Status = "Completed",
+                            Strengths = "Strong leadership",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.Position", b =>
@@ -855,6 +1055,20 @@ namespace career_module.server.Migrations
                         .HasDatabaseName("IX_SuccessionCandidate_Plan_Priority");
 
                     b.ToTable("SuccessionCandidates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EmployeeId = 3,
+                            MatchScore = 85m,
+                            Notes = "Promising candidate",
+                            Priority = 1,
+                            Status = "UnderReview",
+                            SuccessionPlanId = 1,
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.SuccessionPlan", b =>
@@ -899,6 +1113,18 @@ namespace career_module.server.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("SuccessionPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedByUserId = 1,
+                            Notes = "Potential successors for Engineering Manager",
+                            PositionId = 4,
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("career_module.server.Models.Entities.User", b =>

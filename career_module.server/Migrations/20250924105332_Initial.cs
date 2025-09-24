@@ -50,37 +50,12 @@ namespace career_module.server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    ActionType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    RelatedEntityId = table.Column<int>(type: "int", nullable: true),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CareerPaths",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FromPositionId = table.Column<int>(type: "int", nullable: false),
+                    FromPositionId = table.Column<int>(type: "int", nullable: true),
                     ToPositionId = table.Column<int>(type: "int", nullable: false),
                     MinYearsInCurrentRole = table.Column<int>(type: "int", nullable: false),
                     MinTotalExperience = table.Column<int>(type: "int", nullable: false),
@@ -263,6 +238,7 @@ namespace career_module.server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     Degree = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Level = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Institution = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     GraduationYear = table.Column<int>(type: "int", nullable: true),
                     FieldOfStudy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -313,18 +289,32 @@ namespace career_module.server.Migrations
                     RequesterId = table.Column<int>(type: "int", nullable: false),
                     TargetEmployeeId = table.Column<int>(type: "int", nullable: true),
                     RequestType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Pending"),
                     ApprovedByManagerId = table.Column<int>(type: "int", nullable: true),
                     ApprovedByHRId = table.Column<int>(type: "int", nullable: true),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     ManagerApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     HRApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProcessedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EffectiveDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewPositionId = table.Column<int>(type: "int", nullable: true),
+                    ProposedSalary = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    Justification = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewDepartmentId = table.Column<int>(type: "int", nullable: true),
+                    NewManagerId = table.Column<int>(type: "int", nullable: true),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmployeeRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeeRequests_Departments_NewDepartmentId",
+                        column: x => x.NewDepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EmployeeRequests_Employees_ApprovedByHRId",
                         column: x => x.ApprovedByHRId,
@@ -338,6 +328,12 @@ namespace career_module.server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_EmployeeRequests_Employees_NewManagerId",
+                        column: x => x.NewManagerId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_EmployeeRequests_Employees_RequesterId",
                         column: x => x.RequesterId,
                         principalTable: "Employees",
@@ -347,6 +343,12 @@ namespace career_module.server.Migrations
                         name: "FK_EmployeeRequests_Employees_TargetEmployeeId",
                         column: x => x.TargetEmployeeId,
                         principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EmployeeRequests_Positions_NewPositionId",
+                        column: x => x.NewPositionId,
+                        principalTable: "Positions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -495,21 +497,117 @@ namespace career_module.server.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "CareerPaths",
+                columns: new[] { "Id", "CreatedAt", "CreatedByUserId", "Description", "FromPositionId", "IsActive", "MinPerformanceRating", "MinTotalExperience", "MinYearsInCurrentRole", "RequiredCertifications", "RequiredEducationLevel", "ToPositionId", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1, "Path from Developer to Manager", 3, true, 4m, 0, 2, null, null, 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1, "Path from HR Rep to Administrator", 2, true, 3m, 0, 3, null, null, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "CreatedAt", "CurrentPositionId", "DepartmentId", "FirstName", "HireDate", "LastName", "ManagerId", "Phone", "Salary", "UpdatedAt", "UserId" },
+                values: new object[] { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1, 1, "Admin", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "User", null, "555-0001", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1 });
+
+            migrationBuilder.InsertData(
+                table: "SuccessionPlans",
+                columns: new[] { "Id", "CreatedAt", "CreatedByUserId", "Notes", "PositionId", "ReviewDate", "Status", "UpdatedAt" },
+                values: new object[] { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1, "Potential successors for Engineering Manager", 4, null, "Active", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "CareerPathSkills",
+                columns: new[] { "Id", "CareerPathId", "IsMandatory", "MinProficiencyLevel", "SkillId" },
+                values: new object[,]
+                {
+                    { 1, 1, true, 3, 3 },
+                    { 2, 1, true, 3, 4 },
+                    { 3, 2, true, 4, 7 }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Employees",
                 columns: new[] { "Id", "CreatedAt", "CurrentPositionId", "DepartmentId", "FirstName", "HireDate", "LastName", "ManagerId", "Phone", "Salary", "UpdatedAt", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1, 1, "Admin", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "User", null, "555-0001", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1 },
                     { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 2, 2, "HR", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Representative", 1, "555-0002", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 2 },
-                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 4, 3, "Jane", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Manager", 1, "555-0004", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 4 },
-                    { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3, 3, "John", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Employee", 4, "555-0003", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3 }
+                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 4, 3, "Jane", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Manager", 1, "555-0004", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 4 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeEducations",
+                columns: new[] { "Id", "CreatedAt", "Degree", "EmployeeId", "FieldOfStudy", "GraduationYear", "Institution", "Level" },
+                values: new object[] { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "MSc Human Resources", 2, "HR Management", 2018, "Business School", "Master" });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeExperiences",
+                columns: new[] { "Id", "Company", "CreatedAt", "Description", "EmployeeId", "EndDate", "JobTitle", "StartDate" },
+                values: new object[] { 2, "BigCorp", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Led development team", 4, new DateTime(2019, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "Senior Developer", new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeSkills",
+                columns: new[] { "EmployeeId", "SkillId", "AcquiredDate", "LastAssessedDate", "Notes", "ProficiencyLevel" },
+                values: new object[,]
+                {
+                    { 2, 7, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Strong HR communication", 4 },
+                    { 4, 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Excellent leader", 5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "CreatedAt", "CurrentPositionId", "DepartmentId", "FirstName", "HireDate", "LastName", "ManagerId", "Phone", "Salary", "UpdatedAt", "UserId" },
+                values: new object[] { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3, 3, "John", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Employee", 4, "555-0003", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3 });
+
+            migrationBuilder.InsertData(
+                table: "PerformanceReviews",
+                columns: new[] { "Id", "AreasForImprovement", "CreatedAt", "EmployeeId", "Goals", "OverallRating", "ReviewPeriodEnd", "ReviewPeriodStart", "ReviewerId", "Status", "Strengths", "UpdatedAt" },
+                values: new object[] { 2, "Delegate more", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 4, "Mentor junior staff", 4.5m, new DateTime(2023, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Completed", "Strong leadership", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeEducations",
+                columns: new[] { "Id", "CreatedAt", "Degree", "EmployeeId", "FieldOfStudy", "GraduationYear", "Institution", "Level" },
+                values: new object[] { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "BSc Computer Science", 3, "Software Engineering", 2020, "Tech University", "Bachelor" });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeExperiences",
+                columns: new[] { "Id", "Company", "CreatedAt", "Description", "EmployeeId", "EndDate", "JobTitle", "StartDate" },
+                values: new object[] { 1, "Startup Inc.", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Worked on internal tools", 3, new DateTime(2019, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Intern Developer", new DateTime(2019, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeRequests",
+                columns: new[] { "Id", "ApprovedByHRId", "ApprovedByManagerId", "EffectiveDate", "HRApprovalDate", "Justification", "ManagerApprovalDate", "NewDepartmentId", "NewManagerId", "NewPositionId", "Notes", "ProcessedDate", "ProposedSalary", "Reason", "RejectionReason", "RequestDate", "RequestType", "RequesterId", "Status", "TargetEmployeeId" },
+                values: new object[,]
+                {
+                    { 1, null, null, null, null, "Consistently exceeding expectations", null, null, null, 4, null, null, 60000m, null, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Promotion", 3, "Pending", null },
+                    { 2, null, 4, null, null, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 2, null, null, null, null, null, "Employee requested HR rotation", null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "DepartmentChange", 2, "ManagerApproved", 3 },
+                    { 3, null, null, null, null, null, null, null, null, null, null, null, null, null, "Budget constraints", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Training", 3, "Rejected", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EmployeeSkills",
+                columns: new[] { "EmployeeId", "SkillId", "AcquiredDate", "LastAssessedDate", "Notes", "ProficiencyLevel" },
+                values: new object[,]
+                {
+                    { 3, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Strong backend skills", 4 },
+                    { 3, 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Frontend experience", 3 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PerformanceReviews",
+                columns: new[] { "Id", "AreasForImprovement", "CreatedAt", "EmployeeId", "Goals", "OverallRating", "ReviewPeriodEnd", "ReviewPeriodStart", "ReviewerId", "Status", "Strengths", "UpdatedAt" },
+                values: new object[] { 1, "Improve communication", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3, "Lead a project in 2024", 4.2m, new DateTime(2023, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, "Completed", "Great coding ability", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "SuccessionCandidates",
+                columns: new[] { "Id", "AddedAt", "EmployeeId", "MatchScore", "Notes", "Priority", "Status", "SuccessionPlanId", "UpdatedAt" },
+                values: new object[] { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 3, 85m, "Promising candidate", 1, "UnderReview", 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CareerPath_From_To",
                 table: "CareerPaths",
                 columns: new[] { "FromPositionId", "ToPositionId" },
-                unique: true);
+                unique: true,
+                filter: "[FromPositionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CareerPaths_CreatedByUserId",
@@ -554,9 +652,19 @@ namespace career_module.server.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployeeRequest_RequestDate",
+                table: "EmployeeRequests",
+                column: "RequestDate");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeRequest_Requester_Status",
                 table: "EmployeeRequests",
                 columns: new[] { "RequesterId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeRequest_RequestType",
+                table: "EmployeeRequests",
+                column: "RequestType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeRequest_Status",
@@ -564,9 +672,9 @@ namespace career_module.server.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeRequest_Type",
+                name: "IX_EmployeeRequest_Target_Status",
                 table: "EmployeeRequests",
-                column: "RequestType");
+                columns: new[] { "TargetEmployeeId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeRequests_ApprovedByHRId",
@@ -579,9 +687,19 @@ namespace career_module.server.Migrations
                 column: "ApprovedByManagerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeRequests_TargetEmployeeId",
+                name: "IX_EmployeeRequests_NewDepartmentId",
                 table: "EmployeeRequests",
-                column: "TargetEmployeeId");
+                column: "NewDepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeRequests_NewManagerId",
+                table: "EmployeeRequests",
+                column: "NewManagerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeRequests_NewPositionId",
+                table: "EmployeeRequests",
+                column: "NewPositionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_CurrentPositionId",
@@ -608,16 +726,6 @@ namespace career_module.server.Migrations
                 name: "IX_EmployeeSkills_SkillId",
                 table: "EmployeeSkills",
                 column: "SkillId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_CreatedAt",
-                table: "Notifications",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_UserId_IsRead",
-                table: "Notifications",
-                columns: new[] { "UserId", "IsRead" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PerformanceReviews_EmployeeId",
@@ -727,9 +835,6 @@ namespace career_module.server.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmployeeSkills");
-
-            migrationBuilder.DropTable(
-                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "PerformanceReviews");

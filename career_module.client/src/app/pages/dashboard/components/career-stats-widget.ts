@@ -82,7 +82,7 @@ export class CareerStatsWidget {
           description: 'positions match your profile',
           icon: 'pi pi-star',
           bgClass: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-          actionUrl: '/career',
+          actionUrl: '/career-path',
           actionLabel: 'Explore',
           trend: this.getTrend(5, 'increase')
         },
@@ -93,7 +93,7 @@ export class CareerStatsWidget {
           description: 'career paths active',
           icon: 'pi pi-sitemap',
           bgClass: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-          actionUrl: '/career',
+          actionUrl: '/career-path',
           actionLabel: 'View Progress',
           trend: this.getTrend(2, 'increase')
         },
@@ -104,7 +104,7 @@ export class CareerStatsWidget {
           description: 'awaiting approval',
           icon: 'pi pi-clock',
           bgClass: 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
-          actionUrl: '/requests',
+          actionUrl: '/my-requests',
           actionLabel: 'View Requests'
         },
         {
@@ -148,7 +148,7 @@ export class CareerStatsWidget {
           description: 'team members',
           icon: 'pi pi-star',
           bgClass: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-          actionUrl: '/performance/analytics',
+          actionUrl: '/performance-reviews',
           actionLabel: 'View Analytics'
         },
         {
@@ -158,7 +158,7 @@ export class CareerStatsWidget {
           description: 'career development plans',
           icon: 'pi pi-chart-bar',
           bgClass: 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-          actionUrl: '/career',
+          actionUrl: '/career-path',
           actionLabel: 'View Plans'
         }
       );
@@ -182,7 +182,7 @@ export class CareerStatsWidget {
           description: 'development programs',
           icon: 'pi pi-sitemap',
           bgClass: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-          actionUrl: '/career',
+          actionUrl: '/career-path',
           actionLabel: 'View Programs'
         },
         {

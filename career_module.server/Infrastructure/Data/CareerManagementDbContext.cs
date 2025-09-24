@@ -422,7 +422,7 @@ namespace career_module.server.Infrastructure.Data
         {
             var staticDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            // Seed Users
+            // ---------------- USERS ----------------
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, Username = "admin", Email = "admin@admin.admin", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "Admin", CreatedAt = staticDate, UpdatedAt = staticDate },
                 new User { Id = 2, Username = "hr", Email = "hr@hr.hr", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "HR", CreatedAt = staticDate, UpdatedAt = staticDate },
@@ -430,7 +430,7 @@ namespace career_module.server.Infrastructure.Data
                 new User { Id = 4, Username = "manager", Email = "manager@manager.manager", PasswordHash = "$2a$11$H49nhtoaRIX.J7mm3rd9H.ew4v69KgMHzCfELwyZbEEkwsfepb4OO", Role = "Manager", CreatedAt = staticDate, UpdatedAt = staticDate }
             );
 
-            // Seed Departments
+            // ---------------- DEPARTMENTS ----------------
             modelBuilder.Entity<Department>().HasData(
                 new Department { Id = 1, Name = "Administration", Description = "Administrative functions", CreatedAt = staticDate },
                 new Department { Id = 2, Name = "Human Resources", Description = "HR and people management", CreatedAt = staticDate },
@@ -438,7 +438,7 @@ namespace career_module.server.Infrastructure.Data
                 new Department { Id = 4, Name = "Sales", Description = "Sales and business development", CreatedAt = staticDate }
             );
 
-            // Seed Positions
+            // ---------------- POSITIONS ----------------
             modelBuilder.Entity<Position>().HasData(
                 new Position { Id = 1, Title = "Administrator", DepartmentId = 1, Level = "Senior", IsKeyPosition = true, CreatedAt = staticDate, UpdatedAt = staticDate },
                 new Position { Id = 2, Title = "HR Representative", DepartmentId = 2, Level = "Mid", IsKeyPosition = false, CreatedAt = staticDate, UpdatedAt = staticDate },
@@ -446,66 +446,15 @@ namespace career_module.server.Infrastructure.Data
                 new Position { Id = 4, Title = "Engineering Manager", DepartmentId = 3, Level = "Manager", IsKeyPosition = true, CreatedAt = staticDate, UpdatedAt = staticDate }
             );
 
-            // Seed Employees
+            // ---------------- EMPLOYEES ----------------
             modelBuilder.Entity<Employee>().HasData(
-                new Employee
-                {
-                    Id = 1,
-                    UserId = 1,
-                    FirstName = "Admin",
-                    LastName = "User",
-                    Phone = "555-0001",
-                    DepartmentId = 1,
-                    CurrentPositionId = 1,
-                    HireDate = staticDate,
-                    CreatedAt = staticDate,
-                    UpdatedAt = staticDate
-                },
-                new Employee
-                {
-                    Id = 2,
-                    UserId = 2,
-                    FirstName = "HR",
-                    LastName = "Representative",
-                    Phone = "555-0002",
-                    DepartmentId = 2,
-                    CurrentPositionId = 2,
-                    HireDate = staticDate,
-                    ManagerId = 1,
-                    CreatedAt = staticDate,
-                    UpdatedAt = staticDate
-                },
-                new Employee
-                {
-                    Id = 3,
-                    UserId = 3,
-                    FirstName = "John",
-                    LastName = "Employee",
-                    Phone = "555-0003",
-                    DepartmentId = 3,
-                    CurrentPositionId = 3,
-                    HireDate = staticDate,
-                    ManagerId = 4,
-                    CreatedAt = staticDate,
-                    UpdatedAt = staticDate
-                },
-                new Employee
-                {
-                    Id = 4,
-                    UserId = 4,
-                    FirstName = "Jane",
-                    LastName = "Manager",
-                    Phone = "555-0004",
-                    DepartmentId = 3,
-                    CurrentPositionId = 4,
-                    HireDate = staticDate,
-                    ManagerId = 1,
-                    CreatedAt = staticDate,
-                    UpdatedAt = staticDate
-                }
+                new Employee { Id = 1, UserId = 1, FirstName = "Admin", LastName = "User", Phone = "555-0001", DepartmentId = 1, CurrentPositionId = 1, HireDate = staticDate, CreatedAt = staticDate, UpdatedAt = staticDate },
+                new Employee { Id = 2, UserId = 2, FirstName = "HR", LastName = "Representative", Phone = "555-0002", DepartmentId = 2, CurrentPositionId = 2, HireDate = staticDate, ManagerId = 1, CreatedAt = staticDate, UpdatedAt = staticDate },
+                new Employee { Id = 3, UserId = 3, FirstName = "John", LastName = "Employee", Phone = "555-0003", DepartmentId = 3, CurrentPositionId = 3, HireDate = staticDate, ManagerId = 4, CreatedAt = staticDate, UpdatedAt = staticDate },
+                new Employee { Id = 4, UserId = 4, FirstName = "Jane", LastName = "Manager", Phone = "555-0004", DepartmentId = 3, CurrentPositionId = 4, HireDate = staticDate, ManagerId = 1, CreatedAt = staticDate, UpdatedAt = staticDate }
             );
 
-            // Seed Skills
+            // ---------------- SKILLS ----------------
             modelBuilder.Entity<Skill>().HasData(
                 new Skill { Id = 1, Name = "C# Programming", Category = "Technical", CreatedAt = staticDate },
                 new Skill { Id = 2, Name = "JavaScript", Category = "Technical", CreatedAt = staticDate },
@@ -515,6 +464,59 @@ namespace career_module.server.Infrastructure.Data
                 new Skill { Id = 6, Name = "Angular", Category = "Technical", CreatedAt = staticDate },
                 new Skill { Id = 7, Name = "Communication", Category = "Soft Skills", CreatedAt = staticDate },
                 new Skill { Id = 8, Name = "Problem Solving", Category = "Soft Skills", CreatedAt = staticDate }
+            );
+
+            // ---------------- EMPLOYEE SKILLS ----------------
+            modelBuilder.Entity<EmployeeSkill>().HasData(
+                new { EmployeeId = 3, SkillId = 1, ProficiencyLevel = 4, AcquiredDate = staticDate, LastAssessedDate = staticDate, Notes = "Strong backend skills" },
+                new { EmployeeId = 3, SkillId = 2, ProficiencyLevel = 3, AcquiredDate = staticDate, LastAssessedDate = staticDate, Notes = "Frontend experience" },
+                new { EmployeeId = 4, SkillId = 3, ProficiencyLevel = 5, AcquiredDate = staticDate, LastAssessedDate = staticDate, Notes = "Excellent leader" },
+                new { EmployeeId = 2, SkillId = 7, ProficiencyLevel = 4, AcquiredDate = staticDate, LastAssessedDate = staticDate, Notes = "Strong HR communication" }
+            );
+
+            // ---------------- EDUCATION ----------------
+            modelBuilder.Entity<EmployeeEducation>().HasData(
+                new EmployeeEducation { Id = 1, EmployeeId = 3, Degree = "BSc Computer Science", Level = "Bachelor", Institution = "Tech University", GraduationYear = 2020, FieldOfStudy = "Software Engineering", CreatedAt = staticDate },
+                new EmployeeEducation { Id = 2, EmployeeId = 2, Degree = "MSc Human Resources", Level = "Master", Institution = "Business School", GraduationYear = 2018, FieldOfStudy = "HR Management", CreatedAt = staticDate }
+            );
+
+            // ---------------- EXPERIENCES ----------------
+            modelBuilder.Entity<EmployeeExperience>().HasData(
+                new EmployeeExperience { Id = 1, EmployeeId = 3, JobTitle = "Intern Developer", Company = "Startup Inc.", StartDate = new DateTime(2019, 6, 1), EndDate = new DateTime(2019, 12, 1), Description = "Worked on internal tools", CreatedAt = staticDate },
+                new EmployeeExperience { Id = 2, EmployeeId = 4, JobTitle = "Senior Developer", Company = "BigCorp", StartDate = new DateTime(2015, 1, 1), EndDate = new DateTime(2019, 12, 31), Description = "Led development team", CreatedAt = staticDate }
+            );
+
+            // ---------------- PERFORMANCE REVIEWS ----------------
+            modelBuilder.Entity<PerformanceReview>().HasData(
+                new PerformanceReview { Id = 1, EmployeeId = 3, ReviewerId = 4, ReviewPeriodStart = new DateTime(2023, 1, 1), ReviewPeriodEnd = new DateTime(2023, 12, 31), OverallRating = 4.2m, Strengths = "Great coding ability", AreasForImprovement = "Improve communication", Goals = "Lead a project in 2024", Status = "Completed", CreatedAt = staticDate, UpdatedAt = staticDate },
+                new PerformanceReview { Id = 2, EmployeeId = 4, ReviewerId = 2, ReviewPeriodStart = new DateTime(2023, 1, 1), ReviewPeriodEnd = new DateTime(2023, 12, 31), OverallRating = 4.5m, Strengths = "Strong leadership", AreasForImprovement = "Delegate more", Goals = "Mentor junior staff", Status = "Completed", CreatedAt = staticDate, UpdatedAt = staticDate }
+            );
+
+            // ---------------- EMPLOYEE REQUESTS ----------------
+            modelBuilder.Entity<EmployeeRequest>().HasData(
+                new EmployeeRequest { Id = 1, RequesterId = 3, RequestType = "PositionChange", Status = "Pending", NewPositionId = 4, ProposedSalary = 60000, Justification = "Consistently exceeding expectations", RequestDate = staticDate },
+                new EmployeeRequest { Id = 2, RequesterId = 2, TargetEmployeeId = 3, RequestType = "DepartmentChange", Status = "ManagerApproved", NewDepartmentId = 2, Reason = "Employee requested HR rotation", ApprovedByManagerId = 4, ManagerApprovalDate = staticDate, RequestDate = staticDate }
+            );
+
+            // ---------------- SUCCESSION PLANS ----------------
+            modelBuilder.Entity<SuccessionPlan>().HasData(
+                new SuccessionPlan { Id = 1, PositionId = 4, CreatedByUserId = 1, Status = "Active", Notes = "Potential successors for Engineering Manager", CreatedAt = staticDate, UpdatedAt = staticDate }
+            );
+
+            modelBuilder.Entity<SuccessionCandidate>().HasData(
+                new SuccessionCandidate { Id = 1, SuccessionPlanId = 1, EmployeeId = 3, Priority = 1, MatchScore = 85, Status = "UnderReview", Notes = "Promising candidate", AddedAt = staticDate, UpdatedAt = staticDate }
+            );
+
+            // ---------------- CAREER PATHS ----------------
+            modelBuilder.Entity<CareerPath>().HasData(
+                new CareerPath { Id = 1, FromPositionId = 3, ToPositionId = 4, MinYearsInCurrentRole = 2, MinPerformanceRating = 4, Description = "Path from Developer to Manager", CreatedByUserId = 1, CreatedAt = staticDate, UpdatedAt = staticDate },
+                new CareerPath { Id = 2, FromPositionId = 2, ToPositionId = 1, MinYearsInCurrentRole = 3, MinPerformanceRating = 3, Description = "Path from HR Rep to Administrator", CreatedByUserId = 1, CreatedAt = staticDate, UpdatedAt = staticDate }
+            );
+
+            modelBuilder.Entity<CareerPathSkill>().HasData(
+                new CareerPathSkill { Id = 1, CareerPathId = 1, SkillId = 3, MinProficiencyLevel = 3, IsMandatory = true },
+                new CareerPathSkill { Id = 2, CareerPathId = 1, SkillId = 4, MinProficiencyLevel = 3, IsMandatory = true },
+                new CareerPathSkill { Id = 3, CareerPathId = 2, SkillId = 7, MinProficiencyLevel = 4, IsMandatory = true }
             );
         }
     }

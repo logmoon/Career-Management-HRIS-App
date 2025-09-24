@@ -31,7 +31,7 @@ namespace career_module.server.Services
         Task<ServiceResult<List<AttritionRisk>>> PredictAttritionRisksAsync();
         Task<ServiceResult<TeamDynamicsInsight>> AnalyzeTeamDynamicsAsync(int managerId);
 
-        // Smart Dashboard & Analytics (replaces Reports controller)
+        // Smart Dashboard & Analytics
         Task<ServiceResult<IntelligentDashboardDto>> GetIntelligentDashboardAsync(int? employeeId = null, string? userRole = null);
         Task<ServiceResult<DepartmentIntelligence>> GetDepartmentIntelligenceAsync(int departmentId);
         Task<ServiceResult<SkillsIntelligence>> GetSkillsIntelligenceAsync(int? departmentId = null);
